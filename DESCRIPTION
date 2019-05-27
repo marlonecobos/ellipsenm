@@ -3,10 +3,15 @@ Type: Package
 Title: ellipsenm: An R package for ecological niche modeling using ellipsoids
 Version: 0.1.0
 Author: c(
-    person("Marlon E.", "Cobos", email = "manubio13@gmail.com", role = c("aut","cre")),
-    person("Luis", "Osorio-Olvera", email = "luismurao@gmail.com ", role = "aut"),
-    person("Vijay", "Barve", email = "vijay.barve@gmail.com ", role = "aut"),
-    person("Narayani", "Barve", email = "narayani.ku@gmail.com", role = "aut"))
+    person("Marlon E.", "Cobos", email = "manubio13@gmail.com", 
+    role = c("aut","cre"), 
+    comment = c(ORCID = "https://orcid.org/0000-0002-2611-1767")),
+    person("Luis", "Osorio-Olvera", email = "luismurao@gmail.com ", 
+    role = "aut", comment = c(ORCID = "https://orcid.org/0000-0003-0701-5398")),
+    person("Vijay", "Barve", email = "vijay.barve@gmail.com ", 
+    role = "aut", comment = c(ORCID = "https://orcid.org/0000-0002-4852-2567")),
+    person("Narayani", "Barve", email = "narayani.ku@gmail.com", 
+    role = "aut", comment = c(ORCID = "https://orcid.org/0000-0002-7893-8774")))
 Maintainer: Marlon E. Cobos <manubio13@gmail.com>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.

@@ -4,12 +4,21 @@
 # Licence GPL v3
 
 ellipsoid_model <- setClass("ellipsoid_model",
-                            slots = c(algorithm = "character",
-                                      occ_points = "data.frame",
-                                      occ_predictions = "numeric",
-                                      bg_points = "data.frame",
-                                      bgpredictions = "numeric",
+                            slots = c(method = "character",
+                                      occ_predictions = "data.frame",
                                       centroid = "numeric",
                                       cov_matrix = "matrix",
-                                      predictions = "RasterStack",
+                                      predictions = "RasterLayer",
                                       projections = "list"))
+
+ellipsoid_overlap <- setClass("ellipsoid_overlap",
+                              slots = c(method = "character",
+                                        data = "list",
+                                        models = "list",
+                                        overlap = "data.frame"))
+
+ellipsoid_calibration <- setClass("ellipsoid_calibration",
+                                  slots = c(centroid_types = "character",
+                                            covariance_types = "character",
+                                            variable_sets = "list",
+                                            results = "data.frame"))
