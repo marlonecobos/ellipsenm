@@ -118,9 +118,9 @@ thin_data <- function(data, longitude, latitude, thin_class = NULL,
 
       # to report cleaning results
       cat("\nOriginal number of records for class", paste0(i, ":\t"),
-          nrow(dat_sp[[i]]))
+          nrow(dat))
       cat("\nNumber of erased records for class", paste0(i, ":\t"),
-          n - nrow(dat_sp[[i]]), "\n")
+          nrow(dat) - nrow(dat_sp[[i]]), "\n")
     }
 
     dat_sp <- do.call(rbind, dat_sp) # to bind all thinned data
