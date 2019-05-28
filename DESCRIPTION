@@ -17,7 +17,8 @@ Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 Imports:
     sp (>= 1.2),
-    raster (>= 2.6)
+    raster (>= 2.6),
+    rgeos (>= 0.3)
 Depends:
     R (>= 3.4.0)
 VignetteBuilder: knitr
