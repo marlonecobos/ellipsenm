@@ -132,6 +132,8 @@ thin_data <- function(data, longitude, latitude, thin_class = NULL,
 
   cat("\nTotal number of thinned records:\t", nrow(dat_sp), "\n")
 
+  # -----------
+  # writing results
   if (save == TRUE) {
     cat("\nOccurrences were written in the working directory.\n")
     write.csv(dat_sp, file = paste0(name, ".csv"), row.names = FALSE)
