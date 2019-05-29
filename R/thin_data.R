@@ -1,21 +1,24 @@
 #' Spatial thinning of occurrence data
 #'
 #' @description thin_data rarefies spatially occurrence data using a distance
-#'              in kilometers. Multiple distances are alowed if distinct classes
-#'              are defined.
+#' in kilometers. Multiple distances are alowed if distinct classes
+#' are defined.
+#'
 #' @param data data.frame of occurrence records containing at least longitude and
-#'             latitude columns.
+#' latitude columns.
 #' @param longitude (character) name of the column with longitude data.
 #' @param latitude (character) name of the column with latitude data.
 #' @param thin_class (character) name of optional column with numeric values to
-#'                   represent classes for thinning data using distinct
-#'                   distances.
+#' represent classes for thinning data using distinct distances.
 #' @param raster_layer optional RasterLayer to define duplicates based on its
-#'                     cell size.
+#' cell size.
 #' @param thin_distance (numeric) distance in kilometers to thin the data.
-#'                      Default = 0. If distinct classes are defined in
-#'                      \code{thin_class}, a vector of length equal to the number
-#'                      of classes is required.
+#' Default = 0. If distinct classes are defined in \code{thin_class}, a vector
+#' of length equal to the number of classes is required.
+#' @param save (logical) whether or not to save the results in the working
+#' directory. Default = FALSE.
+#' @param name (character) if \code{save} = TRUE, name of the csv file to be
+#' written; format (.csv) is atomatically added. Default = "occurrences_thin".
 #'
 #' @return
 #' A data.frame with thinned data and details about how many records were erased
@@ -52,7 +55,8 @@
 #' dim(thin_occurrences2)
 
 thin_data <- function(data, longitude, latitude, thin_class = NULL,
-                      raster_layer = NULL, thin_distance = 0) {
+                      raster_layer = NULL, thin_distance = 0, save = FALSE,
+                      name = "occurrences_thin") {
   # -----------
   # detecting potential errors
   if (missing(data)) {
@@ -127,6 +131,11 @@ thin_data <- function(data, longitude, latitude, thin_class = NULL,
   }
 
   cat("\nTotal number of thinned records:\t", nrow(dat_sp), "\n")
+
+  if (save == TRUE) {
+    cat("\nOccurrences were written in the working directory.\n")
+    write.csv(dat_sp, file = paste0(name, ".csv"), row.names = FALSE)
+  }
 
   return(dat_sp)
 }

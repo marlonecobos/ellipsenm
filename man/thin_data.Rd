@@ -5,7 +5,8 @@
 \title{Spatial thinning of occurrence data}
 \usage{
 thin_data(data, longitude, latitude, thin_class = NULL,
-  raster_layer = NULL, thin_distance = 0)
+  raster_layer = NULL, thin_distance = 0, save = FALSE,
+  name = "occurrences_thin")
 }
 \arguments{
 \item{data}{data.frame of occurrence records containing at least longitude and
@@ -16,16 +17,20 @@ latitude columns.}
 \item{latitude}{(character) name of the column with latitude data.}
 
 \item{thin_class}{(character) name of optional column with numeric values to
-represent classes for thinning data using distinct
-distances.}
+represent classes for thinning data using distinct distances.}
 
 \item{raster_layer}{optional RasterLayer to define duplicates based on its
 cell size.}
 
 \item{thin_distance}{(numeric) distance in kilometers to thin the data.
-Default = 0. If distinct classes are defined in
-\code{thin_class}, a vector of length equal to the number
-of classes is required.}
+Default = 0. If distinct classes are defined in \code{thin_class}, a vector
+of length equal to the number of classes is required.}
+
+\item{save}{(logical) whether or not to save the results in the working
+directory. Default = FALSE.}
+
+\item{name}{(character) if \code{save} = TRUE, name of the csv file to be
+written; format (.csv) is atomatically added. Default = "occurrences_thin".}
 }
 \value{
 A data.frame with thinned data and details about how many records were erased
@@ -33,8 +38,8 @@ and kept.
 }
 \description{
 thin_data rarefies spatially occurrence data using a distance
-             in kilometers. Multiple distances are alowed if distinct classes
-             are defined.
+in kilometers. Multiple distances are alowed if distinct classes
+are defined.
 }
 \examples{
 occurrences <- read.csv(system.file("extdata", "occurrences_thin.csv",
