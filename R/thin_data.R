@@ -101,7 +101,7 @@ thin_data <- function(data, longitude, latitude, thin_class = NULL,
     cat("\nNumber of erased records:\t", n - nrow(dat_sp), "\n")
 
   } else {
-    classes <- unique(data[, thin_class]) # to get unique thinning classes
+    classes <- sort(unique(data[, thin_class])) # to get unique thinning classes
     dat_sp <- list()
 
     if (length(classes) != length(thin_distance)) {
