@@ -5,7 +5,8 @@
 \title{Split occurrence data into training and testing data}
 \usage{
 split_data(data, method = "random", longitude, latitude,
-  train_proportion, save = FALSE, name = "occurrences")
+  train_proportion, raster_layer = NULL, background_n = 10000,
+  save = FALSE, name = "occurrences")
 }
 \arguments{
 \item{data}{data.frame of occurrence records containing at least longitude
@@ -24,6 +25,12 @@ with latitude data.}
 as training occurrences. The remaining data will be used for testing.
 Default = 0.5 if \code{method} = "random", or 0.75 if \code{method} = "block".}
 
+\item{raster_layer}{optional RasterLayer to prepare background data if
+\code{method} = "block".}
+
+\item{background_n}{(numeric) optional number of coordinates to be extracted
+using the \code{raster_layer}. Default = 10000.}
+
 \item{save}{(logical) whether or not to save the results in the working
 directory. Default = FALSE.}
 
@@ -41,6 +48,10 @@ for the training set, and _test for the testing set.
 If \code{method} = "block", an additional data.frame containing all data and
 an extra column with IDs for each block will be added to the resulted list.
 If \code{save} = TRUE, this data.frame will be written with the suffix _block.
+If a raster layer is given in \code{raster_layer}, background coordinates
+will be returned as part of this list. Data will be named as bg_all, bg_train,
+bg_test, and bg_block, for all, training, testing, and all background with
+assigned blocks, respectively.
 }
 \description{
 split_data splits occurrences into training and testing data
@@ -51,5 +62,17 @@ occurrences <- read.csv(system.file("extdata", "occurrences_comp.csv",
                                     package = "ellipsenm"))
 
 # random split 50\% for trainig and 50\% for testing
-data_split <- split_data(data = occs, train.proportion = 0.5)
+data_split <- split_data(occurrences, train_proportion = 0.5)
+
+# split 75\% for trainig and 25\% for testing using blocks
+data_split <- split_data(occurrences, method = "block", longitude = "longitude",
+                         latitude = "latitude", train_proportion = 0.75)
+
+# split data using blocks and preparing background
+r_layer <- raster::raster(system.file("extdata", "m_bio1.tif",
+                                      package = "ellipsenm"))
+
+data_split <- split_data(occurrences, method = "block", longitude = "longitude",
+                         latitude = "latitude", train_proportion = 0.75,
+                         raster_layer = rlayer)
 }
