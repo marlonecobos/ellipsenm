@@ -4,19 +4,25 @@
 \alias{split_data}
 \title{Split occurrence data into training and testing data}
 \usage{
-split_data(data, train_proportion = 0.5, method = "random",
-  save = FALSE, name = "occurrences")
+split_data(data, method = "random", longitude, latitude,
+  train_proportion, save = FALSE, name = "occurrences")
 }
 \arguments{
 \item{data}{data.frame of occurrence records containing at least longitude
 and latitude columns.}
 
-\item{train_proportion}{(numeric) proportion (from 0 to 1) of data to be used
-as training occurrences. The remaining data will be used for testing.
-Default = 0.5.}
-
 \item{method}{(character) method for selecting training and testing data.
 Options are: "random" and "block"; default = "random".}
+
+\item{longitude}{(character) if \code{method} = "block", name of the column
+with longitude data.}
+
+\item{latitude}{(character) if \code{method} = "block", name of the column
+with latitude data.}
+
+\item{train_proportion}{(numeric) proportion (from 0 to 1) of data to be used
+as training occurrences. The remaining data will be used for testing.
+Default = 0.5 if \code{method} = "random", or 0.75 if \code{method} = "block".}
 
 \item{save}{(logical) whether or not to save the results in the working
 directory. Default = FALSE.}
@@ -31,14 +37,18 @@ A list containing all, training, and testing occurrences. If \code{save} =
 TRUE, three csv files will be written in the working directory according to
 the name defined in \code{name} plus the suffix _all for all records, _train
 for the training set, and _test for the testing set.
+
+If \code{method} = "block", an additional data.frame containing all data and
+an extra column with IDs for each block will be added to the resulted list.
+If \code{save} = TRUE, this data.frame will be written with the suffix _block.
 }
 \description{
 split_data splits occurrences into training and testing data
 based on distinct methods.
 }
 \examples{
-occurrences <- read.csv(system.file("extdata", "occurrences_thin.csv",
-                                    package = "kuenm"))
+occurrences <- read.csv(system.file("extdata", "occurrences_comp.csv",
+                                    package = "ellipsenm"))
 
 # random split 50\% for trainig and 50\% for testing
 data_split <- split_data(data = occs, train.proportion = 0.5)
