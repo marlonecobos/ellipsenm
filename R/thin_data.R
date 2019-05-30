@@ -28,7 +28,7 @@
 #'
 #' @examples
 #' occurrences <- read.csv(system.file("extdata", "occurrences_thin.csv",
-#'                                     package = "kuenm"))
+#'                                     package = "ellipsenm"))
 #'
 #' # simple thinning based on one distance
 #' thin_occurrences <- thin_data(occurrences, longitude = "longitude",
