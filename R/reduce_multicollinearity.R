@@ -1,5 +1,5 @@
 reduce_multicollinearity  <- function(data, raster_layers, sample_size = 10000,
-                                      cor_threshold = 0.8, VIF_limit = 10) {
+                                      correlation_limit = 0.8, VIF_limit = 10) {
   # -----------
   # detecting potential errors a
   if (missing(raster_layers)) {
@@ -25,7 +25,10 @@ reduce_multicollinearity  <- function(data, raster_layers, sample_size = 10000,
   # -----------
   # correlation matrix and groups
   correlations <- cor(rvalues)
-
+  rule <- correlations > correlation_limit | correlations < -correlation_limit
+  correlations <-
+  correlations <-
+  n_cor_groups
 
   # -----------
   # VIF groups
@@ -34,19 +37,36 @@ reduce_multicollinearity  <- function(data, raster_layers, sample_size = 10000,
   d_f <- as.data.frame(rbind(cbind(presence = 1, d_r),
                              cbind(presence = 0, rvalues)))
 
+  form <- paste0("presence ~ ", paste0("I(", colnames(d_f)[-1], ")"))
+
   ## glms
-  glms <- glm(presence ~ ., data = d_f, family = "binomial") ########
+  glms <- glm(form, data = d_f, family = "binomial") ########
 
   ## removal of variables if needed
-  al_vars <- attributes(alias(glms)$Complete)$dimnames[[1]] #########
+  al_var <- attributes(alias(glms)$Complete)$dimnames #########
+  al_vars <- al_var[[1]]
 
   if (length(al_vars) > 0) {
     d_f <- d_f[, !colnames(d_f) %in% al_vars]
+    form <- paste0("presence ~ ", paste0("I(", colnames(d_f)[-1], ")"))
 
-    glms <- glm(presence ~ ., data = d_f, family = "binomial",
-                     weights = weights_data)
+    glms <- glm(form, data = d_f, family = "binomial")
   }
 
+  ## vif claculations
+  vifs <- car::vif(glms)
+
+  ## selected variables
+  sel_vars <- vifs[vifs < VIF_limit]
+
+  # -----------
+  # return object
+  groups <- list(
+    corelation_results = n_cor_groups,
+    VIF_results = list(totally_collinear = al_var,
+                       selected_variables = sel_vars)
+    )
 
 
+  return()
 }
