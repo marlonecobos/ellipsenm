@@ -52,11 +52,43 @@ noncor_groups <- function(raster_values, correlation_limit) {
   variables <- colnames(rule)
 
   cor_n <- sort(sapply(variables, function(x) {sum(rule[, x]) - 1}))
-  cor_l <- lapply(unique(cor_n), function(x) {names(cor_n[cor_n == x])})
-  names(cor_l) <- unique(cor_n)
 
-  var1 <- names(cor_n[cor_n == 1])
-  n_cor_groups
+  varcor <- names(cor_n[cor_n != 0])
+  cors <- lapply(varcor, function(x) {
+    corel <- rule[, x]
+    corvars <- names(corel[corel == TRUE & variables != x])
+  })
+
+  names(cors) <- varcor
+  corl <- list(varcor, cors)
+
+  lvar <- list()
+
+  for (x in 1:length(cors)) {
+    vec_cor <- cors[[x]]
+    nvec <- length(vec_cor)
+
+    svar <- vector()
+    for (y in 1:length(vec_cor)) {
+      ncor <- cors[[vec_cor[y]]]
+
+      if (length(ncor) > nvec){
+        svar[y] <- names(cors)[x]
+        cors <- cors[-which(names(cors) == vec_cor[y])]
+      } else {
+        svar[y] <- "other"
+      }
+    }
+
+    lvar[[x]] <- unique(svar)
+    names(lvar[[x]]) <- vec_cor[[y]]
+
+    if (x == length(cors)) break()
+  }
+
+  no_cor <- names(cor_n[cor_n == 0])
+
+  no_cor_groups <- lapply(no_cor_sets, function (x) {c(no_cor, x)})
 }
 
 
