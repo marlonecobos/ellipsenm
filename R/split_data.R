@@ -69,6 +69,14 @@ split_data <- function(data, method = "random", longitude, latitude,
   if (missing(data)) {
     stop("Argument data is not defined.")
   }
+  if (method == "block") {
+    if (missing(longitude)) {
+      stop("Argument longitude is not defined.")
+    }
+    if (missing(latitude)) {
+      stop("Argument latitude is not defined.")
+    }
+  }
 
   if (missing(train_proportion)) {
     if (method == "random") train_proportion <- 0.5
