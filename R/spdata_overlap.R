@@ -25,8 +25,8 @@
 #' met <- "covmat"
 #' occurrences <- read.csv(system.file("extdata", "occurrences_thin.csv",
 #'                                     package = "ellipsenm"))
-#' layers <- raster::raster(system.file("extdata", "m_bio1.tif",
-#'                                      package = "ellipsenm"))
+#' layers <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
+#'                                    pattern = "m_bio", full.names = TRUE))
 #'
 #' sp_over <- spdata_overlap(method = met, data = occurrences,
 #'                           raster_layers = layers)

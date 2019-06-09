@@ -42,8 +42,8 @@
 #'                       latitude = "latitude", buffer_distance = 100)
 #'
 #' # producing polygons and masking layers
-#' vars <- raster::raster(system.file("extdata", "m_bio1.tif",
-#'                                    package = "ellipsenm"))
+#' vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
+#'                                  pattern = "m_bio", full.names = TRUE))
 #'
 #' b_area1 <- buffer_area(data = occurrences, longitude = "longitude",
 #'                        latitude = "latitude", buffer_distance = 100,

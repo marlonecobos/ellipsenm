@@ -85,8 +85,8 @@ cx_area1 <- convex_area(data = occs, longitude = "LONGITUDE",
 
 
 # producing convex polygons, masking layers
-vars <- raster::raster(system.file("extdata", "m_bio1.tif",
-                                   package = "ellipsenm"))
+vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
+                                 pattern = "m_bio", full.names = TRUE))
 
 cx_area <- convex_area(data = occs, longitude = "LONGITUDE",
                         latitude = "LATITUDE", buffer_distance = 50,
