@@ -11,14 +11,19 @@ ellipsoid_model <- setClass("ellipsoid_model",
                                       predictions = "RasterLayer",
                                       projections = "list"))
 
-ellipsoid_overlap <- setClass("ellipsoid_overlap",
-                              slots = c(method = "character",
-                                        data = "list",
-                                        models = "list",
-                                        overlap = "data.frame"))
-
 ellipsoid_calibration <- setClass("ellipsoid_calibration",
                                   slots = c(centroid_types = "character",
                                             covariance_types = "character",
                                             variable_sets = "list",
                                             results = "data.frame"))
+
+spdata_overlap <- setClass("spdata_overlap",
+                           slots = c(method = "character",
+                                     occurrences = "data.frame",
+                                     m_layers = "RasterStack"))
+
+ellipsoid_overlap <- setClass("ellipsoid_overlap",
+                              slots = c(method = "character",
+                                        data = "list",
+                                        models = "list",
+                                        overlap = "data.frame"))
