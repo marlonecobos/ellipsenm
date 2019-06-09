@@ -17,10 +17,10 @@ ellipsoid_calibration <- setClass("ellipsoid_calibration",
                                             variable_sets = "list",
                                             results = "data.frame"))
 
-spdata_overlap <- setClass("spdata_overlap",
-                           slots = c(method = "character",
-                                     occurrences = "data.frame",
-                                     m_layers = "RasterStack"))
+data_overlap <- setClass("data_overlap",
+                         slots = c(method = "character",
+                                   occurrences = "data.frame",
+                                   m_layers = "RasterStack"))
 
 ellipsoid_overlap <- setClass("ellipsoid_overlap",
                               slots = c(method = "character",
