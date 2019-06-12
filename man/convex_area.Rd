@@ -44,16 +44,6 @@ directory. Default = FALSE.}
 
 \item{name}{(character) name of a folder to be written with the results if
 \code{save} = TRUE. Default = "calib_area_convex".}
-
-\item{cluster_method}{(character) name of the method to be used for clustering
-the occurrences. Options are "hierarchical" and "k-means"; default =
-"hierarchical". Note that this parameter is ignored when \code{split} = FALSE.
-See details \code{\link[ellipsenm]{cluster_split}}.}
-
-\item{split_distance}{(numeric) distance in km that will be considered as the
-limit of connectivity among polygons created with clusters of occurrences.
-This parameter is used when \code{cluster_method} = "hierarchical" and
-\code{split} = TRUE. Default = NULL.}
 }
 \value{
 If raster layers are masked, a lits containing a SpatialPolygonDataFrame and
@@ -82,18 +72,20 @@ cx_area1 <- convex_area(data = occs, longitude = "LONGITUDE",
                         latitude = "LATITUDE", buffer_distance = 50)
 
 # producing convex polygons splitted considering clusters
-
+cx_area2 <- convex_area(data = occs, longitude = "LONGITUDE",
+                        latitude = "LATITUDE", split = TRUE, n_kmeans = 3,
+                        buffer_distance = 50)
 
 # producing convex polygons, masking layers
 vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
                                  pattern = "m_bio", full.names = TRUE))
 
-cx_area <- convex_area(data = occs, longitude = "LONGITUDE",
-                        latitude = "LATITUDE", buffer_distance = 50,
+cx_area3 <- convex_area(data = occs, longitude = "LONGITUDE",
+                        latitude = "LATITUDE", buffer_distance = 100,
                         raster_layers = vars, mask = TRUE)
 
 # producing convex polygons, masking layers, and saving results
-cx_area3 <- convex_area(data = occurrences, longitude = "longitude",
+cx_area4 <- convex_area(data = occurrences, longitude = "longitude",
                        latitude = "latitude", buffer_distance = 100,
                        raster_layers = vars, mask = TRUE, save = TRUE,
                        name = "buff_area")

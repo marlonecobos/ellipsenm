@@ -4,15 +4,12 @@
 \alias{cluster_split}
 \title{Split data based on clusters}
 \usage{
-cluster_split(data, n_kmeans = NULL)
+cluster_split(data, cluster_method = "k-means", split_distance = 250,
+  n_kmeans = NULL)
 }
 \arguments{
 \item{data}{data.frame of occurrence records containing at least longitude
 and latitude columns.}
-
-\item{n_kmeans}{(numeric) if \code{split} = TRUE, number of clusters in which
-the species occurrences will be grouped when using the "k-means"
-\code{cluster_method}. Default = NULL.}
 
 \item{cluster_method}{(character) name of the method to be used for clustering
 the occurrences. Options are "hierarchical" and "k-means"; default =
@@ -23,6 +20,10 @@ See details \code{\link[ellipsenm]{cluster_split}}.}
 limit of connectivity among polygons created with clusters of occurrences.
 This parameter is used when \code{cluster_method} = "hierarchical" and
 \code{split} = TRUE. Default = NULL.}
+
+\item{n_kmeans}{(numeric) if \code{split} = TRUE, number of clusters in which
+the species occurrences will be grouped when using the "k-means"
+\code{cluster_method}. Default = NULL.}
 }
 \description{
 Split data based on clusters
