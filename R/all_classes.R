@@ -11,6 +11,14 @@ ellipsoid_model <- setClass("ellipsoid_model",
                                       predictions = "RasterLayer",
                                       projections = "list"))
 
+ellipsoid <- setClass("ellipsoid",
+                      slots = c(method = "character",
+                                centroid = "numeric",
+                                covariance = "matrix",
+                                niche_volume = "numeric",
+                                semi_axis_length = "numeric",
+                                axis_coordinates = "list"))
+
 ellipsoid_calibration <- setClass("ellipsoid_calibration",
                                   slots = c(centroid_types = "character",
                                             covariance_types = "character",
