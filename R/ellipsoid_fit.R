@@ -17,7 +17,7 @@ ellipsoid_fit <- function (data, longitude, latitude, method = "mve", level,
     vari <- stats::cov(data)
   }
 
-  sigma_i <- solve(vari) / stats::qchisq(level, df = dim(data)[2])
+  sigma_i <- solve(vari) / stats::qchisq(level, df = ncol(data))
   s_eigen <- eigen(sigma_i)
   s_eigenval <- s_eigen$values
   s_eigenvec <- s_eigen$vectors
@@ -38,14 +38,14 @@ ellipsoid_fit <- function (data, longitude, latitude, method = "mve", level,
     assign(paste0("l", i, "_sup"), centroid + s_eigenvec[, i] * stds[i])
     coord_matrix <- matrix(c(eval(parse(text = paste0("l", i, "_sup"))),
                              eval(parse(text = paste0("l", i, "_inf")))),
-                           byrow = T, nrow = 2)
+                           byrow = TRUE, nrow = 2)
     colnames(coord_matrix) <- names(centroid)
     rownames(coord_matrix) <- paste0("vec_", 1:2)
     axis_coordinates[[i]] <- coord_matrix
   }
 
   return(list(centroid = centroid, covariance = vari, niche_volume = vol2,
-              SemiAxis_length = axis_length/2, axis_coordinates = axis_coordinates))
+              semi_axis_length = axis_length / 2, axis_coordinates = axis_coordinates))
 }
 
 
