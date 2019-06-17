@@ -18,7 +18,9 @@ Description: More about what it does (maybe more than one line)
 Imports:
     sp (>= 1.2),
     raster (>= 2.6),
-    rgeos (>= 0.3)
+    rgeos (>= 0.3),
+    rmarkdown (>= 1.13),
+    rmdformats (>= 0.3)
 Depends:
     R (>= 3.4.0)
 VignetteBuilder: knitr
