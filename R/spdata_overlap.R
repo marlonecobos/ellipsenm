@@ -4,8 +4,8 @@
 #' niche overlap analyses.
 #'
 #' @param method (character) method to construct the ellipsoid that characterizes
-#' the species ecological niche. Available methods are: "covmat" and "mve".
-#' See details. Default = "mve".
+#' the species ecological niche. Available methods are: "covmat", "mve1", and
+#' "mve2". See details. Default = "mve1".
 #' @param data data.frame of occurrence records. Columns must be species,
 #' longitude, and latitude.
 #' @param raster_layers a RasterStack of environmental data to be used in niche
@@ -18,7 +18,9 @@
 #'
 #' "covmat"
 #'
-#' "mve"
+#' "mve1"
+#'
+#' "mve2"
 #'
 #' @export
 #'
@@ -33,8 +35,9 @@
 #' sp_over <- spdata_overlap(method = met, data = occurrences,
 #'                           raster_layers = layers)
 
-spdata_overlap <- function(method = "mve", data, raster_layers) {
-
+spdata_overlap <- function(method = "mve1", data, raster_layers) {
+  # -----------
+  # detecting potential errors
   if (!missing(method)) {
     if (is.character(method) == FALSE) {
       stop("method needs to be character.")
@@ -60,6 +63,8 @@ spdata_overlap <- function(method = "mve", data, raster_layers) {
     stop("Argument raster_layers needs to be defined.")
   }
 
+  # -----------
+  # preparing results
   results <- data_overlap(method = method,
                           occurrences = data,
                           m_layers = raster_layers)

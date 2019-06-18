@@ -6,6 +6,12 @@
 \usage{
 ndata_quantile(n_data, level)
 }
+\arguments{
+\item{n_data}{(numeric) total number of data to be considered.}
+
+\item{level}{(numeric) percentage of data to be considered when creating the
+ellipsoid that characterizes the species ecological niche. Default = 95.}
+}
 \description{
 Helper function to calculate quantiles
 }

@@ -4,18 +4,21 @@
 \alias{spdata_overlap}
 \title{Prepare species and environmental data for overlap analysis}
 \usage{
-spdata_overlap(method, data, raster_layers)
+spdata_overlap(method = "mve1", data, raster_layers)
 }
 \arguments{
-\item{method}{(character) method to contruct the ellipsoid that characterizes
-the species ecological niche. Available methods are: "covmat" and "mve".
-See details. Default = "covmat".}
+\item{method}{(character) method to construct the ellipsoid that characterizes
+the species ecological niche. Available methods are: "covmat", "mve1", and
+"mve2". See details. Default = "mve1".}
 
 \item{data}{data.frame of occurrence records. Columns must be species,
 longitude, and latitude.}
 
 \item{raster_layers}{a RasterStack of environmental data to be used in niche
 overlap ananlyses.}
+}
+\value{
+An object of class data_overlap formated for analyses of niche overlap.
 }
 \description{
 spdata_overlap prepares species and environmental data to perform
@@ -26,11 +29,13 @@ Methods details are as follows:
 
 "covmat"
 
-"mve"
+"mve1"
+
+"mve2"
 }
 \examples{
 # data
-met <- "covmat"
+met <- "mve"
 occurrences <- read.csv(system.file("extdata", "occurrences_thin.csv",
                                     package = "ellipsenm"))
 layers <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),

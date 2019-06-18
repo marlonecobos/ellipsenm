@@ -4,24 +4,24 @@
 \alias{ellipsoid_fit}
 \title{Fit ellipsoids based on distinct methods}
 \usage{
-ellipsoid_fit(data, longitude, latitude, method = "mve", level,
+ellipsoid_fit(data, longitude, latitude, method = "mve1", level = 95,
   raster_layers = NULL)
 }
 \arguments{
-\item{data}{data.frame of occurrence records. Columns must be species,
-longitude, and latitude. Other columns are values of environmental variables
-to be used as dimensions of the ellipsoid.}
+\item{data}{data.frame of occurrence records. Columns must be longitude and
+latitude. Other columns are optional and could values of environmental
+variables to be used as dimensions for fitting the ellipsoid.}
 
 \item{longitude}{(character) name of the column with longitude data.}
 
 \item{latitude}{(character) name of the column with latitude data.}
 
 \item{method}{(character) method to construct the ellipsoid that characterizes
-the species ecological niche. Available methods are: "covmat" and "mve".
-See details. Default = "mve".}
+the species ecological niche. Available methods are: "covmat", "mve1", and
+"mve2". See details. Default = "mve1".}
 
 \item{level}{(numeric) percentage of data to be considered when creating the
-ellipsoid that characterizes the species ecological niche.}
+ellipsoid that characterizes the species ecological niche. Default = 95.}
 
 \item{raster_layers}{optional RasterStack of environmental variables to be
 extracted using geographic coordinates present in \code{data}.}
@@ -30,7 +30,18 @@ extracted using geographic coordinates present in \code{data}.}
 
 }
 \description{
+ellipsoid_fit helps in finding the centroid and matrix that
+define an ellipsoid. It uses distinct methods with asumptions that differ
+from each other.
+}
+\details{
+Methods details are as follows:
 
+"covmat"
+
+"mve1"
+
+"mve2"
 }
 \examples{
 occurrences <- read.csv(system.file("extdata", "occurrences_comp.csv",

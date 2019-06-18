@@ -22,8 +22,8 @@ data Recommended when the species of interest has a disjunct distribution.
 Default = FALSE.}
 
 \item{n_kmeans}{(numeric) if \code{split} = TRUE, number of clusters in which
-the species occurrences will be grouped when using the "k-means"
-\code{cluster_method}. Default = NULL.}
+the species occurrences will be grouped using the "k-means" method.
+Default = NULL.}
 
 \item{buffer_distance}{(numeric) distance in km to be used to create a buffer
 for the convex hull. Default = NULL.}
