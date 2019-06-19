@@ -45,8 +45,12 @@ Methods details are as follows:
 }
 \examples{
 occurrences <- read.csv(system.file("extdata", "occurrences_comp.csv",
-                                    package = "ellipsenm"))
+                                    package = "ellipsenm"))[, -1]
 
 vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
                                  pattern = "m_bio", full.names = TRUE))
+
+ellips <- ellipsoid_fit(data = occurrences, longitude = "longitude",
+                        latitude = "latitude", method = "mve1",
+                        level = 95, raster_layers = vars)
 }

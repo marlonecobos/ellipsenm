@@ -32,10 +32,14 @@
 #'
 #' @examples
 #' occurrences <- read.csv(system.file("extdata", "occurrences_comp.csv",
-#'                                     package = "ellipsenm"))
+#'                                     package = "ellipsenm"))[, -1]
 #'
 #' vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
 #'                                  pattern = "m_bio", full.names = TRUE))
+#'
+#' ellips <- ellipsoid_fit(data = occurrences, longitude = "longitude",
+#'                         latitude = "latitude", method = "mve1",
+#'                         level = 95, raster_layers = vars)
 
 ellipsoid_fit <- function (data, longitude, latitude, method = "mve1",
                            level = 95, raster_layers = NULL) {
@@ -80,7 +84,7 @@ ellipsoid_fit <- function (data, longitude, latitude, method = "mve1",
       covari <- stats::cov(data) # change mve2
     }
   } else {
-    stop("method is not valid, please see function's help.")
+    stop("Argument method is not valid, please see function's help.")
   }
 
   # -----------
