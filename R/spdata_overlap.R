@@ -66,8 +66,8 @@ spdata_overlap <- function(method = "mve1", data, raster_layers) {
   # -----------
   # preparing results
   results <- data_overlap(method = method,
-                          occurrences = data,
-                          m_layers = raster_layers)
+                          data = data,
+                          raster_layers = raster_layers)
 
   return(results)
 }
