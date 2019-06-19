@@ -47,7 +47,7 @@ ellipsoid_fit <- function (data, longitude, latitude, method = "mve1",
   # -----------
   # detecting potential errors
   if (missing(data)) {
-    stop("Argument occurrences is necessary to perform the analysis")
+    stop("Argument data is necessary to perform the analysis")
   }
   if (missing(longitude)) {
     stop("Argument longitude is not defined.")
@@ -65,7 +65,7 @@ ellipsoid_fit <- function (data, longitude, latitude, method = "mve1",
   }
 
   # -----------
-  # finding centroid
+  # finding centroid and covariance matrix
   if (method == "covmat" | method == "mve1" | method == "mve2") {
     if (method == "covmat") {
       centroid <- colMeans(data)
@@ -80,8 +80,9 @@ ellipsoid_fit <- function (data, longitude, latitude, method = "mve1",
     }
 
     if (method == "mve2") {
-      centroid <- colMeans(data) # change mve2
-      covari <- stats::cov(data) # change mve2
+      mvee <- mbased_mve(data, tolerance = 0.001)
+      centroid <- mvee[[1]]
+      covari <- mvee[[2]] # check if it works
     }
   } else {
     stop("Argument method is not valid, please see function's help.")
