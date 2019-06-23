@@ -8,9 +8,9 @@ ellipsoid_fit(data, longitude, latitude, method = "mve1", level = 95,
   raster_layers = NULL)
 }
 \arguments{
-\item{data}{data.frame of occurrence records. Columns must be longitude and
-latitude. Other columns are optional and could values of environmental
-variables to be used as dimensions for fitting the ellipsoid.}
+\item{data}{data.frame or matrix of occurrence records. Columns must include
+longitude and latitude. Other columns are optional and could values of
+environmental variables to be used as dimensions for fitting the ellipsoid.}
 
 \item{longitude}{(character) name of the column with longitude data.}
 
@@ -20,8 +20,8 @@ variables to be used as dimensions for fitting the ellipsoid.}
 the species ecological niche. Available methods are: "covmat", "mve1", and
 "mve2". See details. Default = "mve1".}
 
-\item{level}{(numeric) percentage of data to be considered when creating the
-ellipsoid that characterizes the species ecological niche. Default = 95.}
+\item{level}{(numeric) the confidence level of a pairwise confidence region
+for the ellipsoid, expresed as percentage. Default = 95.}
 
 \item{raster_layers}{optional RasterStack of environmental variables to be
 extracted using geographic coordinates present in \code{data}.}
@@ -53,4 +53,10 @@ vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
 ellips <- ellipsoid_fit(data = occurrences, longitude = "longitude",
                         latitude = "latitude", method = "mve1",
                         level = 95, raster_layers = vars)
+
+# using only a matrix of data and no raster layers
+data1 <- cbind(occurrences, raster::extract(ras, occurrences))
+
+ell3 <- ellipsoid_fit(data1, longitude = "longitude", latitude = "latitude",
+                      method = "mve1", level = 95)
 }

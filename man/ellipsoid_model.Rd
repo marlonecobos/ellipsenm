@@ -7,7 +7,8 @@
 ellipsoid_model(data, species, longitude, latitude, raster_layers,
   method = "mve1", level = 95, replicates = 1,
   replicate_type = "bootstrap", bootstrap_percentage = 50,
-  projection_layers = NULL, output_directory = "ellipsenm_model")
+  projection_layers = NULL, tolerance = 1e-60,
+  output_directory = "ellipsenm_model")
 }
 \arguments{
 \item{data}{data.frame of occurrence records. Columns must be: species,
@@ -24,10 +25,10 @@ using geographic coordinates present in \code{data}.}
 
 \item{method}{(character) method to construct the ellipsoid that characterizes
 the species ecological niche. Available methods are: "covmat", "mve1", and
-"mve2". See details of \code{\link[ellipsenm]{ellipsoid_fit}}. Default = "mve1".}
+"mve2". See details of \code{\link{ellipsoid_fit}}. Default = "mve1".}
 
-\item{level}{(numeric) percentage of data to be considered when creating the
-ellipsoid that characterizes the species ecological niche. Default = 95.}
+\item{level}{(numeric) the confidence level of a pairwise confidence region
+for the ellipsoid, expresed as percentage. Default = 95.}
 
 \item{replicates}{(numeric) number of replicates to perform. Default = 1
 produces a single model using all the data.}
@@ -46,8 +47,11 @@ RasterStack of layers respresenting an only scenario for projection; or a
 named list of RasterStacks representing multiple scenarios for projection.
 See details. Default = NULL.}
 
-\item{output_directory}{name of the folder were all results will be saved. This
-avoids saturation of the RAM.}
+\item{tolerance}{the tolerance for detecting linear dependencies.
+Default = 1e-60.}
+
+\item{output_directory}{name of the folder were all results will be written.
+This avoids saturation of the RAM.}
 }
 \value{
 

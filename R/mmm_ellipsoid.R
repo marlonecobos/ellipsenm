@@ -31,14 +31,14 @@ mmm_ellipsoid <- function(ellipsoid_list) {
   max_vol <- max(volumes)
 
   ## min
-  min_ellipsoid <- ellipsoid_list[[sapply(ellipsoid_list, function(x) {
+  min_ellipsoid <- ellipsoid_list[sapply(ellipsoid_list, function(x) {
     x@niche_volume == min_vol
-  })]]
+  })]
 
   ## max
-  max_ellipsoid <- ellipsoid_list[[sapply(ellipsoid_list, function(x) {
+  max_ellipsoid <- ellipsoid_list[sapply(ellipsoid_list, function(x) {
     x@niche_volume == max_vol
-  })]]
+  })]
 
   ## mean
   centroids <- lapply(ellipsoid_list, function(x) {x@centroid})
@@ -82,6 +82,6 @@ mmm_ellipsoid <- function(ellipsoid_list) {
 
   # -----------
   # returning results
-  return(list(mean_ellipsoid = mean_ellipsoid, min_ellipsoid = min_ellipsoid,
-              max_ellipsoid = max_ellipsoid))
+  return(list(mean_ellipsoid = mean_ellipsoid, min_ellipsoid = min_ellipsoid[[1]],
+              max_ellipsoid = max_ellipsoid[[1]]))
 }

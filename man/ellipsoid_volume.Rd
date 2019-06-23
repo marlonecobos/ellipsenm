@@ -4,12 +4,12 @@
 \alias{ellipsoid_volume}
 \title{Helper function to calculate niche volume}
 \usage{
-ellipsoid_volume(n_dimensions, axes_length)
+ellipsoid_volume(n_dimensions, semi_axes_length)
 }
 \arguments{
 \item{n_dimensions}{(numeric) number of dimensions to be considered.}
 
-\item{axes_length}{(numeric) length of ellipsoid axes.}
+\item{semi_axes_length}{(numeric) length of ellipsoid axes.}
 }
 \description{
 Helper function to calculate niche volume

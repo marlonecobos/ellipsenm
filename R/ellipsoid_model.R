@@ -13,9 +13,9 @@
 #' using geographic coordinates present in \code{data}.
 #' @param method (character) method to construct the ellipsoid that characterizes
 #' the species ecological niche. Available methods are: "covmat", "mve1", and
-#' "mve2". See details of \code{\link[ellipsenm]{ellipsoid_fit}}. Default = "mve1".
-#' @param level (numeric) percentage of data to be considered when creating the
-#' ellipsoid that characterizes the species ecological niche. Default = 95.
+#' "mve2". See details of \code{\link{ellipsoid_fit}}. Default = "mve1".
+#' @param level (numeric) the confidence level of a pairwise confidence region
+#' for the ellipsoid, expresed as percentage. Default = 95.
 #' @param replicates (numeric) number of replicates to perform. Default = 1
 #' produces a single model using all the data.
 #' @param replicate_type (character) type of replicates to perform. Options are:
@@ -29,8 +29,12 @@
 #' RasterStack of layers respresenting an only scenario for projection; or a
 #' named list of RasterStacks representing multiple scenarios for projection.
 #' See details. Default = NULL.
-#' @param output_directory name of the folder were all results will be saved. This
-#' avoids saturation of the RAM.
+#' @param prediction (character) type of prediction to be made, options are:
+#' "suitability", "mahalanobis", and "both". Default = "suitability".
+#' @param tolerance the tolerance for detecting linear dependencies.
+#' Default = 1e-60.
+#' @param output_directory name of the folder were all results will be written.
+#' This avoids saturation of the RAM.
 #'
 #' @return
 #'
@@ -52,11 +56,12 @@
 ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
                              method = "mve1", level = 95, replicates = 1,
                              replicate_type = "bootstrap", bootstrap_percentage = 50,
-                             projection_layers = NULL, output_directory = "ellipsenm_model") {
+                             projection_layers = NULL, prediction = "suitability",
+                             tolerance = 1e-60, output_directory = "ellipsenm_model") {
   # -----------
-  # detecting potential errors
+  # detecting potential errors, other potential problems tested in code
   if (missing(data)) {
-    stop("Argument occurrences is necessary to perform the analysis")
+    stop("Argument occurrences is necessary to perform the analysis.")
   }
   if (missing(longitude)) {
     stop("Argument longitude is not defined.")
@@ -155,11 +160,25 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
     ## plots
 
     # -----------
-    # writing results
+    # writing results and savind objects for report
+
+
+    ## objects for report
+    save(ellipsoids, file = "enm_report_data.RData")
   }
 
 
+  # -----------
+  # producing report
+  report_format(name = paste0(output_directory, "/eenm_report_format"))
+  report("enm", name = paste0(output_directory, "/eenm_results_report"))
+
+  unlink(paste0(output_directory, "/eenm_report_format", ".css"))
 
   # -----------
   # returning results
+
+  return(ellipsoid_m)
 }
+
+

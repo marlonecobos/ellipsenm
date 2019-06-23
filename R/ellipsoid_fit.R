@@ -4,16 +4,16 @@
 #' define an ellipsoid. It uses distinct methods with asumptions that differ
 #' from each other.
 #'
-#' @param data data.frame of occurrence records. Columns must be longitude and
-#' latitude. Other columns are optional and could values of environmental
-#' variables to be used as dimensions for fitting the ellipsoid.
+#' @param data data.frame or matrix of occurrence records. Columns must include
+#' longitude and latitude. Other columns are optional and could values of
+#' environmental variables to be used as dimensions for fitting the ellipsoid.
 #' @param longitude (character) name of the column with longitude data.
 #' @param latitude (character) name of the column with latitude data.
 #' @param method (character) method to construct the ellipsoid that characterizes
 #' the species ecological niche. Available methods are: "covmat", "mve1", and
 #' "mve2". See details. Default = "mve1".
-#' @param level (numeric) percentage of data to be considered when creating the
-#' ellipsoid that characterizes the species ecological niche. Default = 95.
+#' @param level (numeric) the confidence level of a pairwise confidence region
+#' for the ellipsoid, expresed as percentage. Default = 95.
 #' @param raster_layers optional RasterStack of environmental variables to be
 #' extracted using geographic coordinates present in \code{data}.
 #'
@@ -40,6 +40,12 @@
 #' ellips <- ellipsoid_fit(data = occurrences, longitude = "longitude",
 #'                         latitude = "latitude", method = "mve1",
 #'                         level = 95, raster_layers = vars)
+#'
+#' # using only a matrix of data and no raster layers
+#' data1 <- cbind(occurrences, raster::extract(ras, occurrences))
+#'
+#' ell3 <- ellipsoid_fit(data1, longitude = "longitude", latitude = "latitude",
+#'                       method = "mve1", level = 95)
 
 ellipsoid_fit <- function (data, longitude, latitude, method = "mve1",
                            level = 95, raster_layers = NULL) {
@@ -61,8 +67,9 @@ ellipsoid_fit <- function (data, longitude, latitude, method = "mve1",
   if (!is.null(raster_layers)) {
     data <- raster::extract(raster_layers, data[, c(longitude, latitude)])
   } else {
-    data <- data[, -c(longitude, latitude)]
+    data <- data[, -which(colnames(data) %in% c(longitude, latitude))]
   }
+  level <- level / 100
 
   # -----------
   # finding centroid and covariance matrix
@@ -82,7 +89,7 @@ ellipsoid_fit <- function (data, longitude, latitude, method = "mve1",
     if (method == "mve2") {
       mvee <- mbased_mve(data, tolerance = 0.001)
       centroid <- mvee[[1]]
-      covari <- mvee[[2]] # check if it works
+      covari <- mvee[[2]] # PROBLEM, see if level needs to be changed
     }
   } else {
     stop("Argument method is not valid, please see function's help.")
@@ -90,41 +97,37 @@ ellipsoid_fit <- function (data, longitude, latitude, method = "mve1",
 
   # -----------
   # calculating ellipsoid characteristics
-  sigma_i <- solve(covari) / stats::qchisq(level, df = ncol(data))
+  ndim <- ncol(data)
+  sigma_i <- solve(covari) / stats::qchisq(level, df = ndim)
   s_eigen <- eigen(sigma_i)
   s_eigenval <- s_eigen$values
   s_eigenvec <- s_eigen$vectors
+
+  ## semi axes length
   stds <- 1 / sqrt(s_eigenval)
-  axes_length <- NULL
+  names(stds) <- letters[1:ndim]
 
-  for (i in 1:dim(sigma_i)[1]) {
-    axes_length[i] <- stds[i] * 2
-  }
+  ## volume
+  volume <- ellipsoid_volume(ndim, stds)
 
-  names(axes_length) <- letters[1:dim(covari)[1]]
-  n_dimensions <- dim(covari)[1]
-  volume <- ellipsoid_volume(n_dimensions, axes_length / 2)
-  axis_coordinates <- list()
-
-  for (i in 1:dim(covari)[1]) {
-    assign(paste0("l", i, "_inf"), centroid - s_eigenvec[, i] * stds[i])
-    assign(paste0("l", i, "_sup"), centroid + s_eigenvec[, i] * stds[i])
-    coord_matrix <- matrix(c(eval(parse(text = paste0("l", i, "_sup"))),
-                             eval(parse(text = paste0("l", i, "_inf")))),
-                           byrow = TRUE, nrow = 2)
-    colnames(coord_matrix) <- names(centroid)
-    rownames(coord_matrix) <- paste0("vec_", 1:2)
-    axis_coordinates[[i]] <- coord_matrix
-  }
+  ## axes coordinates
+  axes_coordinates <- lapply(1:ndim, function(x) {
+    coor <- rbind((centroid + s_eigenvec[, x] * stds[x]),
+                  (centroid - s_eigenvec[, x] * stds[x]))
+    rownames(coor) <- paste0("vec_", 1:2)
+    return(coor)
+  })
+  names(axes_coordinates) <- names(stds)
 
   # -----------
   # preparing results
   results <- ellipsoid(method = method,
                        centroid = centroid,
                        covariance_matrix = covari,
+                       level = level * 100,
                        niche_volume = volume,
-                       semi_axes_length = axes_length / 2,
-                       axis_coordinates = axis_coordinates)
+                       semi_axes_length = stds,
+                       axes_coordinates = axes_coordinates)
   return(results)
 }
 
@@ -132,14 +135,14 @@ ellipsoid_fit <- function (data, longitude, latitude, method = "mve1",
 #' Helper function to calculate niche volume
 #'
 #' @param n_dimensions (numeric) number of dimensions to be considered.
-#' @param axes_length (numeric) length of ellipsoid axes.
+#' @param semi_axes_length (numeric) length of ellipsoid axes.
 #'
 #' @export
 
-ellipsoid_volume <- function (n_dimensions, axes_length) {
+ellipsoid_volume <- function (n_dimensions, semi_axes_length) {
   term1 <- 2 * pi^(n_dimensions / 2)
   term2 <- n_dimensions * gamma(n_dimensions / 2)
-  term3 <- prod(axes_length)
+  term3 <- prod(semi_axes_length)
   term4 <- (term1 / term2) * term3
 
   return(term4)
