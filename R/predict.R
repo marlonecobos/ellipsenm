@@ -1,75 +1,85 @@
-#setMethod("predict", signature(object = "Raster", model = "ellipsoid"),
-#          function(object, model, filename="", fun=predict, ext=NULL, const=NULL,
-#                   index=1, na.rm=TRUE, inf.rm=FALSE, factors=NULL, format,
-#                   datatype, overwrite=FALSE, progress='', ...) {})
-
-
 #' Predict suitability derived from ellipsoid envelope models
 #'
-#' @description predict_ncdsuit predicts of suitability vlues based on
-#' mahalanobis distances based on a centroid and a covariance matrix.
+#' @description prediction of suitability values based on mahalanobis
+#' distances based on a centroid and a covariance matrix.
 #'
-#' @param ellipsoid an ellipsoid* object. If defined, arguments \code{centroid}
-#' and \code{covariance_matrix} are not required.
-#' @param centroid (optional) centroid to wich distance will be measured in
-#' \code{projection_layers}. Length must correspond with the number of layers
-#' in \code{projection_layers}. Ignored if \code{ellipsoid} is defined.
-#' @param covariance_matrix (optional) covariance matrix to be used in measuring
-#' the mahalanobis distance to each point in \code{projection_layers}. Ignored
-#' if \code{ellipsoid} is defined.
-#' @param projection_layers RasterStack of variables representing environmental
-#' conditions of the scenario to which the \code{ellipsoid} model will be projected.
-#' @param level (numeric) the confidence level of a pairwise confidence region
-#' for the ellipsoid, expresed as percentage. Default = 95.
-#' @param tolerance the tolerance for detecting linear dependencies. Default = 1e-60.
+#' @param object a fitted object of class ellipsoid*. See details.
+#' @param projection_layers RasterStack or matrix of variables representing
+#' environmental conditions of the scenario to which \code{object} will be
+#' projected. See details.
+#' @param prediction (character) type of prediction to be made, options are:
+#' "suitability", "mahalanobis", and "both". Default = "suitability".
+#' @param return_numeric (logical) whether or not to return values mahalanobis
+#' distance and suitability as part of the results (it depends on the type of
+#' \code{prediction} selected). Default = FALSE.
+#' @param tolerance the tolerance for detecting linear dependencies.
+#' Default = 1e-60.
+#' @param name (character) optional, name of the file to be writen. Must include
+#' format extension (e.g., ".tif"). When defined, raster predictions are not
+#' returned to the environment. Default = NULL. See detals.
+#' @param format (charater) if \code{name} is defined, file type to be written.
+#' Must correspond with format extension in \code{name}.
+#' See \code{\link[raster]{writeFormats}}.
+#' @param overwrite (logical) if \code{name} is defined, whether or not to
+#' overwrite an exitent file with the exact same name. Default = FALSE.
+#'
+#' @return
+#' An ellipsoid_model* with new predictions.
+#'
+#' @details
+#' Argument \code{object} must be of one of the following classes: "ellipsoid",
+#' "ellipsoid_model_sim", or "ellipsoid_model_rep". A prefix depending on the
+#' type of prediction "suitability" or "mahalanobis" will be added to \code{name},
+#' if defined.
+#'
+#' If \code{object} is a replicated model (i.e., "ellipsoid_model_rep"),
+#' predictions for all replicates will be performed. For this class of ellipsoid,
+#' if \code{name} is defined, a prefix starting in 1 will be added to each
+#' replicate.
+#'
+#' For \code{projection_layers} variables can be given either as a RasterStack
+#' or as a matrix. If a matrix is given each column represents a variable and
+#' predictions are returned only as numeric vectors. In both cases, variable
+#' names must match exactly the order and name of variables used to create
+#' \code{object}.
+#'
+#' @export
+#'
 
-predict_ncdsuit <- function(ellipsoid, centroid = NULL, covariance_matrix = NULL,
-                            projection_layers, level = 95, tolerance = 1e-60) {
-  # -----------
-  # detecting potential errors and preparing the data
-  if (!missing(ellipsoid)) {
-    centroid <- ellipsoid@centroid
-    covariance_matrix <- ellipsoid@covariance_matrix
-  }else {
-    if (missing(centroid) | missing(covariance_matrix)) {
-      stop("If ellipsoid is missing, centroid and covariance_matrix must be defined.")
-    }
-  }
+setMethod("predict", signature(object = "ellipsoid"),
+          function(object, projection_layers, prediction = "suitability",
+                   return_numeric = FALSE, tolerance = 1e-60,
+                   name = NULL, format, overwrite = FALSE) {
+            # -----------
+            # detecting potential errors is mostly done in internal functions
+            if (!missing(object)) {
+              if (!class(object)[1] %in%
+                  c("ellipsoid", "ellipsoid_model_sim", "ellipsoid_model_rep")) {
+                stop("Argument object must be of class ellipsoid*.")
+              }
+            }else {
+              stop("Argument object is necessary to perform the analysis.")
+            }
 
-  # raster data
-  back <- na.omit(raster::values(variables))
+            # -----------
+            # prediction depending on ellipsoid type
+            if (class(object)[1] == "ellipsoid" | class(object)[1] == "ellipsoid_model_sim") {
 
-  # -----------
-  # analyses
-  ## Mahalanobis distance
-  maha <- mahalanobis(x = back, center = centroid, cov = covariance_matrix,
-                      tol = tolerance)
+              results <- predict_sim(object, projection_layers, prediction,
+                                     return_numeric, tolerance,
+                                     name, format, overwrite)
 
-  ## a point is inside the confidence region (1-alpha=confidence%) if the distance
-  ## divided by the quantile of a Chi-square variable with k d.f. is less than 1
-  alpha <- level / 100
-  chi_sq <- qchisq(alpha, ncol(back))
+            } else {
 
-  ## distances to suitabilities considering a multivariate normal distribution
-  suitability <- exp(-0.5 * maha)
-  suitability <- ifelse(maha / chi_sq <= 1, suitability, 0) # inside only
+              results <- predict_rep(object, projection_layers, prediction,
+                                     return_numeric, tolerance,
+                                     name, format, overwrite)
 
-  # -----------
-  # preparing further results
-  ## prevalences
-  p_no_suit_g <- length(back[suitability != 0, 1]) / length(back[, 1])
-  p_no_suit_e <- length(unique(back[suitability != 0, ])[, 1]) / length(back[, 1])
+            }
 
-  not_suitable <- data.frame(c("Geographic_space", "Environmental_space"),
-                             c(p_no_suit_g, p_no_suit_e))
-  names(not_suitable) <- c("Space", "Proportion_not_suitable")
+            # -----------
+            # returning results
+            return(results)
+          }
 
-  # raster generation
-  suit_layer <- variables[[1]]
-  suit_layer[!is.na(raster::values(suit_layer))] <- suitability
-
-  results <- list(centroid = centroid, covariance_matrix = covariance_matrix,
-                  non_suitable_area = not_suitable, suitability_layer = suit_layer)
-
-  return(results)
-}
+)
