@@ -13,6 +13,7 @@ ellipsoid <- setClass("ellipsoid",
                                 semi_axes_length = "numeric",
                                 axes_coordinates = "list"))
 
+setOldClass("RasterLayer")
 ellipsoid_model_sim <- setClass("ellipsoid_model_sim",
                               slots = c(mahalanobis = "numeric",
                                         suitability = "numeric",
@@ -23,6 +24,7 @@ ellipsoid_model_sim <- setClass("ellipsoid_model_sim",
                                         projections_suit = "character"),
                               contains = "ellipsoid")
 
+setOldClass("RasterStack")
 ellipsoid_model_rep <- setClass("ellipsoid_model_rep",
                               slots = c(ellipsoids = "list",
                                         mahalanobis = "matrix",
