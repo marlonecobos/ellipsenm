@@ -130,7 +130,7 @@ predict_sim <- function(object, projection_layers, prediction = "suitability",
 
         ## returning results for both type of predictions
         if (return_numeric == TRUE) {
-          results <- ellipsoid_model_sim(method = object@method,
+          results <- new("ellipsoid_model_sim", method = object@method,
                                          centroid = centroid,
                                          covariance_matrix = covariance_matrix,
                                          level = level,
@@ -143,7 +143,7 @@ predict_sim <- function(object, projection_layers, prediction = "suitability",
           slot(results, "prediction_maha", check = FALSE) <- maha_layer
           slot(results, "prediction_suit", check = FALSE) <- suit_layer
         } else {
-          results <- ellipsoid_model_sim(method = object@method,
+          results <- new("ellipsoid_model_sim", method = object@method,
                                          centroid = centroid,
                                          covariance_matrix = covariance_matrix,
                                          level = level,
@@ -157,7 +157,7 @@ predict_sim <- function(object, projection_layers, prediction = "suitability",
       } else {
         ## returning results for suitability type of predictions
         if (return_numeric == TRUE) {
-          results <- ellipsoid_model_sim(method = object@method,
+          results <- new("ellipsoid_model_sim", method = object@method,
                                          centroid = centroid,
                                          covariance_matrix = covariance_matrix,
                                          level = level,
@@ -168,7 +168,7 @@ predict_sim <- function(object, projection_layers, prediction = "suitability",
                                          prevalence = prevalence)
           slot(results, "prediction_suit", check = FALSE) <- suit_layer
         } else {
-          results <- ellipsoid_model_sim(method = object@method,
+          results <- new("ellipsoid_model_sim", method = object@method,
                                          centroid = centroid,
                                          covariance_matrix = covariance_matrix,
                                          level = level,
@@ -191,7 +191,7 @@ predict_sim <- function(object, projection_layers, prediction = "suitability",
 
       ## returning results for mahalanobis type of predictions
       if (return_numeric == TRUE) {
-        results <- ellipsoid_model_sim(method = object@method,
+        results <- new("ellipsoid_model_sim", method = object@method,
                                        centroid = centroid,
                                        covariance_matrix = covariance_matrix,
                                        level = level,
@@ -201,7 +201,7 @@ predict_sim <- function(object, projection_layers, prediction = "suitability",
                                        mahalanobis = maha)
         slot(results, "prediction_maha", check = FALSE) <- maha_layer
       } else {
-        results <- ellipsoid_model_sim(method = object@method,
+        results <- new("ellipsoid_model_sim", method = object@method,
                                        centroid = centroid,
                                        covariance_matrix = covariance_matrix,
                                        level = level,
