@@ -2,6 +2,7 @@
 # May 2019
 # Version 0.1.5
 # Licence GPL v3
+#' @export
 
 ellipsoid <- setClass("ellipsoid",
                       slots = c(method = "character",
