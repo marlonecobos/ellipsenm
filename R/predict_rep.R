@@ -215,14 +215,18 @@ predict_rep <- function(object, projection_layers, prediction = "suitability",
         maha <- do.call(cbind, lapply(maha, function(x) {x[[1]]}))
         colnames(maha) <- nam_ell
 
-        results <- new("ellipsoid_model_rep", ellipsoids = object@ellipsoids,
+        results <- ellipsoid_model_rep(method = object@method,
+                                       level = object@level,
+                                       ellipsoids = object@ellipsoids,
                                        mahalanobis = maha,
                                        suitability = suitability,
                                        prevalence = prevalence)
         slot(results, "prediction_maha", check = FALSE) <- maha_layers
         slot(results, "prediction_suit", check = FALSE) <- suit_layers
       } else {
-        results <- new("ellipsoid_model_rep", ellipsoids = object@ellipsoids,
+        results <- ellipsoid_model_rep(method = object@method,
+                                       level = object@level,
+                                       ellipsoids = object@ellipsoids,
                                        prevalence = prevalence)
         slot(results, "prediction_maha", check = FALSE) <- maha_layers
         slot(results, "prediction_suit", check = FALSE) <- suit_layers
@@ -230,12 +234,16 @@ predict_rep <- function(object, projection_layers, prediction = "suitability",
     } else {
       ## returning results for suitability type of predictions
       if (return_numeric == TRUE) {
-        results <- new("ellipsoid_model_rep", ellipsoids = object@ellipsoids,
+        results <- ellipsoid_model_rep(method = object@method,
+                                       level = object@level,
+                                       ellipsoids = object@ellipsoids,
                                        suitability = suitability,
                                        prevalence = prevalence)
         slot(results, "prediction_suit", check = FALSE) <- suit_layers
       } else {
-        results <- new("ellipsoid_model_rep", ellipsoids = object@ellipsoids,
+        results <- ellipsoid_model_rep(method = object@method,
+                                       level = object@level,
+                                       ellipsoids = object@ellipsoids,
                                        prevalence = prevalence)
         slot(results, "prediction_suit", check = FALSE) <- suit_layers
       }
@@ -289,11 +297,15 @@ predict_rep <- function(object, projection_layers, prediction = "suitability",
       maha <- do.call(cbind, lapply(maha, function(x) {x[[1]]}))
       colnames(maha) <- nam_ell
 
-      results <- new("ellipsoid_model_rep", ellipsoids = object@ellipsoids,
+      results <- ellipsoid_model_rep(method = object@method,
+                                     level = object@level,
+                                     ellipsoids = object@ellipsoids,
                                      mahalanobis = maha)
       slot(results, "prediction_maha", check = FALSE) <- maha_layers
     } else {
-      results <- new("ellipsoid_model_rep", ellipsoids = object@ellipsoids)
+      results <- ellipsoid_model_rep(method = object@method,
+                                     level = object@level,
+                                     ellipsoids = object@ellipsoids)
       slot(results, "prediction_maha", check = FALSE) <- maha_layers
     }
   }

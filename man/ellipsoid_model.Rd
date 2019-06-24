@@ -7,8 +7,8 @@
 ellipsoid_model(data, species, longitude, latitude, raster_layers,
   method = "mve1", level = 95, replicates = 1,
   replicate_type = "bootstrap", bootstrap_percentage = 50,
-  projection_layers = NULL, tolerance = 1e-60,
-  output_directory = "ellipsenm_model")
+  projection_layers = NULL, prediction = "suitability",
+  tolerance = 1e-60, output_directory = "ellipsenm_model")
 }
 \arguments{
 \item{data}{data.frame of occurrence records. Columns must be: species,
@@ -46,6 +46,9 @@ folders with raster layers that represent the scenarios for projections; a
 RasterStack of layers respresenting an only scenario for projection; or a
 named list of RasterStacks representing multiple scenarios for projection.
 See details. Default = NULL.}
+
+\item{prediction}{(character) type of prediction to be made, options are:
+"suitability", "mahalanobis", and "both". Default = "suitability".}
 
 \item{tolerance}{the tolerance for detecting linear dependencies.
 Default = 1e-60.}
