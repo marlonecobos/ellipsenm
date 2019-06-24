@@ -14,7 +14,7 @@ ellipsoid_basic <- setClass("ellipsoid_basic",
                                       niche_volume = "numeric",
                                       semi_axes_length = "numeric",
                                       axes_coordinates = "list"),
-                            contains = "ellipsoid")
+                            contains = c("ellipsoid", "VIRTUAL"))
 
 ellipsoid_model_sim <- setClass("ellipsoid_model_sim",
                               slots = c(mahalanobis = "numeric",
@@ -35,7 +35,7 @@ ellipsoid_model_rep <- setClass("ellipsoid_model_rep",
                                           prediction_suit = "S4",
                                           projections_maha = "list",
                                           projections_suit = "list"),
-                                contains = "ellipsoid")
+                                contains = c("ellipsoid", "VIRTUAL"))
 
 calibration_ellipsoid <- setClass("calibration_ellipsoid",
                                   slots = c(methods = "character",

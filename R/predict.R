@@ -46,6 +46,8 @@
 #' @export
 #'
 
+if (!isGeneric("predict")) {setGeneric("predict", function(object, ...) standardGeneric("predict"))}
+
 setMethod("predict", signature(object = "ellipsoid"),
           function(object, projection_layers, prediction = "suitability",
                    return_numeric = FALSE, tolerance = 1e-60,
