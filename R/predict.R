@@ -54,8 +54,8 @@ setMethod("predict", signature(object = "ellipsoid"),
             # detecting potential errors is mostly done in internal functions
             if (!missing(object)) {
               if (!class(object)[1] %in%
-                  c("ellipsoid", "ellipsoid_model_sim", "ellipsoid_model_rep")) {
-                stop("Argument object must be of class ellipsoid*.")
+                  c("ellipsoid_basic", "ellipsoid_model_sim", "ellipsoid_model_rep")) {
+                stop("Argument object must be one of class ellipsoid* that\ncontains centroid and coariance_matrix.")
               }
             }else {
               stop("Argument object is necessary to perform the analysis.")

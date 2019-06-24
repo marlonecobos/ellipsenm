@@ -48,8 +48,8 @@ predict_rep <- function(object, projection_layers, prediction = "suitability",
   # detecting potential errors
   if (!missing(object)) {
     if (!class(object)[1] %in%
-        c("ellipsoid", "ellipsoid_model_sim", "ellipsoid_model_rep")) {
-      stop("Argument object must be of class ellipsoid*.")
+        c("ellipsoid_basic", "ellipsoid_model_sim", "ellipsoid_model_rep")) {
+      stop("Argument object must be of class ellipsoid* that\ncontains centroid and coariance_matrix.")
     }
   }else {
     stop("Argument object is necessary to perform the analysis.")
