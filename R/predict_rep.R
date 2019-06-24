@@ -75,7 +75,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
             centroid <- sapply(object@ellipsoids, function(x) {x@centroid})
             covariance_matrix <- lapply(object@ellipsoids, function(x) {x@covariance_matrix})
             level <- sapply(object@ellipsoids, function(x) {x@level})
-            n_ell <- length(centroid)
+            n_ell <- ncol(centroid)
             nam_ell <- names(object@ellipsoids)
 
             # raster data
@@ -111,7 +111,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
               chi_sq <- qchisq(alpha, ncol(back))
 
               maha_suit <- lapply(1:n_ell, function(x) {
-                mah <-  mahalanobis(x = back, center = centroid[x],
+                mah <-  mahalanobis(x = back, center = centroid[, x],
                                     cov = covariance_matrix[[x]], tol = tolerance)
                 if (prediction == "both") {
                   if (class(projection_layers)[1] == "RasterStack") {
@@ -122,7 +122,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 }
 
                 suitability <- exp(-0.5 * mah)
-                suitability <- ifelse(mah / chi_sq <= 1, suitability, 0)
+                suitability <- ifelse(mah / chi_sq[x] <= 1, suitability, 0)
 
                 if (class(projection_layers)[1] == "RasterStack") {
                   suit_layer[!is.na(suit_layer[])] <- suitability
@@ -181,15 +181,19 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 colnames(suitability) <- nam_ell
               }
 
-              idp <- length(maha_suit)
+              idp <- length(maha_suit[[1]])
               prevalence <- do.call(cbind, lapply(maha_suit, function(x) {x[[idp]]}))
               colnames(prevalence) <- nam_ell
-              rownames(prevalence) <- c("prevalence_E_space", "prevalence_G_space")
 
               if (is.null(name)) {
                 if (class(projection_layers)[1] == "RasterStack") {
-                  inds <- ifelse(return_numeric == TRUE, 4, 2)
+                  if (prediction == "both") {
+                    inds <- ifelse(return_numeric == TRUE, 4, 2)
+                  } else {
+                    inds <- ifelse(return_numeric == TRUE, 2, 1)
+                  }
                   suit_layers <- do.call(raster::stack, lapply(maha_suit, function(x) {x[[inds]]}))
+                  names(suit_layers) <- nam_ell
                 } else {
                   suit_layers <- vector()
                 }
@@ -202,6 +206,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                   if (class(projection_layers)[1] == "RasterStack") {
                     indm <- ifelse(return_numeric == TRUE, 3, 1)
                     maha_layers <- do.call(raster::stack, lapply(maha_suit, function(x) {x[[indm]]}))
+                    names(maha_layers) <- nam_ell
                   } else {
                     maha_layers <- vector()
                   }
@@ -242,7 +247,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
 
             } else {
               maha <- lapply(1:n_ell, function(x) {
-                mah <-  mahalanobis(x = back, center = centroid[x],
+                mah <-  mahalanobis(x = back, center = centroid[, x],
                                     cov = covariance_matrix[[x]], tol = tolerance)
 
                 if (class(projection_layers)[1] == "RasterStack") {
@@ -276,6 +281,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 if (class(projection_layers)[1] == "RasterStack") {
                   indm <- ifelse(return_numeric == TRUE, 2, 1)
                   maha_layers <- do.call(raster::stack, lapply(maha, function(x) {x[[indm]]}))
+                  names(maha_layers) <- nam_ell
                 } else {
                   maha_layers <- vector()
                 }
