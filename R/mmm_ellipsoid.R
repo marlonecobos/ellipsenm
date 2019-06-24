@@ -72,13 +72,13 @@ mmm_ellipsoid <- function(ellipsoid_list) {
   names(axes_coordinates) <- names(stds)
 
   ### mean ellipsoid
-  mean_ellipsoid <- ellipsoid_basic(method = ellipsoid_list[[1]]@method,
-                                    centroid = mean_cen,
-                                    covariance_matrix = mean_cov,
-                                    level = level * 100,
-                                    niche_volume = volume,
-                                    semi_axes_length = stds,
-                                    axes_coordinates = axes_coordinates)
+  mean_ellipsoid <- ellipsoid(method = ellipsoid_list[[1]]@method,
+                              centroid = mean_cen,
+                              covariance_matrix = mean_cov,
+                              level = level * 100,
+                              niche_volume = volume,
+                              semi_axes_length = stds,
+                              axes_coordinates = axes_coordinates)
 
   # -----------
   # returning results
