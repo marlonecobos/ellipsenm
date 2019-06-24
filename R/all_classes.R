@@ -6,15 +6,12 @@
 
 ellipsoid <- setClass("ellipsoid",
                       slots = c(method = "character",
-                                level = "numeric"))
-
-ellipsoid_basic <- setClass("ellipsoid_basic",
-                            slots = c(centroid = "numeric",
-                                      covariance_matrix = "matrix",
-                                      niche_volume = "numeric",
-                                      semi_axes_length = "numeric",
-                                      axes_coordinates = "list"),
-                            contains = c("ellipsoid", "VIRTUAL"))
+                                level = "numeric",
+                                centroid = "numeric",
+                                covariance_matrix = "matrix",
+                                niche_volume = "numeric",
+                                semi_axes_length = "numeric",
+                                axes_coordinates = "list"))
 
 ellipsoid_model_sim <- setClass("ellipsoid_model_sim",
                               slots = c(mahalanobis = "numeric",
@@ -24,7 +21,7 @@ ellipsoid_model_sim <- setClass("ellipsoid_model_sim",
                                         prediction_suit = "S4",
                                         projections_maha = "character",
                                         projections_suit = "character"),
-                              contains = "ellipsoid_basic")
+                              contains = "ellipsoid")
 
 ellipsoid_model_rep <- setClass("ellipsoid_model_rep",
                                 slots = c(ellipsoids = "list",
@@ -34,8 +31,7 @@ ellipsoid_model_rep <- setClass("ellipsoid_model_rep",
                                           prediction_maha = "S4",
                                           prediction_suit = "S4",
                                           projections_maha = "list",
-                                          projections_suit = "list"),
-                                contains = c("ellipsoid", "VIRTUAL"))
+                                          projections_suit = "list"))
 
 calibration_ellipsoid <- setClass("calibration_ellipsoid",
                                   slots = c(methods = "character",
@@ -47,9 +43,10 @@ calibration_ellipsoid <- setClass("calibration_ellipsoid",
                                             selected_parameters = "character"))
 
 data_overlap <- setClass("data_overlap",
-                         slots = c(data = "data.frame",
-                                   raster_layers = "S4"),
-                         contains = "ellipsoid")
+                         slots = c(method = "character",
+                                   level = "numeric",
+                                   data = "data.frame",
+                                   raster_layers = "S4"))
 
 overlap_ellipsoid <- setClass("overlap_ellipsoid",
                               slots = c(spp_data = "list",

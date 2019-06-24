@@ -22,6 +22,5 @@ the main processes that the ellipsenm package performs.
 }
 \details{
 This function is used along with the \code{\link{ellipsoid_model}},
-\code{\link{ellipsoid_calibration}}, and \code{\link{ellipsoid_overlap}}
-functions.
+ellipsoid_calibration, and ellipsoid_overlap functions.
 }
