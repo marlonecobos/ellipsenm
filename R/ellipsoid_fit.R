@@ -121,13 +121,13 @@ ellipsoid_fit <- function (data, longitude, latitude, method = "mve1",
 
   # -----------
   # preparing results
-  results <- ellipsoid(method = method,
-                       centroid = centroid,
-                       covariance_matrix = covari,
-                       level = level * 100,
-                       niche_volume = volume,
-                       semi_axes_length = stds,
-                       axes_coordinates = axes_coordinates)
+  results <- ellipsoid_basic(method = method,
+                             centroid = centroid,
+                             covariance_matrix = covari,
+                             level = level * 100,
+                             niche_volume = volume,
+                             semi_axes_length = stds,
+                             axes_coordinates = axes_coordinates)
   return(results)
 }
 
