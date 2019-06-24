@@ -13,25 +13,23 @@ ellipsoid <- setClass("ellipsoid",
                                 semi_axes_length = "numeric",
                                 axes_coordinates = "list"))
 
-setOldClass("RasterLayer")
 ellipsoid_model_sim <- setClass("ellipsoid_model_sim",
                               slots = c(mahalanobis = "numeric",
                                         suitability = "numeric",
                                         prevalence = "numeric",
-                                        prediction_maha = "RasterLayer",
-                                        prediction_suit = "RasterLayer",
+                                        prediction_maha = "S4",
+                                        prediction_suit = "S4",
                                         projections_maha = "character",
                                         projections_suit = "character"),
                               contains = "ellipsoid")
 
-setOldClass("RasterStack")
 ellipsoid_model_rep <- setClass("ellipsoid_model_rep",
                               slots = c(ellipsoids = "list",
                                         mahalanobis = "matrix",
                                         suitability = "matrix",
                                         prevalence = "matrix",
-                                        prediction_maha = "RasterStack",
-                                        prediction_suit = "RasterStack",
+                                        prediction_maha = "S4",
+                                        prediction_suit = "S4",
                                         projections_maha = "list",
                                         projections_suit = "list"))
 
