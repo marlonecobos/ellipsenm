@@ -157,7 +157,7 @@ predict_sim <- function(object, projection_layers, prediction = "suitability",
       } else {
         ## returning results for suitability type of predictions
         if (return_numeric == TRUE) {
-          results <- new("ellipsoid_model_sim", method = object@method,
+          results <- ellipsoid_model_sim(method = object@method,
                                          centroid = centroid,
                                          covariance_matrix = covariance_matrix,
                                          level = level,
