@@ -19,7 +19,7 @@ projected. See details.}
 \item{prediction}{(character) type of prediction to be made, options are:
 "suitability", "mahalanobis", and "both". Default = "suitability".}
 
-\item{return_numeric}{(logical) whether or not to return values mahalanobis
+\item{return_numeric}{(logical) whether or not to return values of mahalanobis
 distance and suitability as part of the results (it depends on the type of
 \code{prediction} selected). Default = FALSE.}
 

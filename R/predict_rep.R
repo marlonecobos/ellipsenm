@@ -9,7 +9,7 @@
 #' projected. See details.
 #' @param prediction (character) type of prediction to be made, options are:
 #' "suitability", "mahalanobis", and "both". Default = "suitability".
-#' @param return_numeric (logical) whether or not to return values mahalanobis
+#' @param return_numeric (logical) whether or not to return values of mahalanobis
 #' distance and suitability as part of the results (it depends on the type of
 #' \code{prediction} selected). Default = FALSE.
 #' @param tolerance the tolerance for detecting linear dependencies.
@@ -111,6 +111,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
               chi_sq <- qchisq(alpha, ncol(back))
 
               maha_suit <- lapply(1:n_ell, function(x) {
+                cat("\tPrediction", x, "of", n_ell, "\n")
                 mah <-  mahalanobis(x = back, center = centroid[, x],
                                     cov = covariance_matrix[[x]], tol = tolerance)
                 if (prediction == "both") {
@@ -216,7 +217,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
 
                 ## returning results for both type of predictions
                 if (return_numeric == TRUE) {
-                  maha <- do.call(cbind, lapply(maha, function(x) {x[[1]]}))
+                  maha <- do.call(cbind, lapply(maha_suit, function(x) {x[[1]]}))
                   colnames(maha) <- nam_ell
 
                   results <- ellipsoid_model_rep(ellipsoids = object@ellipsoids,
@@ -247,6 +248,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
 
             } else {
               maha <- lapply(1:n_ell, function(x) {
+                cat("\tPrediction", x, "of", n_ell, "\n")
                 mah <-  mahalanobis(x = back, center = centroid[, x],
                                     cov = covariance_matrix[[x]], tol = tolerance)
 

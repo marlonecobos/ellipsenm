@@ -9,7 +9,7 @@
 #' projected. See details.
 #' @param prediction (character) type of prediction to be made, options are:
 #' "suitability", "mahalanobis", and "both". Default = "suitability".
-#' @param return_numeric (logical) whether or not to return values mahalanobis
+#' @param return_numeric (logical) whether or not to return values of mahalanobis
 #' distance and suitability as part of the results (it depends on the type of
 #' \code{prediction} selected). Default = FALSE.
 #' @param tolerance the tolerance for detecting linear dependencies.
