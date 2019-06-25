@@ -8,7 +8,8 @@ ellipsoid_model(data, species, longitude, latitude, raster_layers,
   method = "mve1", level = 95, replicates = 1,
   replicate_type = "bootstrap", bootstrap_percentage = 50,
   projection_layers = NULL, prediction = "suitability",
-  tolerance = 1e-60, output_directory = "ellipsenm_model")
+  return_numeric = TRUE, tolerance = 1e-60, format = "GTiff",
+  overwrite = FALSE, output_directory = "ellipsenm_model")
 }
 \arguments{
 \item{data}{data.frame of occurrence records. Columns must be: species,
@@ -50,8 +51,18 @@ See details. Default = NULL.}
 \item{prediction}{(character) type of prediction to be made, options are:
 "suitability", "mahalanobis", and "both". Default = "suitability".}
 
+\item{return_numeric}{(logical) whether or not to return values of mahalanobis
+distance and suitability as part of the results (it depends on the type of
+\code{prediction} selected). Default = FALSE.}
+
 \item{tolerance}{the tolerance for detecting linear dependencies.
 Default = 1e-60.}
+
+\item{format}{(charater) file type for raster outputs to be written in
+\code{output_directory}. Default = = "GTiff". See \code{\link[raster]{writeFormats}}.}
+
+\item{overwrite}{(logical) whether or not to overwrite exitent results in
+\code{output_directory}. Default = FALSE.}
 
 \item{output_directory}{name of the folder were all results will be written.
 This avoids saturation of the RAM.}
