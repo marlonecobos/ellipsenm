@@ -49,25 +49,35 @@ buffer_area helps in creating buffer polygons based on occurrences,
 masking raster layers, and writing results if needed.
 }
 \examples{
-# data
-occurrences <- read.csv(system.file("extdata", "occurrences_comp.csv",
+# reading data
+occurrences <- read.csv(system.file("extdata", "occurrences.csv",
                                     package = "ellipsenm"))
 
 # producing polygons
 b_area <- buffer_area(data = occurrences, longitude = "longitude",
-                      latitude = "latitude", buffer_distance = 100)
+                      latitude = "latitude", buffer_distance = 50)
+
+sp::plot(b_area)
+points(occurrences[, 2:3])
 
 # producing polygons and masking layers
 vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
-                                 pattern = "m_bio", full.names = TRUE))
+                                 pattern = "bio", full.names = TRUE))
 
 b_area1 <- buffer_area(data = occurrences, longitude = "longitude",
-                       latitude = "latitude", buffer_distance = 100,
+                       latitude = "latitude", buffer_distance = 50,
                        raster_layers = vars, mask = TRUE)
+
+raster::plot(b_area1$masked_variables[[1]])
+sp::plot(b_area1$calibration_area, add = TRUE)
+points(occurrences[, 2:3])
 
 # producing polygons, masking layers, and saving results
 b_area2 <- buffer_area(data = occurrences, longitude = "longitude",
-                       latitude = "latitude", buffer_distance = 100,
+                       latitude = "latitude", buffer_distance = 50,
                        raster_layers = vars, mask = TRUE, save = TRUE,
                        name = "buff_area")
+
+# check directory
+dir()
 }

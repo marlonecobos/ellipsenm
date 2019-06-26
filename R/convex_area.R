@@ -41,36 +41,52 @@
 #' @export
 #'
 #' @examples
-#' # data
-#' occurrences <- read.csv(system.file("extdata", "occurrences_comp.csv",
+#' # reading data
+#' occurrences <- read.csv(system.file("extdata", "occurrences.csv",
 #'                                     package = "ellipsenm"))
 #'
 #' # producing simple convex polygons
-#' cx_area <- convex_area(data = occs, longitude = "LONGITUDE",
-#'                        latitude = "LATITUDE")
+#' cx_area <- convex_area(data = occurrences, longitude = "longitude",
+#'                        latitude = "latitude")
+#'
+#' sp::plot(cx_area)
+#' points(occurrences[, 2:3])
 #'
 #' # producing convex polygons with buffers
-#' cx_area1 <- convex_area(data = occs, longitude = "LONGITUDE",
-#'                         latitude = "LATITUDE", buffer_distance = 50)
+#' cx_area1 <- convex_area(data = occurrences, longitude = "longitude",
+#'                         latitude = "latitude", buffer_distance = 50)
+#'
+#' sp::plot(cx_area1)
+#' points(occurrences[, 2:3])
 #'
 #' # producing convex polygons splitted considering clusters
-#' cx_area2 <- convex_area(data = occs, longitude = "LONGITUDE",
-#'                         latitude = "LATITUDE", split = TRUE, n_kmeans = 3,
-#'                         buffer_distance = 50)
+#' cx_area2 <- convex_area(data = occurrences, longitude = "longitude",
+#'                         latitude = "latitude", split = TRUE, n_kmeans = 2,
+#'                         buffer_distance = 5)
+#'
+#' sp::plot(cx_area2)
+#' points(occurrences[, 2:3])
 #'
 #' # producing convex polygons, masking layers
 #' vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
-#'                                  pattern = "m_bio", full.names = TRUE))
+#'                                  pattern = "bio", full.names = TRUE))
 #'
-#' cx_area3 <- convex_area(data = occs, longitude = "LONGITUDE",
-#'                         latitude = "LATITUDE", buffer_distance = 100,
+#' cx_area3 <- convex_area(data = occurrences, longitude = "longitude",
+#'                         latitude = "latitude", buffer_distance = 50,
 #'                         raster_layers = vars, mask = TRUE)
+#'
+#' raster::plot(cx_area3$masked_variables[[1]])
+#' sp::plot(cx_area3$calibration_area, add = TRUE)
+#' points(occurrences[, 2:3])
 #'
 #' # producing convex polygons, masking layers, and saving results
 #' cx_area4 <- convex_area(data = occurrences, longitude = "longitude",
-#'                        latitude = "latitude", buffer_distance = 100,
-#'                        raster_layers = vars, mask = TRUE, save = TRUE,
-#'                        name = "buff_area")
+#'                         latitude = "latitude", buffer_distance = 50,
+#'                         raster_layers = vars, mask = TRUE, save = TRUE,
+#'                         name = "convex_area")
+#'
+#' # check directory
+#' dir()
 
 convex_area <- function(data, longitude, latitude, split = FALSE,
                         n_kmeans = NULL, buffer_distance = NULL,

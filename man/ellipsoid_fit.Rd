@@ -44,19 +44,25 @@ Methods details are as follows:
 "mve2"
 }
 \examples{
-occurrences <- read.csv(system.file("extdata", "occurrences_comp.csv",
-                                    package = "ellipsenm"))[, -1]
+# reading data
+occurrences <- read.csv(system.file("extdata", "occurrences.csv",
+                                    package = "ellipsenm"))
 
+# raster layers of environmental data
 vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
-                                 pattern = "m_bio", full.names = TRUE))
+                                 pattern = "bio", full.names = TRUE))
 
+# fitting an ellipsoid using normal covariance matrix
 ellips <- ellipsoid_fit(data = occurrences, longitude = "longitude",
-                        latitude = "latitude", method = "mve1",
-                        level = 95, raster_layers = vars)
+                        latitude = "latitude", method = "covmat",
+                        level = 99, raster_layers = vars)
 
-# using only a matrix of data and no raster layers
-data1 <- cbind(occurrences, raster::extract(ras, occurrences))
+class(ellips) # the class created in this package for this type of object
+str(ellips)
 
-ell3 <- ellipsoid_fit(data1, longitude = "longitude", latitude = "latitude",
-                      method = "mve1", level = 95)
+# using only a matrix of data and no raster layers, also another method
+occurrences1 <- cbind(occurrences[, 2:3], raster::extract(vars, occurrences[, 2:3]))
+
+ellips1 <- ellipsoid_fit(occurrences1, longitude = "longitude", latitude = "latitude",
+                         method = "mve1", level = 99)
 }

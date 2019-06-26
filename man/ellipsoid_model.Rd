@@ -81,9 +81,22 @@ from each other.
 \code{projection_layers}
 }
 \examples{
-occurrences <- read.csv(system.file("extdata", "occurrences_comp.csv",
+# reading data
+occurrences <- read.csv(system.file("extdata", "occurrences.csv",
                                     package = "ellipsenm"))
 
+# raster layers of environmental data
 vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
-                                 pattern = "m_bio", full.names = TRUE))
+                                 pattern = "bio", full.names = TRUE))
+
+# creating the model with no replicates
+ell_model <- ellipsoid_model(data = occurrences, species = "species",
+                             longitude = "longitude", latitude = "latitude",
+                             raster_layers = vars, method = "mve1", level = 99,
+                             replicates = 1, prediction = "suitability",
+                             return_numeric = TRUE, format = "GTiff",
+                             overwrite = FALSE, output_directory = "ellipsenm_model")
+
+class(ell_model)
+# check your directory, folder "ellipsenm_model"
 }

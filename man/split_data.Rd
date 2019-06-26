@@ -58,21 +58,44 @@ split_data splits occurrences into training and testing data
 based on distinct methods.
 }
 \examples{
-occurrences <- read.csv(system.file("extdata", "occurrences_comp.csv",
+# reading data
+occurrences <- read.csv(system.file("extdata", "occurrences.csv",
                                     package = "ellipsenm"))
 
 # random split 50\% for trainig and 50\% for testing
 data_split <- split_data(occurrences, train_proportion = 0.5)
 
+names(data_split)
+lapply(data_split, head)
+lapply(data_split, dim)
+
+# random split 70\% for trainig and 30\% for testing
+data_split1 <- split_data(occurrences, train_proportion = 0.7)
+
+names(data_split1)
+lapply(data_split1, head)
+lapply(data_split1, dim)
+
 # split 75\% for trainig and 25\% for testing using blocks
-data_split <- split_data(occurrences, method = "block", longitude = "longitude",
-                         latitude = "latitude", train_proportion = 0.75)
+data_split2 <- split_data(occurrences, method = "block", longitude = "longitude",
+                          latitude = "latitude", train_proportion = 0.75)
+
+names(data_split2)
+lapply(data_split2, head)
+lapply(data_split2, dim)
 
 # split data using blocks and preparing background
-r_layer <- raster::raster(system.file("extdata", "m_bio1.tif",
+r_layer <- raster::raster(system.file("extdata", "bio_1.tif",
                                       package = "ellipsenm"))
 
-data_split <- split_data(occurrences, method = "block", longitude = "longitude",
-                         latitude = "latitude", train_proportion = 0.75,
-                         raster_layer = rlayer)
+data_split3 <- split_data(occurrences, method = "block", longitude = "longitude",
+                          latitude = "latitude", train_proportion = 0.75,
+                          raster_layer = r_layer)
+
+# saving data
+data_split4 <- split_data(occurrences, train_proportion = 0.7, save = TRUE,
+                          name = "occs")
+
+# cheking directory
+dir()
 }

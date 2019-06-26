@@ -21,3 +21,37 @@ elements in \code{ellipsoid_list}.
 The mean ellipsoid is calculated by finsing the mean of all centroids and all
 covariance matrices of all elements in \code{ellipsoid_list}.
 }
+\examples{
+# reading data
+occurrences <- read.csv(system.file("extdata", "occurrences.csv",
+                                    package = "ellipsenm"))
+
+# raster layers of environmental data
+vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
+                                 pattern = "bio", full.names = TRUE))
+
+# getting values of variables in data
+occurrences1 <- cbind(occurrences[, 2:3], raster::extract(vars, occurrences[, 2:3]))
+
+# subsampling data for construction of multiple ellipsoids
+subsamples <- data_subsample(data = occurrences1, replicates = 10,
+                             replicate_type = "bootstrap")
+
+# fitting ellipsoids for the 10 subsamples
+ellipsoids <- lapply(subsamples, function (x) {
+  ellipsoid_fit(data = x, longitude = "longitude",
+                latitude = "latitude", method = "mve1",
+                level = 99)
+})
+length(ellipsoids)
+names(ellipsoids) <- paste0("replicate_", 1:10)
+
+class(ellipsoids$replicate_1)
+
+# mean, minumum, and maximum ellipsoids
+mmm_ellips <- mmm_ellipsoid(ellipsoid_list = ellipsoids)
+
+length(mmm_ellips)
+names(mmm_ellips)
+class(mmm_ellips$mean_ellipsoid)
+}

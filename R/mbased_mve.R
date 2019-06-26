@@ -5,8 +5,8 @@
 #'
 #' @param data matrix of values to be used for fitting the ellipsoid. Columns
 #' represent dimensions and rows observations.
-#' @param tolerance (numeric) proportion of error allowed when checking if the
-#' ellipsoid incloses all values considered to fit it. Default = 0.001.
+#' @param fitting_tolerance (numeric) proportion of error allowed when checking
+#' if the ellipsoid incloses all values considered to fit it. Default = 0.001.
 #'
 #' @return
 #' A named list containing the values for the centroid of th ellipsoid and a
@@ -15,8 +15,7 @@
 #' @details
 #' The algorithm used to fit the ellipsoids here was implemented by
 #' Moshtagh (2005) and based on initial work of Khachiyan (1996) and
-#' Rocha et al. (2002). This is a translation of MATLAB code made by
-#' Miller (2012).
+#' Rocha et al. (2002).
 #'
 #' Details about to the algortihm can be found in \url{https://bit.ly/2XYWlVT},
 #' \url{https://bit.ly/2x6aR2s}, and \url{https://bit.ly/2KrxE1g}.
@@ -24,17 +23,19 @@
 #' @export
 #'
 #' @examples
-#' occurrences <- read.csv(system.file("extdata", "occurrences_comp.csv",
-#'                                     package = "ellipsenm"))[, -1]
+#' # reading data
+#' occurrences <- read.csv(system.file("extdata", "occurrences.csv",
+#'                                     package = "ellipsenm"))
 #'
+#' # raster layers of environmental data
 #' vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
-#'                                  pattern = "m_bio", full.names = TRUE))
+#'                                  pattern = "bio", full.names = TRUE))
 #'
-#' data <- raster::extract(vars, occurrences)
+#' data <- raster::extract(vars, occurrences[, -1])
 #'
 #' mvellipsoid <- mbased_mve(data)
 
-mbased_mve <- function(data, tolerance = 0.001) {
+mbased_mve <- function(data, fitting_tolerance = 0.001) {
   # -----------
   # detecting potential errors
   if (missing(data)) {
@@ -55,7 +56,7 @@ mbased_mve <- function(data, tolerance = 0.001) {
 
   # -----------
   # fitting the ellipsoid according to 1 and 2 moments of data
-  while (err > tolerance) {
+  while (err > fitting_tolerance) {
     prod_x <- q %*% diag(u, n, n) %*% t(q)
     prod_m <- diag(t(q) %*% solve(prod_x) %*% q)
     max_m <- max(prod_m)

@@ -23,5 +23,10 @@ the main processes that the ellipsenm package performs.
 }
 \details{
 This function is used along with the \code{\link{ellipsoid_model}},
-ellipsoid_calibration, and ellipsoid_overlap functions.
+ellipsoid_calibration, and ellipsoid_overlap functions. To obtain nice reports
+a css file with format instructions should exist. See \code{\link{report_format}}.
+}
+\examples{
+# for results from modeling processes
+report(report_type = "enm_suitability", name = "enm_suitability_report")
 }

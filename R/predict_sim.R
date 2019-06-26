@@ -40,7 +40,34 @@
 #'
 #' @export
 #'
-
+#' @examples
+#' # reading data
+#' occurrences <- read.csv(system.file("extdata", "occurrences.csv",
+#'                                     package = "ellipsenm"))
+#'
+#' # raster layers of environmental data
+#' vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
+#'                                  pattern = "bio", full.names = TRUE))
+#'
+#' # fitting a minimum volume ellipsoid
+#' ellips1 <- ellipsoid_fit(data = occurrences, longitude = "longitude",
+#'                          latitude = "latitude", method = "mve1",
+#'                          level = 99, raster_layers = vars)
+#'
+#' # predicting suitability (some slots will be empty if not required)
+#' prediction <- predict(object = ellips1, projection_layers = vars,
+#'                       prediction = "suitability")
+#'
+#' class(prediction)
+#'
+#' # predicting mahalanobis distance
+#' prediction1 <- predict(object = ellips1, projection_layers = vars,
+#'                        prediction = "mahalanobis")
+#'
+#'
+#' # predicting both things
+#' prediction2 <- predict(object = ellips1, projection_layers = vars,
+#'                        prediction = "both")
 
 setMethod("predict", signature(object = "ellipsoid"),
           function(object, projection_layers, prediction = "suitability",

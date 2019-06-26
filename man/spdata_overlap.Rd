@@ -28,13 +28,17 @@ spdata_overlap prepares species and environmental data to perform
 niche overlap analyses.
 }
 \examples{
-# data
-met <- "mve"
-occurrences <- read.csv(system.file("extdata", "occurrences_thin.csv",
+# preparing data
+met <- "mve1" # method
+
+# reading data
+occurrences <- read.csv(system.file("extdata", "occurrences.csv",
                                     package = "ellipsenm"))
-layers <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
-                                   pattern = "m_bio", full.names = TRUE))
+
+# raster layers of environmental data
+vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
+                                 pattern = "bio", full.names = TRUE))
 
 sp_over <- spdata_overlap(method = met, data = occurrences,
-                          raster_layers = layers)
+                          raster_layers = vars, level = 95)
 }

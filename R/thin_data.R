@@ -27,31 +27,43 @@
 #' @export
 #'
 #' @examples
-#' occurrences <- read.csv(system.file("extdata", "occurrences_thin.csv",
+#' # reading data
+#' occurrences <- read.csv(system.file("extdata", "occurrences_gbif.csv",
 #'                                     package = "ellipsenm"))
+#' colnames(occurrences)
 #'
 #' # simple thinning based on one distance
 #' thin_occurrences <- thin_data(occurrences, longitude = "longitude",
-#'                               latitude = "latitude", thin_distance = 20)
+#'                               latitude = "latitude", thin_distance = 5)
 #'
 #' # thinning using a raster (only duplicates are erased)
-#' r_layer <- raster::raster((system.file("extdata", "layer_thin",
-#'                                        package = "kuenm"))
+#' r_layer <- raster::raster(system.file("extdata", "bio_1.tif",
+#'                                        package = "ellipsenm"))
 #'
 #' thin_occurrences1 <- thin_data(occurrences, longitude = "longitude",
 #'                                latitude = "latitude", raster_layer = r_layer)
 #'
 #' # thinning with different distances according to distinct classes
-#' occurrences$classes # to check classes (1 = 20 km, 2 = 35 km, 3 = 50 km)
+#' occurrences1 <- read.csv(system.file("extdata", "occurrences_spa_cor.csv",
+#'                                     package = "ellipsenm"))
+#' colnames(occurrences1)
+#' occurrences1$thin_factor # to check classes (1 = 5 km, 2 = 10 km, 3 = 15 km)
 #'
-#' thin_occurrences2 <- thin_data(occurrences, longitude = "longitude",
-#'                                latitude = "latitude", thin_class = "classes",
-#'                                thin_distance = c(20, 35, 50))
+#' thin_occurrences2 <- thin_data(occurrences1, longitude = "longitude",
+#'                                latitude = "latitude", thin_class = "thin_factor",
+#'                                thin_distance = c(5, 10, 15))
+#'
+#' # saving thinned data
+#' thin_occurrences2 <- thin_data(occurrences1, longitude = "longitude",
+#'                                latitude = "latitude", thin_class = "thin_factor",
+#'                                thin_distance = c(5, 10, 15), save = TRUE,
+#'                                name = "thin_data")
 #'
 #' # Check dimensions of original data and results
 #' dim(occurrences)
 #' dim(thin_occurrences)
 #' dim(thin_occurrences1)
+#' dim(occurrences1)
 #' dim(thin_occurrences2)
 
 thin_data <- function(data, longitude, latitude, thin_class = NULL,

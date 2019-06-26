@@ -13,6 +13,25 @@
 #' \code{replicate_type} = "bootstrap".
 #'
 #' @export
+#'
+#' @examples
+#' # reading data
+#' occurrences <- read.csv(system.file("extdata", "occurrences.csv",
+#'                                     package = "ellipsenm"))
+#'
+#' # subsampling by bootstrap
+#' subsamples <- data_subsample(data = occurrences[, -1], replicates = 5,
+#'                              replicate_type = "bootstrap", bootstrap_percentage = 70)
+#'
+#' lapply(subsamples, head)
+#' lapply(subsamples, dim)
+#'
+#' # subsampling by "jackknife" one record out at the time
+#' subsamples1 <- data_subsample(data = occurrences[, -1], replicates = 5,
+#'                               replicate_type = "jackknife")
+#'
+#' lapply(subsamples1, head)
+#' lapply(subsamples1, dim)
 
 data_subsample <- function(data, replicates = 1, replicate_type = "bootstrap",
                            bootstrap_percentage = 50) {

@@ -56,3 +56,44 @@ predictions are returned only as numeric vectors. In both cases, variable
 names must match exactly the order and name of variables used to create
 \code{object}.
 }
+\examples{
+# reading data
+occurrences <- read.csv(system.file("extdata", "occurrences.csv",
+                                    package = "ellipsenm"))
+
+# raster layers of environmental data
+vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
+                                 pattern = "bio", full.names = TRUE))
+
+# getting values of variables in data
+occurrences1 <- cbind(occurrences[, 2:3], raster::extract(vars, occurrences[, 2:3]))
+
+# subsampling data for construction of multiple ellipsoids
+subsamples <- data_subsample(data = occurrences1, replicates = 10,
+                             replicate_type = "bootstrap")
+
+# fitting ellipsoids for the 10 subsamples
+ellipsoids <- lapply(subsamples, function (x) {
+  ellipsoid_fit(data = x, longitude = "longitude",
+                latitude = "latitude", method = "mve1",
+                level = 99)
+})
+length(ellipsoids)
+names(ellipsoids) <- paste0("replicate_", 1:10)
+
+# creating an ellipsoid_model_rep object with replicates and mean, min, max
+ell_rep <- new("ellipsoid_model_rep",
+               ellipsoids = ellipsoids) # again some slots empty here
+
+# predicting suitability
+prediction_rep <- predict(object = ell_rep, projection_layers = vars,
+                          prediction = "suitability")
+
+# predicting mahalanobis distance
+prediction_rep <- predict(object = ell_rep, projection_layers = vars,
+                          prediction = "mahalanobis")
+
+# predicting both things
+prediction_rep <- predict(object = ell_rep, projection_layers = vars,
+                          prediction = "both")
+}
