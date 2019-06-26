@@ -65,18 +65,34 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
               warning("Argument projection_layers is matrix, no raster predictions will be written.")
             }
 
-            ## solving potential problems with name
+            # -----------
+            # preparing data
+            ## solving potential problems with name and creting prefixes and colnames
             name <- gsub("\\\\", "/", name)
             name <- unlist(strsplit(name, "/"))
             ndir <- paste0(paste(name[-length(name)], collapse = "/"), "/")
             name <- name[length(name)]
+
+            nam <- names(object@ellipsoids)
+            if (is.null(nam)) {
+              enames <- as.character(1:length(object@ellipsoids))
+              nam_ell <- paste0("ellipsoid", enames)
+            } else {
+              if (length(grep("replicate", nam)) > 0 & length(grep("mean", nam)) > 0) {
+                enames <- c(1:(length(nam) - 3), "mean", "min", "max")
+                nam_ell <- nam
+              } else {
+                enames <- nam
+                nam_ell <- nam
+              }
+            }
 
             # ellipsoids data
             centroid <- sapply(object@ellipsoids, function(x) {x@centroid})
             covariance_matrix <- lapply(object@ellipsoids, function(x) {x@covariance_matrix})
             level <- sapply(object@ellipsoids, function(x) {x@level})
             n_ell <- ncol(centroid)
-            nam_ell <- names(object@ellipsoids)
+            #nam_ell <- names(object@ellipsoids)
 
             # raster data
             if (class(projection_layers)[1] == "RasterStack") {
@@ -139,12 +155,12 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 if (!is.null(name)) {
                   if (class(projection_layers)[1] == "RasterStack") {
                     if (prediction == "both") {
-                      mname <- paste0(ndir, x, "_mahalanobis_", name)
-                      sname <- paste0(ndir, x, "_suitability_", name)
+                      mname <- paste0(ndir, enames[x], "_mahalanobis_", name)
+                      sname <- paste0(ndir, enames[x], "_suitability_", name)
                       raster::writeRaster(maha_layer, filename = mname, format = format, overwrite = overwrite)
                       raster::writeRaster(suit_layer, filename = sname, format = format)
                     } else {
-                      sname <- paste0(ndir, x, "_suitability_", name)
+                      sname <- paste0(ndir, enames[x], "_suitability_", name)
                       raster::writeRaster(suit_layer, filename = sname, format = format, overwrite = overwrite)
                     }
                   }
@@ -260,7 +276,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
 
                 if (!is.null(name)) {
                   if (class(projection_layers)[1] == "RasterStack") {
-                    mname <- paste0(ndir, x, "_mahalanobis_", name)
+                    mname <- paste0(ndir, enames[x], "_mahalanobis_", name)
                     raster::writeRaster(maha_layer, filename = mname, format = format, overwrite = overwrite)
                   }
 
