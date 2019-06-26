@@ -5,11 +5,12 @@
 #'
 #' @param repor_type (character) type of report to be produced. Options are:
 #' "calibration", "enm_suitability", "enm_mahalanobis", "enm_both", and "overlap".
-#' @param name (character) name of the HTML file to be produced.
+#' @param name (character) name of the HTML file to be produced, file extention
+#' does not need to be defined.
 #'
 #' @return
 #' An HTML file summarizing results from the main processes that the ellipsenm
-#' package performs.
+#' package performs. Some 3D plots from the rgl package may appear.
 #'
 #' @details This function is used along with the \code{\link{ellipsoid_model}},
 #' ellipsoid_calibration, and ellipsoid_overlap functions.
@@ -18,10 +19,11 @@
 
 report <- function(report_type, name = "results_report") {
   # -----------
-  # detecting potential errors, other potential problems tested in code
+  # detecting potential errors and preparing name
   if (missing(report_type)) {
     stop("Argument report_type is missing.")
   }
+  name <- paste0(name, ".Rmd")
 
   # -----------
   # preparing report
@@ -34,7 +36,6 @@ report <- function(report_type, name = "results_report") {
                                      package = "ellipsenm"), to = name)
       )
     }
-
     if (report_type == "enm_suitability") {
       suppressMessages(
         file.copy(from = system.file("extdata", "enm_suitability_report.Rmd",
@@ -42,21 +43,18 @@ report <- function(report_type, name = "results_report") {
       )
 
     }
-
     if (report_type == "enm_mahalanobis") {
       suppressMessages(
         file.copy(from = system.file("extdata", "enm_mahalanobis_report.Rmd",
                                      package = "ellipsenm"), to = name)
       )
     }
-
     if (report_type == "enm_both") {
       suppressMessages(
         file.copy(from = system.file("extdata", "enm_both_report.Rmd",
                                      package = "ellipsenm"), to = name)
       )
     }
-
     if (report_type == "overlap") {
       suppressMessages(
         file.copy(from = system.file("extdata", "niche_overlap_report.Rmd",
@@ -69,7 +67,7 @@ report <- function(report_type, name = "results_report") {
 
   # -----------
   # rendering
-  suppressWarnings(rmarkdown::render(paste0(name, ".Rmd"), "all", quiet = TRUE))
+  suppressWarnings(rmarkdown::render(name, "all", quiet = TRUE))
 
   # -----------
   # reporting

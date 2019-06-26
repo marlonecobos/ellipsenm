@@ -7,14 +7,15 @@
 report(report_type, name = "results_report")
 }
 \arguments{
-\item{name}{(character) name of the HTML file to be produced.}
+\item{name}{(character) name of the HTML file to be produced, file extention
+does not need to be defined.}
 
 \item{repor_type}{(character) type of report to be produced. Options are:
 "calibration", "enm_suitability", "enm_mahalanobis", "enm_both", and "overlap".}
 }
 \value{
 An HTML file summarizing results from the main processes that the ellipsenm
-package performs.
+package performs. Some 3D plots from the rgl package may appear.
 }
 \description{
 report creates an HTML file that summarizes all outputs from
