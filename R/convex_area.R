@@ -171,7 +171,7 @@ convex_area <- function(data, longitude, latitude, split = FALSE,
   # -----------
   # masking
   if (!is.null(raster_layers) & mask == TRUE) {
-    mask_var <- mask(crop(raster_layers, hulls_buffer), hulls_buffer)
+    mask_var <- raster::mask(raster::crop(raster_layers, hulls_buffer), hulls_buffer)
 
     hulls_buffer <- list(calibration_area = hulls_buffer, masked_variables = mask_var)
   }
