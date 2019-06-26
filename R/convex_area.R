@@ -118,7 +118,7 @@ convex_area <- function(data, longitude, latitude, split = FALSE,
   # creating convex hull(s) from points
   hulls_buffer <- lapply(1:length(occ_sps), function(x) {
     if (length(occ_sps) > 1) {
-      coord <- as.data.frame(sp::coordinates(occ_sps[[x]]@coords))
+      coord <- as.data.frame(occ_sps@coords[[x]])
     } else {
       coord <- as.data.frame(sp::coordinates(occ_sps[[x]]))
     }
