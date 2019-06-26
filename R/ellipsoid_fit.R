@@ -4,9 +4,9 @@
 #' define an ellipsoid. It uses distinct methods with asumptions that differ
 #' from each other.
 #'
-#' @param data data.frame or matrix of occurrence records. Columns must include
-#' longitude and latitude. Other columns are optional and could values of
-#' environmental variables to be used as dimensions for fitting the ellipsoid.
+#' @param data data.frame or matrix of occurrence records. Columns must be
+#' longitude and latitude. Other columns are optional and would represent values
+#' of environmental variables to be used as dimensions for fitting the ellipsoid.
 #' @param longitude (character) name of the column with longitude data.
 #' @param latitude (character) name of the column with latitude data.
 #' @param method (character) method to construct the ellipsoid that characterizes

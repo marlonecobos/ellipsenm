@@ -8,9 +8,9 @@ ellipsoid_fit(data, longitude, latitude, method = "mve1", level = 95,
   raster_layers = NULL)
 }
 \arguments{
-\item{data}{data.frame or matrix of occurrence records. Columns must include
-longitude and latitude. Other columns are optional and could values of
-environmental variables to be used as dimensions for fitting the ellipsoid.}
+\item{data}{data.frame or matrix of occurrence records. Columns must be
+longitude and latitude. Other columns are optional and would represent values
+of environmental variables to be used as dimensions for fitting the ellipsoid.}
 
 \item{longitude}{(character) name of the column with longitude data.}
 
