@@ -105,7 +105,7 @@ buffer_area <- function(data, longitude, latitude, buffer_distance = 100,
   # -----------
   # masking
   if (!is.null(raster_layers) & mask == TRUE) {
-    mask_var <- mask(crop(raster_layers, buff_area), buff_area)
+    mask_var <- raster::mask(raster::crop(raster_layers, buff_area), buff_area)
 
     buff_area <- list(calibration_area = buff_area, masked_variables = mask_var)
   }
