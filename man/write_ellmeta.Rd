@@ -2,20 +2,25 @@
 % Please edit documentation in R/helpers.R
 \name{write_ellmeta}
 \alias{write_ellmeta}
-\title{Helperf function to write ellipsoid metadata}
+\title{Helperf function to get and write ellipsoid metadata}
 \usage{
-write_ellmeta(ellipsoid, name = "ell_meta.txt")
+write_ellmeta(ellipsoid, name = "")
 }
 \arguments{
 \item{ellipsoid}{object of class ellipsoid*.}
 
 \item{name}{(character) name of the file to be written. If the object in
-\code{ellipsoid} is replicated, number of replicate and mean, min, and max,
-are added as prefixes to each file. Default = "ell_meta.txt"}
+\code{ellipsoid} is replicated, number of replicates and mean, min, and max,
+are added as prefixes to each file. The suffix "ell_meta.txt" will be added
+to \code{name}. Default = "".}
 }
 \value{
-Writes a txt file with the ellipsoid metadata in the working directory.
+A summary of ellipsoid metadata as a data.frame.
+
+Writes a csv file with the summary of ellipsoid metadata named
+"*_metadata_summary.csv" and txt files with the complete ellipsoid
+metadata in the working directory.
 }
 \description{
-Helperf function to write ellipsoid metadata
+Helperf function to get and write ellipsoid metadata
 }
