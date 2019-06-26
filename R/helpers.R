@@ -82,7 +82,19 @@ write_ellmeta <- function(ellipsoid, name = "") {
 
   } else {
     ellipsoid <- ellipsoid@ellipsoids
-    enames <- c(1:(length(ellipsoid) - 3), "mean", "min", "max")
+    nam <- names(ellipsoid)
+    if (is.null(nam)) {
+      enames <- as.character(1:length(ellipsoid))
+      enames1 <- paste0("ellipsoid", enames)
+    } else {
+      if (length(grep("replicate", nam)) > 0 & length(grep("mean", nam)) > 0) {
+        enames <- c(1:(length(nam) - 3), "mean", "min", "max")
+        enames1 <- nam
+      } else {
+        enames <- nam
+        enames1 <- nam
+      }
+    }
     namesim <- paste0(enames, "_", name)
     name <- paste0(ndir, enames, "_", name)
     ell_meta <- lapply(1:length(name), function(x) {
@@ -115,6 +127,7 @@ write_ellmeta <- function(ellipsoid, name = "") {
       return(ellm)
     })
     ell_meta <- as.data.frame(rbind(do.call(cbind, ell_meta), namesim))
+    colnames(ell_meta) <- enames1
   }
   row.names(ell_meta) <- c("Method", "Level", "Volume", "Other_metadata")
   write.csv(ell_meta, namesum, row.names = TRUE)
