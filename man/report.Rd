@@ -10,7 +10,7 @@ report(report_type, name = "results_report")
 \item{name}{(character) name of the HTML file to be produced.}
 
 \item{repor_type}{(character) type of report to be produced. Options are:
-"enm", "calibration", and "overlap".}
+"calibration", "enm_suitability", "enm_mahalanobis", "enm_both", and "overlap".}
 }
 \value{
 An HTML file summarizing results from the main processes that the ellipsenm

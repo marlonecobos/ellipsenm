@@ -4,7 +4,7 @@
 #' the main processes that the ellipsenm package performs.
 #'
 #' @param repor_type (character) type of report to be produced. Options are:
-#' "enm", "calibration", and "overlap".
+#' "calibration", "enm_suitability", "enm_mahalanobis", "enm_both", and "overlap".
 #' @param name (character) name of the HTML file to be produced.
 #'
 #' @return
@@ -25,17 +25,43 @@ report <- function(report_type, name = "results_report") {
 
   # -----------
   # preparing report
-  if (report_type == "enm" | report_type == "calibration" | report_type == "overlap") {
-    if (report_type == "enm") {
-      enm_report(name = name)
-    }
+  if (report_type %in% c("calibration", "enm_suitability", "enm_mahalanobis",
+                       "enm_both", "overlap")) {
 
     if (report_type == "calibration") {
-      calibration_report(name = name)
+      suppressMessages(
+        file.copy(from = system.file("extdata", "enm_calibration_report.Rmd",
+                                     package = "ellipsenm"), to = name)
+      )
+    }
+
+    if (report_type == "enm_suitability") {
+      suppressMessages(
+        file.copy(from = system.file("extdata", "enm_suitability_report.Rmd",
+                                     package = "ellipsenm"), to = name)
+      )
+
+    }
+
+    if (report_type == "enm_mahalanobis") {
+      suppressMessages(
+        file.copy(from = system.file("extdata", "enm_mahalanobis_report.Rmd",
+                                     package = "ellipsenm"), to = name)
+      )
+    }
+
+    if (report_type == "enm_both") {
+      suppressMessages(
+        file.copy(from = system.file("extdata", "enm_both_report.Rmd",
+                                     package = "ellipsenm"), to = name)
+      )
     }
 
     if (report_type == "overlap") {
-      overlap_report(name = name)
+      suppressMessages(
+        file.copy(from = system.file("extdata", "niche_overlap_report.Rmd",
+                                     package = "ellipsenm"), to = name)
+      )
     }
   } else {
     stop("Argument report_type is not valid, please see function's help.")
@@ -43,11 +69,10 @@ report <- function(report_type, name = "results_report") {
 
   # -----------
   # rendering
-  rmarkdown::render(paste0(name, ".Rmd"), "html_document", quiet = TRUE)
-  unlink(paste0(name, ".Rmd"))
+  suppressWarnings(rmarkdown::render(paste0(name, ".Rmd"), "all", quiet = TRUE))
 
   # -----------
   # reporting
-  cat(paste0("A file named", paste0(name, ".html"), "has been produced.\n",
-             "Check your working directory:\t", getwd()))
+  cat(paste0("\nA file named", paste0(name, ".html"), "has been produced.\n",
+             "Check your output directory in:\t", getwd()))
 }
