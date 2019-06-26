@@ -91,7 +91,19 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   data <- cbind(data, raster::extract(raster_layers, data[, c(longitude, latitude)]))
 
   raster_base <- raster_layers[[1]]
+  nona <- !is.na(raster::values(raster_base))
+  variable_names <- names(raster_layers)
+  variable1 <- raster_layers[[1]]
+  n_var <- length(variable_names)
+
   r_values <- na.omit(raster::values(raster_layers))
+  nb <- nrow(r_values)
+  n_prop <- ifelse(nb > 100000, 0.1, 0.3)
+  set.seed(1)
+  samp <- sample(nb, ceiling(nb * n_prop))
+  r_values <- r_values[samp, ]
+
+  mpos <- replicates + 1
 
   # -----------
   # fitting ellipsoids and getting statistics
@@ -119,120 +131,89 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   # prediction in raster_layers
   cat("\nPreparing raster predictions for calibration area:\n")
   nam_format <- rformat_type(format)
-  name <- paste0(output_directory, "/", sp, nam_format)
+  namer <- paste0(output_directory, "/calibration_", sp, nam_format)
+  dir.create(output_directory)
 
   predictions <- predict(ellipsoids, raster_layers, prediction, return_numeric,
-                         tolerance, name, format, overwrite) # check this part force_raster_in
+                         tolerance, namer, format, overwrite)
+
+  # -----------
+  # returning metadata and preparing needed variables
+  cat("\nObtaining and writing metadata of ellipsoid models:\n")
+  ell_meta <- write_ellmeta(predictions, name = paste0(output_directory, "/calibration"))
 
   if (prediction != "mahalanobis") {
-    prevalences <- do.call(cbind, lapply(predictions, function(x) {x@prevalence}))
+    if (class(predictions)[1] == "ellipsoid_model_rep") {
+      suit_layer <- raster_base; suit_layer[nona] <- predictions@suitability[, mpos]
+      mean_pred <- predictions@ellipsoids[[mpos]]
+      prevalences <- predictions@prevalence
+    } else {
+      suit_layer <- raster_base; suit_layer[nona] <- predictions@suitability
+      mean_pred <- predictions
+      prevalences <- data.frame(ellipsoid_model = predictions@prevalence)
+    }
+    write.csv(prevalences, paste0(output_directory, "/calibration_prevalences.csv"),
+              row.names = TRUE)
   } else {
     prevalences <- vector()
   }
 
-  cat("\nObtaining and writing metadata of ellipsoid models:\n")
-  ell_meta <- do.call(cbind, lapply(ellipsoids, function(x) {
-    c(x@method, x@level, round(x@niche_volume, digits = 2))
-  }))
-  ell_meta <- as.data.frame(rbind(ell_meta, paste0(c(1:replicates, "mean", "min", "max"),
-                                                   "_ell_meta.txt")))
-  row.names(ell_meta) <- c("Method", "Level", "Niche volume", "Other characteristics")
-  write.csv(ell_meta, paste0(output_directory, "/ellipsoid_metadata_summary.csv"),
-            row.names = TRUE)
-
-
-
-  #predictions <- predictions[[(replicates + 1)]]
-  if (is.null(projection_layers)) {
-
-  } else {
-    cclas <- class(projection_layers)[1]
-    if (cclas == "character" | cclas == "RasterStack" | cclas == "list") {
-      if (cclas == "RasterStack") {
-        if (!all(names(raster_layers) == names(projection_layers))) {
-          stop("Variable names of projection_layers do not match names of raster_layers.")
-        }
-      }
-
-      if (cclas == "list") {
-        for (i in 1:length(projection_layers)) {
-          if (!all(names(raster_layers) == names(projection_layers[[i]]))) {
-            stop("Variable names of projection_layers do not match names of raster_layers.")
-          }
-        }
-      }
-
-      if (cclas == "character") {
-        dirs <- dir(projection_layers, full.names = TRUE)
-        for (i in 1:length(dirs)) {
-          namest <- list.files(dirs[i], pattern = format_pl)
-          if (!all(names(raster_layers) == namest)) {
-            stop("Variable names of projection_layers do not match names of raster_layers.")
-          }
-        }
-      }
-    } else {
-      stop("Argument projection_layers is not valid, see function's help.")
-    }
-
-  }
-
-  # -----------
-  # performing analyses
-  if (is.null(projection_layers)) {
-    ## fitting ellipsoids
-    ellipsoid_fit(data, longitude, latitude, method, level, raster_layers)
-
-    ## predicting
-
-
-    # -----------
-    # preparing further results
-    ## model statistics (median, range, min, max)
-    ## tables
-    ## statistis of performance
-    ## plots
-
-    # -----------
-    # writing results
-
-  } else {
-    ## fitting ellipsoids
-    ellipsoid_fit(data, longitude, latitude, method, level, raster_layers)
-
-    ## predicting
-
-
-    # -----------
-    # preparing further results
-    ## model statistics (median, range, min, max)
-    ## tables
-    ## statistis of performance
-    ## plots
-
-    # -----------
-    # writing results and savind objects for report
-
-
-    ## objects for report
-    save(ellipsoids, file = "enm_report_data.RData")
-  }
-
+  #if (is.null(projection_layers)) {
+#
+ # } else {
+  #  cclas <- class(projection_layers)[1]
+   # if (cclas == "character" | cclas == "RasterStack" | cclas == "list") {
+    #  if (cclas == "RasterStack") {
+     #   if (!all(names(raster_layers) == names(projection_layers))) {
+      #    stop("Variable names of projection_layers do not match names of raster_layers.")
+       # }
+      #}
+#
+ #     if (cclas == "list") {
+  #      for (i in 1:length(projection_layers)) {
+   #       if (!all(names(raster_layers) == names(projection_layers[[i]]))) {
+    #        stop("Variable names of projection_layers do not match names of raster_layers.")
+     #     }
+      #  }
+      #}
+#
+ #     if (cclas == "character") {
+  #      dirs <- dir(projection_layers, full.names = TRUE)
+   #     for (i in 1:length(dirs)) {
+    #      namest <- list.files(dirs[i], pattern = format_pl)
+     #     if (!all(names(raster_layers) == namest)) {
+      #      stop("Variable names of projection_layers do not match names of raster_layers.")
+       #   }
+        #}
+      #}
+#    } else {
+ #     stop("Argument projection_layers is not valid, see function's help.")
+  #  }
+#
+#  }
 
   # -----------
   # producing report
-  save(data, variable_names, variable1, n_var, back1, ell_meta, predictions,
-       prevalences, file = paste0(output_directory, "/enm_report_data.RData"))
+  save(data, variable_names, variable1, n_var, r_values, ell_meta, mean_pred,
+       suit_layer, prevalences, replicates, replicate_type, bootstrap_percentage,
+       file = paste0(output_directory, "/enm_report_data.RData"))
 
-  report_format(name = paste0(output_directory, "/eenm_report_format"))
-  report("enm", name = paste0(output_directory, "/eenm_results_report"))
+  report_format(name = paste0(output_directory, "/report_format"))
+  if (prediction != "mahalanobis") {
+    if (prediction == "both") {
+      report("enm_both", name = paste0(output_directory, "/enm_both_report"))
+    } else {
+      report("enm_suitability", name = paste0(output_directory, "/enm_suitability_report"))
+    }
+  } else {
+    report("enm_mahalanobis", name = paste0(output_directory, "/enm_mahalanobis_report"))
+  }
 
-  unlink(paste0(output_directory, "/eenm_report_format.css"))
+
+  #unlink(paste0(output_directory, "/eenm_report_format.css"))
 
   # -----------
   # returning results
 
-  return(ellipsoid_m)
+  return(predictions)
 }
-
-
