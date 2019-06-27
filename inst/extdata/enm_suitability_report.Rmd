@@ -63,7 +63,7 @@ The plot below shows the geographic arrangement of occurrence data on the variab
 
 ```{r Figure1, fig.cap="Representation of species occurrence data in geographic space."}
 par(mar = c(2, 2, 1, 1))
-plot(variable1, viridis(255))
+plot(variable1, col = viridis(255))
 map(add = TRUE, col = "gray50")
 points(data[, 2:3])
 ```
