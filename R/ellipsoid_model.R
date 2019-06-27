@@ -40,6 +40,8 @@
 #' \code{output_directory}. Default = = "GTiff". See \code{\link[raster]{writeFormats}}.
 #' @param overwrite (logical) whether or not to overwrite exitent results in
 #' \code{output_directory}. Default = FALSE.
+#' @param color_palette a color palette function to be used in plotting
+#' suitability values in an HTML report produced at the end of all analyses.
 #' @param output_directory name of the folder were all results will be written.
 #' This avoids saturation of the RAM.
 #'
@@ -77,7 +79,8 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
                              replicate_type = "bootstrap", bootstrap_percentage = 50,
                              projection_layers = NULL, prediction = "suitability",
                              return_numeric = TRUE, tolerance = 1e-60, format = "GTiff",
-                             overwrite = FALSE, output_directory = "ellipsenm_model") {
+                             overwrite = FALSE, color_palette = viridis::magma,
+                             output_directory = "ellipsenm_model") {
   # -----------
   # detecting potential errors, other potential problems tested in code
   if (missing(data)) {
@@ -208,7 +211,7 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   # producing report
   save(data, variable_names, variable1, n_var, r_values, ell_meta, mean_pred,
        suit_layer, prevalences, replicates, replicate_type, bootstrap_percentage,
-       file = paste0(output_directory, "/enm_report_data.RData"))
+       color_palette, file = paste0(output_directory, "/enm_report_data.RData"))
 
   report_format(name = paste0(output_directory, "/report_format"))
   if (prediction != "mahalanobis") {
