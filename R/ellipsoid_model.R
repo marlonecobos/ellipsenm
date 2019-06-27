@@ -154,7 +154,7 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
 
   # -----------
   # returning metadata and preparing needed variables
-  cat("\nObtaining and writing metadata of ellipsoid models:\n")
+  cat("\nObtaining and writing metadata of ellipsoid models...\n")
   ell_meta <- write_ellmeta(predictions, name = paste0(output_directory, "/calibration"))
 
   if (prediction != "mahalanobis") {
@@ -209,6 +209,7 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
 
   # -----------
   # producing report
+  cat("\nAnalyses finished. Producing HTML report...\n")
   save(data, variable_names, variable1, n_var, r_values, ell_meta, mean_pred,
        suit_layer, prevalences, replicates, replicate_type, bootstrap_percentage,
        color_palette, file = paste0(output_directory, "/enm_report_data.RData"))

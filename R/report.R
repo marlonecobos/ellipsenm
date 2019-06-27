@@ -28,6 +28,7 @@ report <- function(report_type, name = "results_report") {
   if (missing(report_type)) {
     stop("Argument report_type is missing.")
   }
+  name1 <- name
   name <- paste0(name, ".Rmd")
 
   # -----------
@@ -76,6 +77,6 @@ report <- function(report_type, name = "results_report") {
 
   # -----------
   # reporting
-  cat(paste0("\nA file named ", paste0(name, ".html"), " has been produced.\n",
+  cat(paste0("\nA file named ", paste0(name1, ".html"), " has been produced.\n",
              "Check your output directory in:\t", getwd()))
 }
