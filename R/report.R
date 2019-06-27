@@ -76,6 +76,6 @@ report <- function(report_type, name = "results_report") {
 
   # -----------
   # reporting
-  cat(paste0("\nA file named", paste0(name, ".html"), "has been produced.\n",
+  cat(paste0("\nA file named ", paste0(name, ".html"), " has been produced.\n",
              "Check your output directory in:\t", getwd()))
 }
