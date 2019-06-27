@@ -25,7 +25,6 @@ Imports:
     knitr (>= 1.23),
     maps (>= 3.3),
     MASS (>= 7.3),
-    oompaBase (>= 3.2),
     raster (>= 2.6),
     rgdal (>= 1.4),
     rgeos (>= 0.3),
