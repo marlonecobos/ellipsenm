@@ -17,13 +17,14 @@ css: report_format.css
 
 ```{r knitr_init, echo=FALSE, cache=FALSE, message=FALSE}
 # packages to load
-suppressWarnings(library(knitr))
-suppressWarnings(library(rmdformats))
+suppressWarnings(library(ellipse))
 suppressWarnings(library(ellipsenm))
+suppressWarnings(library(knitr))
+suppressWarnings(library(maps))
 suppressWarnings(library(raster))
 suppressWarnings(library(rgl))
-suppressWarnings(library(ellipse))
-suppressWarnings(library(oompaBase))
+suppressWarnings(library(rmdformats))
+suppressWarnings(library(viridis))
 
 # global options
 opts_chunk$set(echo=FALSE, cache=FALSE, prompt=FALSE, tidy=TRUE, comment=NA,
@@ -38,9 +39,9 @@ load("enm_report_data.RData")
 body {text-align: justify}
 </style>
 
-This is the final report produced during the execution of the function `ellipsoid_model` from the <a href="https://github.com/marlonecobos/ellipsenm" target="_blank">**`ellipsenm`**</a> package. Following, a complete description of the ecological niche modeling process for the sepecies *`r as.character(data[1, 1])`* is presented. Models created with the **`ellipsenm`** package are ellipsoid envelope models and assume that a species ecological niche is convex, has an only optimum, and the species response to each variable covaries with the response to other variables. Mahalanobis distances are used to represent how far is each combination of environmental conditions from the optimum (ellipsoid centroid). Suitability values result by default from a multivariate normal transformation of the mahalanobis distances measured form ellipsoid centroid. Therefore, maximum values of suitability will be close to the centroid and minimum values of suitability will be close to the border of the ellipsoid.
+This is the final report produced during the execution of the function `ellipsoid_model` from the <a href="https://github.com/marlonecobos/ellipsenm" target="_blank">**`ellipsenm`**</a> package. Following, a complete description of the ecological niche modeling process for the species *`r as.character(data[1, 1])`* is presented. Models created with the **`ellipsenm`** package are ellipsoid envelope models and assume that a species ecological niche is convex, has an only optimum, and the species response to each variable covaries with the response to other variables. Mahalanobis distances are used to represent how far is each combination of environmental conditions from the optimum (ellipsoid centroid). Suitability values result by default from a multivariate normal transformation of the mahalanobis distances measured form ellipsoid centroid. Therefore, maximum values of suitability will be close to the centroid and minimum values of suitability will be close to the border of the ellipsoid.
 
-Note 1: If only one replicate was performed, results are obtained using the hole set of data. If multiple replicates were performed, results are presented per repicate; as each replicate is produced with a subsample of the data, results may differ among replicates. For replicated models, mean results are shown in this report, results for all replicates, as well as mean, minimum, and maximum can be found in the output directory defined in the function `ellipsoid_model`. 
+Note 1: If only one replicate was performed, results are obtained using the hole set of data. If multiple replicates were performed, results are produced per replicate; as each replicate is build with a sub-sample of the data, results may differ among replicates. For replicated models, mean results are shown in this report, results for all replicates, as well as mean, minimum, and maximum can be found in the output directory defined in the function `ellipsoid_model`. 
 
 Note 2: If more than tree dimensions were used to create the model, only the first three of them will be used in graphical representations.
 
@@ -87,7 +88,7 @@ if (n_var > 2) {
 
 # Numeric results
 
-Numeic results of the ellipsoid envelope model for *`r as.character(data[1, 1])`* are presented below. 
+Numeric results of the ellipsoid envelope model for *`r as.character(data[1, 1])`* are presented below. 
 
 ## Ellipsoid characteristics
 
@@ -99,7 +100,7 @@ kable(ell_meta, row.names = TRUE, caption = paste0("Characteristics of the ellip
 
 ## Prevalence
 
-Prevalence in environmental and georaphic space are sumarized below.
+Prevalence in environmental and geographic space are summarized below.
 
 ```{r Table2}
 kable(prevalences, row.names = TRUE, caption = paste0("Prevalence of the ellipsoid envelope model for ", as.character(data[1, 1]), "."))
@@ -113,10 +114,10 @@ Given the data and the characteristics that define the species ellipsoidal niche
 
 ## Calibration area
 
-The calibration area is represented by the variables given to fit the ellipsoid using the `ellipsoid_model` function. This area is recomended to be a region that has been accessible to the species for a relevant period of time. Although most methods used in the **`ellipsenm`**  package are not sensible to a background (environmental conditions in the calibration area), having a well defined accessible area helps with interpretations. Bellow, a `r paste(ifelse(n_var > 2, "3", "2"), "dimensional")` representation of the ellipsoidal niche model and the suitability values is shown in environmental space for the calibration area.
+The calibration area is represented by the variables given to fit the ellipsoid using the `ellipsoid_model` function. This area is recommended to be a region that has been accessible to the species for a relevant period of time. Although most methods used in the **`ellipsenm`**  package are not sensible to a background (environmental conditions in the calibration area), having a well defined accessible area helps with interpretations. Bellow, a `r paste(ifelse(n_var > 2, "3", "2"), "dimensional")` representation of the ellipsoidal niche model and the suitability values is shown in environmental space for the calibration area.
 
 ```{r Figure3, fig.cap="Representation of suitability values in environmental space. Cool colors represent low suitabilities and warm colors high suitabilities."}
-col1 <- jetColors(nrow(r_values))
+col1 <- magma(nrow(r_values))
 
 if (n_var > 2) {
   el3d <- ellipse3d(mean_pred@covariance_matrix[1:3, 1:3],
@@ -156,20 +157,20 @@ if (n_var > 2) {
 
 # Predictions in geographic space
 
-Given the data and the characteristics that define the species ellipsoidal niche (see [Data used for modeling] and [Ellipsoid characteristics]) the results in geographic space are presented bellow. Values of suitability can range from 0 to 1; when the maximum is not 1, it means that there is not environmental conditions equal to the ones at the centroid of the ellipsoid. Another reason why the range of suitability can change is that a different function of suitability was used in the `ellipsoid_model` function. Values of cero (cold areas) represent areas with environmental values outside the ellipsoid, values other than cero reprensent levels of suitability. 
+Given the data and the characteristics that define the species ellipsoidal niche (see [Data used for modeling] and [Ellipsoid characteristics]) the results in geographic space are presented bellow. Values of suitability can range from 0 to 1; when the maximum is not 1, it means that there is not environmental conditions equal to the ones at the centroid of the ellipsoid. Another reason why the range of suitability can change is that a different function of suitability was used in the `ellipsoid_model` function. Values of zero (cold areas) represent areas with environmental values outside the ellipsoid, values other than core represent levels of suitability. 
 
 ## Calibration area
 
 The geographic prediction in the calibration area is presented below. 
 
-```{r Figure5, fig.cap="Representation of suitability values in geographic space."}
+```{r Figure4, fig.cap="Representation of suitability values in geographic space."}
 par(mar = c(2, 2, 1, 1))
-plot(suit_layer, col = jetColors(255))
+plot(suit_layer, col = magma(255))
 ```
 
 <hr>
 
-This report was produced usign the <a href="https://github.com/marlonecobos/ellipsenm" target="_blank">**`ellipsenm`**</a> R package; to cite R and this package use the following code:
+This report was produced using the <a href="https://github.com/marlonecobos/ellipsenm" target="_blank">**`ellipsenm`**</a> R package; to cite R and this package use the following code:
 
 ```{r References, eval=FALSE, echo=TRUE}
 # R reference:  

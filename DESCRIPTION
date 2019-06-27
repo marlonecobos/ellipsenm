@@ -1,7 +1,7 @@
 Package: ellipsenm
 Type: Package
 Title: ellipsenm: An R package for ecological niche modeling using ellipsoids
-Version: 0.1.9
+Version: 0.2.0
 Author: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", 
     role = c("aut","cre"), comment = c(ORCID = "https://orcid.org/0000-0002-2611-1767")),
@@ -14,11 +14,16 @@ Author: c(
     person("Narayani", "Barve", email = "narayani.ku@gmail.com", 
     role = "aut", comment = c(ORCID = "https://orcid.org/0000-0002-7893-8774")))
 Maintainer: Marlon E. Cobos <manubio13@gmail.com>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: ellipsenm is an R package that implements multiple tools to help in
+    using ellipsoid envelopes to model ecological niches of species. Handly 
+    options for calibrating and selecting models, producing models with replicates 
+    and projections,  and assessing niche overlap are included as part of this 
+    package. Other functions implemented here are useful to perform a series of 
+    pre- and post-modeling analyses.
 Imports:
     formatR (>= 1.7),
     knitr (>= 1.23),
+    maps (>= 3.3),
     MASS (>= 7.3),
     oompaBase (>= 3.2),
     raster (>= 2.6),
@@ -26,7 +31,8 @@ Imports:
     rgeos (>= 0.3),
     rmarkdown (>= 1.13),
     rmdformats (>= 0.3),
-    sp (>= 1.2)
+    sp (>= 1.2),
+    viridis (>= 0.5)
 Suggests:
     ellipse (>= 0.4)
 Depends:
