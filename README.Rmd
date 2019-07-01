@@ -11,10 +11,6 @@ output:
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 ```
 
-<style>
-body {text-align: justify}
-</style>
-
 <br>
 
 **This repository is for the project "Grinnellian ecological niches and ellipsoids in R" developed during the program GSoC 2019.** 

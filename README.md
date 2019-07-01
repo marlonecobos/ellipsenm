@@ -7,9 +7,6 @@ Marlon E. Cobos, Luis Osorio-Olvera, Jorge Soberónn, Laura Jiménez, A. Townsen
 -   [Package description](#package-description)
 -   [Installing the package](#installing-the-package)
 
-<style>
-body {text-align: justify}
-</style>
 <br>
 
 **This repository is for the project "Grinnellian ecological niches and ellipsoids in R" developed during the program GSoC 2019.**
