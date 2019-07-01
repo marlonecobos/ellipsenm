@@ -117,7 +117,7 @@ Given the data and the characteristics that define the species ellipsoidal niche
 
 The calibration area is represented by the variables given to fit the ellipsoid using the `ellipsoid_model` function. This area is recommended to be a region that has been accessible to the species for a relevant period of time. Although most methods used in the **`ellipsenm`**  package are not sensible to a background (environmental conditions in the calibration area), having a well defined accessible area helps with interpretations. Bellow, a `r paste(ifelse(n_var > 2, "3", "2"), "dimensional")` representation of the ellipsoidal niche model and the suitability values is shown in environmental space for the calibration area.
 
-```{r Figure3, fig.cap="Representation of suitability values in environmental space. Cool colors represent low suitabilities and warm colors high suitabilities."}
+```{r Figure3, fig.cap="Representation of suitability values in environmental space. Cold colors represent low suitabilities and warm colors high suitabilities."}
 col1 <- color_palette(nrow(r_values))
 
 if (n_var > 2) {
