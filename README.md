@@ -1,4 +1,4 @@
-ellipsenm: An R package for ecological niche charaterization using ellipsoids
+ellipsenm: An R package for ecological niche's characterization using ellipsoids
 ================
 Marlon E. Cobos, Luis Osorio-Olvera, Jorge Soberón, Laura Jiménez, A. Townsend Peterson, Vijay Barve, and Narayani Barve
 

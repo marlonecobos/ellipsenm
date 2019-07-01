@@ -1,5 +1,5 @@
 ---
-title: "ellipsenm: An R package for ecological niche charaterization using ellipsoids"
+title: "ellipsenm: An R package for ecological niche's characterization using ellipsoids"
 author: "Marlon E. Cobos, Luis Osorio-Olvera, Jorge Soberón, Laura Jiménez, A. Townsend Peterson, Vijay Barve, and Narayani Barve"
 output:
   github_document:

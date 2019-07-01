@@ -1,6 +1,6 @@
 Package: ellipsenm
 Type: Package
-Title: ellipsenm: An R package for ecological niche modeling using ellipsoids
+Title: ellipsenm: An R package for ecological niche's characterization using ellipsoids
 Version: 0.2.0
 Author: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", 
@@ -17,7 +17,7 @@ Maintainer: Marlon E. Cobos <manubio13@gmail.com>
 Description: ellipsenm is an R package that implements multiple tools to help in
     using ellipsoid envelopes to model ecological niches of species. Handly 
     options for calibrating and selecting models, producing models with replicates 
-    and projections,  and assessing niche overlap are included as part of this 
+    and projections, and assessing niche overlap are included as part of this 
     package. Other functions implemented here are useful to perform a series of 
     pre- and post-modeling analyses.
 Imports:
