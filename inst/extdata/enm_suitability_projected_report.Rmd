@@ -1,0 +1,238 @@
+---
+title: "ellipsenm: ecological niche model"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    thumbnails: true
+    lightbox: true
+    gallery: false
+    highlight: tango
+    fig_width: 7
+    fig_height: 6
+    toc_depth: 3
+    use_bookdown: true
+    number_sections: false
+css: report_format.css
+---
+
+```{r knitr_init, echo=FALSE, cache=FALSE, message=FALSE}
+# packages to load
+suppressWarnings(library(ellipse))
+suppressWarnings(library(ellipsenm))
+suppressWarnings(library(knitr))
+suppressWarnings(library(maps))
+suppressWarnings(library(raster))
+suppressWarnings(library(rgl))
+suppressWarnings(library(rmdformats))
+suppressWarnings(library(viridis))
+
+# global options
+opts_chunk$set(echo=FALSE, cache=FALSE, prompt=FALSE, tidy=TRUE, comment=NA,
+               message=FALSE, warning=FALSE, fig.align='center', webgl=hook_webgl)
+opts_knit$set(width=100)
+
+# reading data
+load("enm_report_data.RData")
+```
+
+<style>
+body {text-align: justify}
+</style>
+
+This is the final report produced during the execution of the function `ellipsoid_model` from the <a href="https://github.com/marlonecobos/ellipsenm" target="_blank">**`ellipsenm`**</a> package. Following, a complete description of the ecological niche modeling process for the species *`r as.character(data[1, 1])`* is presented. Models created with the **`ellipsenm`** package are ellipsoid envelope models and assume that a species ecological niche is convex, has an only optimum, and the species response to each variable covaries with the response to other variables. Mahalanobis distances are used to represent how far is each combination of environmental conditions from the optimum (ellipsoid centroid). Suitability values result by default from a multivariate normal transformation of the mahalanobis distances measured form ellipsoid centroid. Therefore, maximum values of suitability will be close to the centroid and minimum values of suitability will be close to the border of the ellipsoid.
+
+Note 1: If only one replicate was performed, results are obtained using the hole set of data. If multiple replicates were performed, results are produced per replicate; as each replicate is build with a sub-sample of the data, results may differ among replicates. For replicated models, mean results are shown in this report, results for all replicates, as well as mean, minimum, and maximum can be found in the output directory defined in the function `ellipsoid_model`. 
+
+Note 2: If more than tree dimensions were used to create the model, only the first three of them will be used in graphical representations.
+
+Note 3: This is the report of a projected model, only one example of the projected results is shown graphically to avoid RAM-related issues. If projections were made to more than one scenario, other results to replicate figures presented here can be found in the output directory defined in the function `ellipsoid_model`.  
+
+Tip: To see two dimensional figures in their actual size click on them. Three dimensional figures are interactive.
+
+<hr>
+
+# Summary
+
+The model presented in this report was produced for the species *`r as.character(data[1, 1])`* to characterize its ecological niche using an approach based in ellipsoid envelopes. The  modeling process was performed with `r ifelse(replicates > 1, paste0(replicates, " replicates"), "1 replicate")`.`r if (replicates > 1) {ifelse(replicate_type == "bootstrap", paste0(" Replicates were produced using bootstrapped subsamples of ", bootstrap_percentage, "% of the data.", " Replicates were produced by excluding one occurrence record at the time."))}` Based on the level used to produce the ellipsoids (`r as.character(mean_pred@level)`) the error (*E*) assumed for the occurrence data was `r as.character(100 - mean_pred@level)`%. 
+
+## Data used for modeling
+
+A total of `r nrow(data)` occurrences and `r n_var` variables (`r paste(variable_names, collapse = ", ")`) were used to produce the models. 
+
+### Data in geographic space
+
+The plot below shows the geographic arrangement of occurrence data on the variable `r variable_names[1]`:
+
+```{r Figure1, fig.cap="Representation of species occurrence data in geographic space."}
+par(mar = c(2, 2, 1, 1))
+plot(variable1, col = viridis(255))
+map(add = TRUE, col = "gray50")
+points(data[, 2:3])
+```
+
+### Data in environmental space
+
+The plot below shows the arrangement of the occurrence data in environmental space considering `r paste(ifelse(n_var > 2, "3", "2"), "dimensions")`. 
+
+```{r Figure2, fig.cap="Representation of species occurrence data in environmental space."}
+if (n_var > 2) {
+  plot3d(data[, 4:6], col = "black", size = 5)
+  plot3d(r_values[, 1:3], col = "gray65", add = TRUE)
+  rglwidget()
+  
+} else {
+  par(mar = c(2, 2, 1, 1))
+  plot(r_values, col = "gray65")
+  points(data[, 4:5], pch = 16) 
+}
+```
+
+<hr>
+
+# Numeric results
+
+Numeric results of the ellipsoid envelope model for *`r as.character(data[1, 1])`* are presented below. 
+
+## Ellipsoid characteristics
+
+The table below describes the characteristics of the ellipsoidal ecological niche model.  
+
+```{r Table1}
+kable(ell_meta, row.names = TRUE, caption = paste0("Characteristics of the ellipsoid envelope model for ", as.character(data[1, 1]), "."))
+```
+
+## Prevalence
+
+Prevalence in environmental and geographic space are summarized below for all areas and scenarios of projection.
+
+```{r Table2}
+kable(prevalences, row.names = TRUE, caption = paste0("Prevalence of the ellipsoid envelope model for ", as.character(data[1, 1]), "."))
+```
+
+<hr>
+
+# Predictions in environmental space
+
+Given the data and the characteristics that define the species ellipsoidal niche (see [Data used for modeling] and [Ellipsoid characteristics]) the results in environmental space are presented bellow. 
+
+## Calibration area
+
+The calibration area is represented by the variables given to fit the ellipsoid using the `ellipsoid_model` function. This area is recommended to be a region that has been accessible to the species for a relevant period of time. Although most methods used in the **`ellipsenm`**  package are not sensible to a background (environmental conditions in the calibration area), having a well defined accessible area helps with interpretations. Bellow, a `r paste(ifelse(n_var > 2, "3", "2"), "dimensional")` representation of the ellipsoidal niche model and the suitability values is shown in environmental space for the calibration area.
+
+```{r Figure3, fig.cap="Representation of suitability values in environmental space for the calibration area. Cold colors represent low suitabilities and warm colors high suitabilities."}
+col1 <- color_palette(nrow(r_values))
+
+if (n_var > 2) {
+  el3d <- ellipse3d(mean_pred@covariance_matrix[1:3, 1:3],
+                    centre = mean_pred@centroid[1:3], 
+                    level = mean_pred@level / 100)
+  
+  ob <- new("ellipsoid", method = mean_pred@method, 
+            centroid = mean_pred@centroid[1:3], 
+            covariance_matrix = mean_pred@covariance_matrix[1:3, 1:3],
+            level = mean_pred@level)
+  suit <- predict(ob, r_values[, 1:3], "suitability", TRUE)
+  
+  plot3d(data[, 4:6], col = "black", size = 5)
+  plot3d(r_values[order(suit@suitability, decreasing = F), 1:3], col = col1, add = TRUE)
+  wire3d(el3d, col = "darkgreen", alpha = 0.5)
+  rglwidget()
+  
+} else {
+  el1 <- ellipse(x = mean_pred@covariance_matrix[1:2, 1:2], 
+                 centre = mean_pred@centroid[1:2], 
+                 level = mean_pred@level / 100)
+  
+  ob <- new("ellipsoid", method = mean_pred@method, 
+            centroid = mean_pred@centroid[1:2], 
+            covariance_matrix = mean_pred@covariance_matrix[1:2, 1:2],
+            level = mean_pred@level)
+  suit <- predict(ob, r_values[, 1:2], "suitability", TRUE)
+  
+  par(mar = c(4, 4, 1, 1))
+  plot(r_values[order(suit@suitability, decreasing = F), 1:2], col = col1)
+  points(data[, 4:5], pch = 19) 
+  lines(el1, col = "darkgreen", lwd = 1.5)
+}
+```
+
+## Projection area
+
+A `r paste(ifelse(n_var > 2, "3", "2"), "dimensional")` representation of the ellipsoidal niche model and the suitability values is shown in environmental space for a scenario of projection.
+
+```{r Figure4, fig.cap="Representation of suitability values in environmental space for a scenario of projection. Cold colors represent low suitabilities and warm colors high suitabilities."}
+col1 <- color_palette(nrow(pr_values))
+
+if (n_var > 2) {
+  el3d <- ellipse3d(mean_pred@covariance_matrix[1:3, 1:3],
+                    centre = mean_pred@centroid[1:3], 
+                    level = mean_pred@level / 100)
+  
+  ob <- new("ellipsoid", method = mean_pred@method, 
+            centroid = mean_pred@centroid[1:3], 
+            covariance_matrix = mean_pred@covariance_matrix[1:3, 1:3],
+            level = mean_pred@level)
+  suit <- predict(ob, pr_values[, 1:3], "suitability", TRUE)
+  
+  plot3d(data[, 4:6], col = "black", size = 5)
+  plot3d(pr_values[order(suit@suitability, decreasing = F), 1:3], col = col1, add = TRUE)
+  wire3d(el3d, col = "darkgreen", alpha = 0.5)
+  rglwidget()
+  
+} else {
+  el1 <- ellipse(x = mean_pred@covariance_matrix[1:2, 1:2], 
+                 centre = mean_pred@centroid[1:2], 
+                 level = mean_pred@level / 100)
+  
+  ob <- new("ellipsoid", method = mean_pred@method, 
+            centroid = mean_pred@centroid[1:2], 
+            covariance_matrix = mean_pred@covariance_matrix[1:2, 1:2],
+            level = mean_pred@level)
+  suit <- predict(ob, pr_values[, 1:2], "suitability", TRUE)
+  
+  par(mar = c(4, 4, 1, 1))
+  plot(pr_values[order(suit@suitability, decreasing = F), 1:2], col = col1)
+  points(data[, 4:5], pch = 19) 
+  lines(el1, col = "darkgreen", lwd = 1.5)
+}
+```
+
+<hr>
+
+# Predictions in geographic space
+
+Given the data and the characteristics that define the species ellipsoidal niche (see [Data used for modeling] and [Ellipsoid characteristics]) the results in geographic space are presented bellow. Values of suitability can range from 0 to 1; when the maximum is not 1, it means that there is not environmental conditions equal to the ones at the centroid of the ellipsoid. Another reason why the range of suitability can change is that a different function of suitability was used in the `ellipsoid_model` function. Values of zero (cold areas) represent areas with environmental values outside the ellipsoid, values other than core represent levels of suitability. 
+
+## Calibration area
+
+The geographic prediction in the calibration area is presented below. 
+
+```{r Figure5, fig.cap="Representation of suitability values in geography for the calibration area."}
+par(mar = c(2, 2, 1, 1))
+plot(suit_layer, col = color_palette(255))
+map(add = TRUE, col = "gray50")
+```
+
+## Projection area
+
+A geographic prediction in a projection scenario is shown below. This example corresponds to the scenario `r sceario_name`.
+
+```{r Figure6, fig.cap="Representation of suitability values in geography for a projection scenario."}
+par(mar = c(2, 2, 1, 1))
+plot(proj_layer, col = color_palette(255))
+map(add = TRUE, col = "gray50")
+```
+
+<hr>
+
+This report was produced using the <a href="https://github.com/marlonecobos/ellipsenm" target="_blank">**`ellipsenm`**</a> R package; to cite R and this package use the following code:
+
+```{r References, eval=FALSE, echo=TRUE}
+# R reference:  
+citation()
+
+# ellipsenm reference: `
+citation("ellipsenm")
+```
+
+The code for producing this report (if needed) can be found in the file `enm_suitability_projected_report.Rmd`; the data used is in `enm_report_data.RData`.
