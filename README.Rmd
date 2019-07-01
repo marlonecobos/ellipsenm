@@ -1,18 +1,21 @@
-ellipsenm: An R package for ecological niche charaterization using ellipsoids
-================
-Marlon E. Cobos, Luis Osorio-Olvera, Jorge Soberónn, Laura Jiménez, A. Townsend Peterson, Vijay Barve, and Narayani Barve
+---
+title: "ellipsenm: An R package for ecological niche charaterization using ellipsoids"
+author: "Marlon E. Cobos, Luis Osorio-Olvera, Jorge Soberónn, Laura Jiménez, A. Townsend Peterson, Vijay Barve, and Narayani Barve"
+output:
+  github_document:
+    toc: yes
+    toc_depth: 4
+---
 
--   [Project description](#project-description)
-    -   [Estatus of the project](#estatus-of-the-project)
--   [Package description](#package-description)
--   [Installing the package](#installing-the-package)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
 
 <br>
 
-**This repository is for the project "Grinnellian ecological niches and ellipsoids in R" developed during the program GSoC 2019.**
+**This repository is for the project "Grinnellian ecological niches and ellipsoids in R" developed during the program GSoC 2019.** 
 
-Project description
--------------------
+## Project description
 
 Student: *Marlon E. Cobos*
 
@@ -32,19 +35,17 @@ Following you can find a brief description of this R package, as well as some ex
 
 <br>
 
-Package description
--------------------
+## Package description
 
 The **ellipsenm** R package implements multiple tools to help in using ellipsoid envelopes to model ecological niches of species. Handly options for calibrating and selecting models, producing models with replicates and projections, and assessing niche overlap are included as part of this package. Other functions implemented here are useful to perform a series of pre- and post-modeling analyses.
 
 <br>
 
-Installing the package
-----------------------
+## Installing the package
 
-**ellipsenm** is in a GitHub repository and can be installed and/or loaded using the following code (make sure to have Internet connection).
+**ellipsenm** is in a GitHub repository and can be installed and/or loaded using the following code (make sure to have Internet connection). 
 
-``` r
+```{r, eval=FALSE, include=TRUE, message=FALSE, warning=FALSE}
 # Installing and loading packages
 if(!require(devtools)){
     install.packages("devtools")
