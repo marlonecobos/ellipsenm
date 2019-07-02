@@ -14,23 +14,30 @@
 #' \code{prediction} selected). Default = FALSE.
 #' @param tolerance the tolerance for detecting linear dependencies.
 #' Default = 1e-60.
-#' @param name (character) optional, name of the file to be writen. Must include
-#' format extension (e.g., ".tif"). When defined, raster predictions are not
-#' returned to the environment. Default = NULL. See detals.
-#' @param format (charater) if \code{name} is defined, file type to be written.
-#' Must correspond with format extension in \code{name}.
-#' See \code{\link[raster]{writeFormats}}.
+#' @param name (character) optional, a name for the files to be writen. When
+#' defined, raster predictions and numeric results are not returned as part of
+#' the ellipsoid* object unless \code{force_return} = TRUE. File extensions will
+#' be added as needed for writing raster and numeric results. Default = NULL.
+#' See detals.
+#' @param format (charater) if \code{name} is defined, raster type to be written.
+#' See \code{\link[raster]{writeFormats}} for details and options.
 #' @param overwrite (logical) if \code{name} is defined, whether or not to
 #' overwrite an exitent file with the exact same name. Default = FALSE.
+#' @param force_return (logical) whether or not to force returning numeric and
+#' raster results as part of the ellipsoid* object when \code{name} is defined.
 #'
 #' @return
-#' An ellipsoid_model_sim with new predictions.
+#' An ellipsoid_model_sim with new predictions. If \code{name} is defined, csv
+#' files with numeric results and raster files with the geographic predictions
+#' will be written.
 #'
 #' @details
 #' Argument \code{object} must be of one of the following classes: "ellipsoid"
 #' or "ellipsoid_model_sim". The prefix "suitability" or "mahalanobis" will be
 #' added to \code{name} depending on the type of prediction defined in
-#' \code{prediction}.
+#' \code{prediction}. File type (extention) will be added to \code{name}, if
+#' defined, .csv for numeric results and any of the ones described in
+#' \code{\link[raster]{writeFormats}} depending on \code{format}.
 #'
 #' For \code{projection_layers} variables can be given either as a RasterStack
 #' or as a matrix. If a matrix is given each column represents a variable and
@@ -71,8 +78,8 @@
 
 setMethod("predict", signature(object = "ellipsoid"),
           function(object, projection_layers, prediction = "suitability",
-                   return_numeric = FALSE, tolerance = 1e-60,
-                   name = NULL, format, overwrite = FALSE) {
+                   return_numeric = FALSE, tolerance = 1e-60, name = NULL,
+                   format, overwrite = FALSE, force_return = FALSE) {
             # -----------
             # detecting potential errors
             if (!missing(object)) {
