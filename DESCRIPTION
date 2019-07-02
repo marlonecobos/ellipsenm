@@ -1,7 +1,7 @@
 Package: ellipsenm
 Type: Package
 Title: ellipsenm: An R package for ecological niche's characterization using ellipsoids
-Version: 0.2.0
+Version: 0.2.1
 Author: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", 
     role = c("aut","cre"), comment = c(ORCID = "https://orcid.org/0000-0002-2611-1767")),
@@ -21,6 +21,7 @@ Description: ellipsenm is an R package that implements multiple tools to help in
     package. Other functions implemented here are useful to perform a series of 
     pre- and post-modeling analyses.
 Imports:
+    data.table (>= 1.12),
     formatR (>= 1.7),
     knitr (>= 1.23),
     maps (>= 3.3),
