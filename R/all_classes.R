@@ -14,14 +14,16 @@ ellipsoid <- setClass("ellipsoid",
                                 axes_coordinates = "list"))
 
 ellipsoid_model_sim <- setClass("ellipsoid_model_sim",
-                              slots = c(mahalanobis = "numeric",
-                                        suitability = "numeric",
-                                        prevalence = "numeric",
-                                        prediction_maha = "S4",
-                                        prediction_suit = "S4",
-                                        projections_maha = "character",
-                                        projections_suit = "character"),
-                              contains = "ellipsoid")
+                                slots = c(mahalanobis = "numeric",
+                                          suitability = "numeric",
+                                          prevalence = "numeric",
+                                          prediction_maha = "S4",
+                                          prediction_suit = "S4",
+                                          mahalanobis_proj = "matrix",
+                                          suitability_proj = "matrix",
+                                          projections_maha = "S4",
+                                          projections_suit = "S4"),
+                                contains = "ellipsoid")
 
 ellipsoid_model_rep <- setClass("ellipsoid_model_rep",
                                 slots = c(ellipsoids = "list",
@@ -30,6 +32,8 @@ ellipsoid_model_rep <- setClass("ellipsoid_model_rep",
                                           prevalence = "matrix",
                                           prediction_maha = "S4",
                                           prediction_suit = "S4",
+                                          mahalanobis_proj = "list",
+                                          suitability_proj = "list",
                                           projections_maha = "list",
                                           projections_suit = "list"))
 
