@@ -22,7 +22,8 @@ projected. See details.}
 \item{return_numeric}{(logical) whether or not to return values of mahalanobis
 distance and suitability as part of the results (it depends on the type of
 \code{prediction} selected). If \code{projection_layers} is a RasterStack,
-default = FALSE; if \code{projection_layers} is a matrix, default = TRUE.}
+default = FALSE, but can be changed to TRUE; if \code{projection_layers} is a
+matrix, default = TRUE and cannot be changed.}
 
 \item{tolerance}{the tolerance for detecting linear dependencies.
 Default = 1e-60.}

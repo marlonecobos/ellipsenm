@@ -12,7 +12,8 @@
 #' @param return_numeric (logical) whether or not to return values of mahalanobis
 #' distance and suitability as part of the results (it depends on the type of
 #' \code{prediction} selected). If \code{projection_layers} is a RasterStack,
-#' default = FALSE; if \code{projection_layers} is a matrix, default = TRUE.
+#' default = FALSE, but can be changed to TRUE; if \code{projection_layers} is a
+#' matrix, default = TRUE and cannot be changed.
 #' @param tolerance the tolerance for detecting linear dependencies.
 #' Default = 1e-60.
 #' @param name (character) optional, a name for the files to be writen. When
@@ -121,10 +122,10 @@ setMethod("predict", signature(object = "ellipsoid"),
 
             # raster data
             if (class(projection_layers)[1] == "RasterStack") {
-              return_numeric = FALSE
+              return_numeric <- ifelse(missing(return_numeric), FALSE, return_numeric)
               back <- na.omit(raster::values(projection_layers))
             } else {
-              return_numeric = TRUE
+              return_numeric <- TRUE
               back <- as.matrix(projection_layers)
             }
             db <- !duplicated.matrix(back)
