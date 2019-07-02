@@ -11,7 +11,8 @@
 #' "suitability", "mahalanobis", and "both". Default = "suitability".
 #' @param return_numeric (logical) whether or not to return values of mahalanobis
 #' distance and suitability as part of the results (it depends on the type of
-#' \code{prediction} selected). Default = FALSE.
+#' \code{prediction} selected). If \code{projection_layers} is a RasterStack,
+#' default = FALSE; if \code{projection_layers} is a matrix, default = TRUE.
 #' @param tolerance the tolerance for detecting linear dependencies.
 #' Default = 1e-60.
 #' @param name (character) optional, a name for the files to be writen. When
@@ -25,6 +26,7 @@
 #' overwrite an exitent file with the exact same name. Default = FALSE.
 #' @param force_return (logical) whether or not to force returning numeric and
 #' raster results as part of the ellipsoid* object when \code{name} is defined.
+#' Ignored if \code{projection_layers} is a matrix.
 #'
 #' @return
 #' An ellipsoid_model_sim with new predictions. If \code{name} is defined, csv
@@ -78,7 +80,7 @@
 
 setMethod("predict", signature(object = "ellipsoid"),
           function(object, projection_layers, prediction = "suitability",
-                   return_numeric = FALSE, tolerance = 1e-60, name = NULL,
+                   return_numeric, tolerance = 1e-60, name = NULL,
                    format, overwrite = FALSE, force_return = FALSE) {
             # -----------
             # detecting potential errors
@@ -103,10 +105,14 @@ setMethod("predict", signature(object = "ellipsoid"),
             }
 
             ## solving potential problems with name
-            name <- gsub("\\\\", "/", name)
-            name <- unlist(strsplit(name, "/"))
-            ndir <- paste0(paste(name[-length(name)], collapse = "/"), "/")
-            name <- name[length(name)]
+            if (!is.null(name)) {
+              name <- gsub("\\\\", "/", name)
+              name <- unlist(strsplit(name, "/"))
+              ndir <- paste0(paste(name[-length(name)], collapse = "/"), "/")
+              name <- name[length(name)]
+              num_format <- ".csv"
+              ras_format <- rformat_type(format)
+            }
 
             # ellipsoid data
             centroid <- object@centroid
@@ -115,8 +121,10 @@ setMethod("predict", signature(object = "ellipsoid"),
 
             # raster data
             if (class(projection_layers)[1] == "RasterStack") {
+              return_numeric = FALSE
               back <- na.omit(raster::values(projection_layers))
             } else {
+              return_numeric = TRUE
               back <- as.matrix(projection_layers)
             }
             db <- !duplicated.matrix(back)
@@ -256,25 +264,54 @@ setMethod("predict", signature(object = "ellipsoid"),
               if (prediction != "mahalanobis") {
                 if (prediction == "both") {
                   ## writing raster layers
-                  mname <- paste0(ndir, "mahalanobis_", name)
-                  sname <- paste0(ndir, "suitability_", name)
-                  raster::writeRaster(maha_layer, filename = mname, format = format, overwrite = overwrite)
-                  raster::writeRaster(suit_layer, filename = sname, format = format, overwrite = overwrite)
+                  mname <- paste0(ndir, "mahalanobis_", name, ras_format)
+                  sname <- paste0(ndir, "suitability_", name, ras_format)
+                  raster::writeRaster(maha_layer, filename = mname, format = format,
+                                      overwrite = overwrite)
+                  raster::writeRaster(suit_layer, filename = sname, format = format,
+                                      overwrite = overwrite)
+
+                  mnamec <- paste0(ndir, "mahalanobis_", name, num_format)
+                  snamec <- paste0(ndir, "suitability_", name, num_format)
+                  suppressMessages(data.table::fwrite(data.frame(mahalanobis = maha),
+                                                      file = mnamec))
+                  suppressMessages(data.table::fwrite(data.frame(suitability = suitability),
+                                                      file = snamec))
 
                   ## erasing slots
-                  slot(results, "prediction_maha", check = FALSE) <- vector()
-                  slot(results, "prediction_suit", check = FALSE) <- vector()
+                  if (force_return == FALSE) {
+                    slot(results, "prediction_maha", check = FALSE) <- vector()
+                    slot(results, "prediction_suit", check = FALSE) <- vector()
+                    slot(results, "mahalanobis", check = FALSE) <- vector()
+                    slot(results, "suitability", check = FALSE) <- vector()
+                  }
                 } else {
-                  sname <- paste0(ndir, "suitability_", name)
-                  raster::writeRaster(suit_layer, filename = sname, format = format, overwrite = overwrite)
+                  sname <- paste0(ndir, "suitability_", name, ras_format)
+                  raster::writeRaster(suit_layer, filename = sname, format = format,
+                                      overwrite = overwrite)
 
-                  slot(results, "prediction_suit", check = FALSE) <- vector()
+                  snamec <- paste0(ndir, "suitability_", name, num_format)
+                  suppressMessages(data.table::fwrite(data.frame(suitability = suitability),
+                                                      file = snamec))
+
+                  if (force_return == FALSE) {
+                    slot(results, "prediction_suit", check = FALSE) <- vector()
+                    slot(results, "suitability", check = FALSE) <- vector()
+                  }
                 }
               } else {
-                mname <- paste0(ndir, "mahalanobis_", name)
-                raster::writeRaster(maha_layer, filename = mname, format = format, overwrite = overwrite)
+                mname <- paste0(ndir, "mahalanobis_", name, ras_format)
+                raster::writeRaster(maha_layer, filename = mname, format = format,
+                                    overwrite = overwrite)
 
-                slot(results, "prediction_maha", check = FALSE) <- vector()
+                mnamec <- paste0(ndir, "mahalanobis_", name, num_format)
+                suppressMessages(data.table::fwrite(data.frame(mahalanobis = maha),
+                                                    file = mnamec))
+
+                if (force_return == FALSE) {
+                  slot(results, "prediction_maha", check = FALSE) <- vector()
+                  slot(results, "mahalanobis", check = FALSE) <- vector()
+                }
               }
             }
 
