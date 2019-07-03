@@ -177,15 +177,19 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
 
             ## preparing variants
             if (return_numeric == FALSE & is.null(name) & is.null(return_name) &
-                class(projection_variables)[1] != "RasterStack" ) {
+                class(projection_variables)[1] != "RasterStack") {
               return_name <- nam_ell[1]
             }
             if (return_numeric == FALSE & is.null(name) & is.null(return_name) &
-                class(projection_variables)[1] == "RasterStack" ) {
+                class(projection_variables)[1] == "RasterStack") {
               return_name <- "ipmoisbsel392"
             }
             if (return_numeric == FALSE & !is.null(name) & is.null(return_name) &
-                class(projection_variables)[1] == "RasterStack" ) {
+                class(projection_variables)[1] == "RasterStack") {
+              return_name <- "ipmoisbsel392"
+            }
+            if (return_numeric == TRUE & !is.null(name) & is.null(return_name) &
+                class(projection_variables)[1] == "RasterStack") {
               return_name <- "ipmoisbsel392"
             }
 
