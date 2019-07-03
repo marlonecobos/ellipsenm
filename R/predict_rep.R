@@ -20,7 +20,7 @@
 #' defined, raster predictions and numeric results (with exceptions) are not
 #' returned as part of the ellipsoid_model_rep object unless
 #' \code{force_return} = TRUE. File extensions will be added as needed for
-#' writing raster and numeric results. Default = NULL. See detals.
+#' writing raster and numeric results. Default = NULL. See details.
 #' @param format (charater) if \code{name} is defined, raster type to be written.
 #' See \code{\link[raster]{writeFormats}} for details and options.
 #' @param overwrite (logical) if \code{name} is defined, whether or not to
