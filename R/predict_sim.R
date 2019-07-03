@@ -13,14 +13,14 @@
 #' distance and suitability as part of the results (it depends on the type of
 #' \code{prediction} selected). If \code{projection_variables} is a RasterStack,
 #' default = FALSE, but can be changed to TRUE; if \code{projection_variables} is
-#' a matrix, default = TRUE and cannot be changed.
+#' a matrix, default = TRUE and cannot be changed. See details.
 #' @param tolerance the tolerance for detecting linear dependencies.
 #' Default = 1e-60.
 #' @param name (character) optional, a name for the files to be writen. When
 #' defined, raster predictions and numeric results are not returned as part of
 #' the ellipsoid* object unless \code{force_return} = TRUE. File extensions will
 #' be added as needed for writing raster and numeric results. Default = NULL.
-#' See detals.
+#' See details.
 #' @param format (charater) if \code{name} is defined, raster type to be written.
 #' See \code{\link[raster]{writeFormats}} for details and options.
 #' @param overwrite (logical) if \code{name} is defined, whether or not to
@@ -48,6 +48,11 @@
 #' variable and predictions are returned only as numeric vectors. In both cases,
 #' variable names must match exactly the order and name of variables used to
 #' create \code{object}.
+#'
+#' The only scenarios in which none of the numeric results will be returned are:
+#' if \code{projection_variables} is a RasterStack and \code{return numeric} is
+#' set as FALSE, and if \code{name} is defined and \code{force_return} is set as
+#' FALSE, even if \code{return numeric} = TRUE.
 #'
 #' @export
 #'
@@ -279,15 +284,25 @@ setMethod("predict", signature(object = "ellipsoid"),
                                                       file = mnamec))
                   suppressMessages(data.table::fwrite(data.frame(suitability = suitability),
                                                       file = snamec))
+                  if (force_return == FALSE) {
+                    slot(results, "mahalanobis", check = FALSE) <- vector()
+                    slot(results, "suitability", check = FALSE) <- vector()
+                  }
                 } else {
                   snamec <- paste0(ndir, "suitability_", name, num_format)
                   suppressMessages(data.table::fwrite(data.frame(suitability = suitability),
                                                       file = snamec))
+                  if (force_return == FALSE) {
+                    slot(results, "suitability", check = FALSE) <- vector()
+                  }
                 }
               } else {
                 mnamec <- paste0(ndir, "mahalanobis_", name, num_format)
                 suppressMessages(data.table::fwrite(data.frame(mahalanobis = maha),
                                                     file = mnamec))
+                if (force_return == FALSE) {
+                  slot(results, "mahalanobis", check = FALSE) <- vector()
+                }
               }
 
               if (class(projection_variables)[1] == "RasterStack") {

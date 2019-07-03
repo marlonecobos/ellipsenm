@@ -23,7 +23,7 @@ projected. See details.}
 distance and suitability as part of the results (it depends on the type of
 \code{prediction} selected). If \code{projection_variables} is a RasterStack,
 default = FALSE, but can be changed to TRUE; if \code{projection_variables} is
-a matrix, default = TRUE and cannot be changed.}
+a matrix, default = TRUE and cannot be changed. See details.}
 
 \item{tolerance}{the tolerance for detecting linear dependencies.
 Default = 1e-60.}
@@ -32,7 +32,7 @@ Default = 1e-60.}
 defined, raster predictions and numeric results are not returned as part of
 the ellipsoid* object unless \code{force_return} = TRUE. File extensions will
 be added as needed for writing raster and numeric results. Default = NULL.
-See detals.}
+See details.}
 
 \item{format}{(charater) if \code{name} is defined, raster type to be written.
 See \code{\link[raster]{writeFormats}} for details and options.}
@@ -67,6 +67,11 @@ RasterStack or as a matrix. If a matrix is given each column represents a
 variable and predictions are returned only as numeric vectors. In both cases,
 variable names must match exactly the order and name of variables used to
 create \code{object}.
+
+The only scenarios in which none of the numeric results will be returned are:
+if \code{projection_variables} is a RasterStack and \code{return numeric} is
+set as FALSE, and if \code{name} is defined and \code{force_return} is set as
+FALSE, even if \code{return numeric} = TRUE.
 }
 \examples{
 # reading data
