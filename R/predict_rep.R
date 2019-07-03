@@ -286,13 +286,26 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                     }
                   }
 
-                  if (force_return == TRUE & nam_ell[x] == return_name) {
-                    if (prediction == "both") {
-                      return(list(maha = mah, suit = suitability, m_layer = maha_layer,
-                                  s_layer = suit_layer, prev = prevalence))
+                  if (force_return == TRUE) {
+                    if (nam_ell[x] == return_name) {
+                      if (return_numeric == TRUE) {
+                        if (prediction == "both") {
+                          return(list(maha = mah, suit = suitability, m_layer = maha_layer,
+                                      s_layer = suit_layer, prev = prevalence))
+                        } else {
+                          return(list(suit = suitability, s_layer = suit_layer,
+                                      prev = prevalence))
+                        }
+                      } else {
+                        if (prediction == "both") {
+                          return(list(m_layer = maha_layer, s_layer = suit_layer,
+                                      prev = prevalence))
+                        } else {
+                          return(list(s_layer = suit_layer, prev = prevalence))
+                        }
+                      }
                     } else {
-                      return(list(suit = suitability, s_layer = suit_layer,
-                                  prev = prevalence))
+                      return(list(prev = prevalence))
                     }
                   } else {
                     return(list(prev = prevalence))
@@ -420,8 +433,16 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                                         overwrite = overwrite)
                   }
 
-                  if (return_numeric == TRUE & nam_ell[x] == return_name) {
-                    return(list(maha = mah, m_layer = maha_layer))
+                  if (force_return == TRUE) {
+                    if (nam_ell[x] == return_name) {
+                      if (return_numeric == TRUE) {
+                        return(list(maha = mah, m_layer = maha_layer))
+                      } else {
+                        return(list(m_layer = maha_layer))
+                      }
+                    } else {
+                      return(list())
+                    }
                   } else {
                     return(list())
                   }
@@ -437,6 +458,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                   }
                 }
               })
+              names(maha) <- nam_ell
 
               if (is.null(name)) {
                 if (class(projection_variables)[1] == "RasterStack") {
