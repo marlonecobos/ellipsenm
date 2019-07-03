@@ -98,11 +98,19 @@ setMethod("predict", signature(object = "ellipsoid"),
                 stop("Argument format needs to be defined if argument name is given.")
               }
             }
-            if (!class(projection_layers)[1] %in% c("RasterStack", "matrix", "data.frame")) {
+            if (!class(projection_layers)[1] %in% c("RasterStack", "RasterBrick", "matrix", "data.frame")) {
               stop("Argument projection_layers needs to be either a RasterStack or a matrix.")
+            } else {
+              if (class(projection_layers)[1] == "RasterBrick") {
+                projection_layers <- raster::stack(projection_layers)
+              }
             }
-            if (!is.null(name) & class(projection_layers)[1] != "RasterStack") {
-              warning("Argument projection_layers is matrix, no raster predictions will be written.")
+            if (!is.null(name)) {
+              if (class(projection_layers)[1] != "RasterStack") {
+                message("Argument projection_layers is a matrix, no raster predictions will be written.")
+              }
+            } else {
+              force_return <- FALSE
             }
 
             ## solving potential problems with name
