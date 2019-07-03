@@ -4,15 +4,15 @@
 #' based on a centroid and a covariance matrix.
 #'
 #' @param object a fitted object of class ellipsoid_model_rep.
-#' @param projection_layers RasterStack or matrix of variables representing
+#' @param projection_variables RasterStack or matrix of variables representing
 #' environmental conditions of the scenario to which \code{object} will be
 #' projected. See details.
 #' @param prediction (character) type of prediction to be made, options are:
 #' "suitability", "mahalanobis", and "both". Default = "suitability".
 #' @param return_numeric (logical) whether or not to return values of mahalanobis
 #' distance and suitability as part of the results (it depends on the type of
-#' \code{prediction} selected). If \code{projection_layers} is a RasterStack,
-#' default = FALSE; if \code{projection_layers} is a matrix, default = TRUE. For
+#' \code{prediction} selected). If \code{projection_variables} is a RasterStack,
+#' default = FALSE; if \code{projection_variables} is a matrix, default = TRUE. For
 #' both options the default can be changed. See details.
 #' @param tolerance the tolerance for detecting linear dependencies.
 #' Default = 1e-60.
@@ -46,16 +46,23 @@
 #' added to \code{name}, if defined, .csv for numeric results and any of the ones
 #' described in \code{\link[raster]{writeFormats}} depending on \code{format}.
 #'
-#' For \code{projection_layers} variables can be given either as a RasterStack
-#' or as a matrix. If a matrix is given each column represents a variable and
-#' predictions are returned only as numeric vectors. In both cases, variable
-#' names must match exactly the order and name of variables used to create
-#' \code{object}.
+#' Argument \code{projection_variables} variables can be defined either as a
+#' RasterStack or as a matrix. If a matrix is given each column represents a
+#' variable and predictions are returned only as numeric matrices. In both cases,
+#' variable names must match exactly the order and name of variables used to
+#' create \code{object}.
 #'
-#' If \code{projection_layers} is a matrix at least one numeric result will be
+#' If \code{projection_variables} is a matrix at least one numeric result will be
 #' returned even if \code{return numeric} is set as FALSE; if \code{return_name}
 #' is defined this indicates the ellipsoid for which the numeric result will
 #' return, if not defined, the results for the first ellipsoid will return.
+#'
+#' The only scenarios in which none of the numeric results will be returned are:
+#' if \code{projection_variables} is a RasterStack and \code{return numeric} is
+#' set as FALSE, and if \code{name} is defined and \code{force_return} is set as
+#' FALSE. However, for the latter, if \code{force_return} is set as TRUE, raster
+#' and numeric results will be returned for the ellipsoid defined in
+#' \code{return_name}.
 #'
 #' @export
 #'
@@ -89,19 +96,19 @@
 #'                ellipsoids = ellipsoids) # again some slots empty here
 #'
 #' # predicting suitability
-#' prediction_rep <- predict(object = ell_rep, projection_layers = vars,
+#' prediction_rep <- predict(object = ell_rep, projection_variables = vars,
 #'                           prediction = "suitability")
 #'
 #' # predicting mahalanobis distance
-#' prediction_rep <- predict(object = ell_rep, projection_layers = vars,
+#' prediction_rep <- predict(object = ell_rep, projection_variables = vars,
 #'                           prediction = "mahalanobis")
 #'
 #' # predicting both things
-#' prediction_rep <- predict(object = ell_rep, projection_layers = vars,
+#' prediction_rep <- predict(object = ell_rep, projection_variables = vars,
 #'                           prediction = "both")
 
 setMethod("predict", signature(object = "ellipsoid_model_rep"),
-          function(object, projection_layers, prediction = "suitability",
+          function(object, projection_variables, prediction = "suitability",
                    return_numeric, tolerance = 1e-60, name = NULL, format,
                    overwrite = FALSE, force_return = FALSE, return_name = NULL) {
             # -----------
@@ -118,22 +125,25 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 stop("Argument format needs to be defined if argument name is given.")
               }
             }
-            if (!class(projection_layers)[1] %in% c("RasterStack", "RasterBrick", "matrix", "data.frame")) {
-              stop("Argument projection_layers needs to be either a RasterStack or a matrix.")
+            if (!class(projection_variables)[1] %in% c("RasterStack", "RasterBrick", "matrix", "data.frame")) {
+              stop("Argument projection_variables needs to be either a RasterStack or a matrix.")
             } else {
-              if (class(projection_layers)[1] == "RasterBrick") {
-                projection_layers <- raster::stack(projection_layers)
+              if (class(projection_variables)[1] == "RasterBrick") {
+                projection_variables <- raster::stack(projection_variables)
               }
-              if (class(projection_layers)[1] == "RasterStack" & missing(return_numeric)) {
+              if (class(projection_variables)[1] == "RasterStack" & missing(return_numeric)) {
                 return_numeric <- FALSE
               }
-              if (class(projection_layers)[1] != "RasterStack" & missing(return_numeric)){
+              if (class(projection_variables)[1] != "RasterStack" & missing(return_numeric)){
                 return_numeric <- TRUE
               }
             }
             if (!is.null(name)) {
-              if (class(projection_layers)[1] != "RasterStack") {
-                message("Argument projection_layers is a matrix, no raster predictions will be written.")
+              if (class(projection_variables)[1] != "RasterStack") {
+                message("\nArgument projection_variables is a matrix, no raster predictions will be returned.\n")
+              }
+              if (force_return == TRUE & is.null(return_name)) {
+                return_name <- nam_ell[1]
               }
             } else {
               force_return <- FALSE
@@ -166,15 +176,13 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
             }
 
             ## preparing variants
-            if (force_return == TRUE) {
-              if (class(projection_layers)[1] != "RasterStack" & return_numeric == FALSE) {
-
-                eret_pos <- s
-              }
-            } else {
-              if (class(projection_layers)[1] != "RasterStack" & return_numeric == FALSE) {
-                eret_pos <- s
-              }
+            if (return_numeric == FALSE & is.null(name) & is.null(return_name) &
+                class(projection_variables)[1] != "RasterStack" ) {
+              return_name <- nam_ell[1]
+            }
+            if (return_numeric == FALSE & is.null(name) & is.null(return_name) &
+                class(projection_variables)[1] == "RasterStack" ) {
+              return_name <- "ipmoisbsel392"
             }
 
             # ellipsoids data
@@ -182,13 +190,12 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
             covariance_matrix <- lapply(object@ellipsoids, function(x) {x@covariance_matrix})
             level <- sapply(object@ellipsoids, function(x) {x@level})
             n_ell <- ncol(centroid)
-            #nam_ell <- names(object@ellipsoids)
 
             # raster data
-            if (class(projection_layers)[1] == "RasterStack") {
-              back <- na.omit(raster::values(projection_layers))
+            if (class(projection_variables)[1] == "RasterStack") {
+              back <- na.omit(raster::values(projection_variables))
             } else {
-              back <- as.matrix(projection_layers)
+              back <- as.matrix(projection_variables)
             }
             db <- !duplicated.matrix(back)
 
@@ -196,14 +203,14 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
             # analyses and preparation of results
             ## layers to be filled
             if (prediction == "suitability" | prediction == "mahalanobis" | prediction == "both") {
-              if (class(projection_layers)[1] == "RasterStack") {
+              if (class(projection_variables)[1] == "RasterStack") {
                 if (prediction != "mahalanobis") {
-                  suit_layer <- projection_layers[[1]]
+                  suit_layer <- projection_variables[[1]]
                   if (prediction == "both") {
-                    maha_layer <- projection_layers[[1]]
+                    maha_layer <- projection_variables[[1]]
                   }
                 } else {
-                  maha_layer <- projection_layers[[1]]
+                  maha_layer <- projection_variables[[1]]
                 }
               }
             } else {
@@ -221,7 +228,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 mah <-  mahalanobis(x = back, center = centroid[, x],
                                     cov = covariance_matrix[[x]], tol = tolerance)
                 if (prediction == "both") {
-                  if (class(projection_layers)[1] == "RasterStack") {
+                  if (class(projection_variables)[1] == "RasterStack") {
                     maha_layer[!is.na(maha_layer[])] <- mah
                   } else {
                     maha_layer <- vector()
@@ -231,7 +238,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 suitability <- exp(-0.5 * mah)
                 suitability <- ifelse(mah / chi_sq[x] <= 1, suitability, 0)
 
-                if (class(projection_layers)[1] == "RasterStack") {
+                if (class(projection_variables)[1] == "RasterStack") {
                   suit_layer[!is.na(suit_layer[])] <- suitability
                 } else {
                   suit_layer <- vector()
@@ -243,7 +250,19 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 prevalence <- c(prevalence_E_space = p_suit_e, prevalence_G_space = p_suit_g)
 
                 if (!is.null(name)) {
-                  if (class(projection_layers)[1] == "RasterStack") {
+                  if (prediction == "both") {
+                    mnamec <- paste0(ndir, enames[x], "_mahalanobis_", name, num_format)
+                    snamec <- paste0(ndir, enames[x], "_suitability_", name, num_format)
+                    suppressMessages(data.table::fwrite(data.frame(mahalanobis = mah),
+                                                        file = mnamec))
+                    suppressMessages(data.table::fwrite(data.frame(suitability = suitability),
+                                                        file = snamec))
+                  } else {
+                    snamec <- paste0(ndir, enames[x], "_suitability_", name, num_format)
+                    suppressMessages(data.table::fwrite(data.frame(suitability = suitability),
+                                                        file = snamec))
+                  }
+                  if (class(projection_variables)[1] == "RasterStack") {
                     if (prediction == "both") {
                       mname <- paste0(ndir, enames[x], "_mahalanobis_", name, ras_format)
                       sname <- paste0(ndir, enames[x], "_suitability_", name, ras_format)
@@ -251,119 +270,122 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                                           overwrite = overwrite)
                       raster::writeRaster(suit_layer, filename = sname, format = format,
                                           overwrite = overwrite)
-
-                      mnamec <- paste0(ndir, enames[x], "_mahalanobis_", name, num_format)
-                      snamec <- paste0(ndir, enames[x], "_suitability_", name, num_format)
-                      suppressMessages(data.table::fwrite(data.frame(mahalanobis = mah),
-                                                          file = mnamec))
-                      suppressMessages(data.table::fwrite(data.frame(suitability = suitability),
-                                                          file = snamec))
                     } else {
                       sname <- paste0(ndir, enames[x], "_suitability_", name, ras_format)
                       raster::writeRaster(suit_layer, filename = sname, format = format,
                                           overwrite = overwrite)
-
-                      snamec <- paste0(ndir, enames[x], "_suitability_", name, num_format)
-                      suppressMessages(data.table::fwrite(data.frame(suitability = suitability),
-                                                          file = snamec))
                     }
                   }
 
-                  if (return_numeric == TRUE) {
+                  if (force_return == TRUE & nam_ell[x] == return_name) {
                     if (prediction == "both") {
-                      return(list(mah, suitability, prevalence))
+                      return(list(maha = mah, suit = suitability, m_layer = maha_layer,
+                                  s_layer = suit_layer, prev = prevalence))
                     } else {
-                      return(list(suitability, prevalence))
+                      return(list(suit = suitability, s_layer = suit_layer,
+                                  prev = prevalence))
                     }
                   } else {
-                    return(list(prevalence))
+                    return(list(prev = prevalence))
                   }
-
                 } else {
                   if (return_numeric == TRUE) {
                     if (prediction == "both") {
-                      return(list(mah, suitability, maha_layer, suit_layer, prevalence))
+                      return(list(maha = mah, suit = suitability, m_layer = maha_layer,
+                                  s_layer = suit_layer, prev = prevalence))
                     } else {
-                      return(list(suitability, suit_layer, prevalence))
+                      return(list(suit = suitability, s_layer = suit_layer,
+                                  prev = prevalence))
                     }
                   } else {
-                    if (prediction == "both") {
-                      return(list(maha_layer, suit_layer, prevalence))
+                    if (nam_ell[x] == return_name) {
+                      if (prediction == "both") {
+                        return(list(maha = mah, suit = suitability, m_layer = maha_layer,
+                                    s_layer = suit_layer, prev = prevalence))
+                      } else {
+                        return(list(suit = suitability, s_layer = suit_layer,
+                                    prev = prevalence))
+                      }
                     } else {
-                      return(list(suit_layer, prevalence))
+                      if (prediction == "both") {
+                        return(list(m_layer = maha_layer, s_layer = suit_layer,
+                                    prev = prevalence))
+                      } else {
+                        return(list(s_layer = suit_layer, prev = prevalence))
+                      }
                     }
                   }
                 }
               })
+              names(maha_suit) <- nam_ell
 
-              if (return_numeric == TRUE) {
-                ids <- ifelse(prediction == "both", 2, 1)
-                suitability <- do.call(cbind, lapply(maha_suit, function(x) {x[[ids]]}))
-                colnames(suitability) <- nam_ell
-              }
-
-              idp <- length(maha_suit[[1]])
-              prevalence <- do.call(cbind, lapply(maha_suit, function(x) {x[[idp]]}))
+              prevalence <- do.call(cbind, lapply(maha_suit, function(x) {x[["prev"]]}))
               colnames(prevalence) <- nam_ell
 
               if (is.null(name)) {
-                if (class(projection_layers)[1] == "RasterStack") {
-                  if (prediction == "both") {
-                    inds <- ifelse(return_numeric == TRUE, 4, 2)
-                  } else {
-                    inds <- ifelse(return_numeric == TRUE, 2, 1)
-                  }
-                  suit_layers <- do.call(raster::stack, lapply(maha_suit, function(x) {x[[inds]]}))
+                if (return_numeric == TRUE) {
+                  suitability <- do.call(cbind, lapply(maha_suit, function(x) {x[["suit"]]}))
+                  colnames(suitability) <- nam_ell
+                } else {
+                  suitability <- data.frame(maha_suit[[return_name]][["suit"]])
+                }
+
+                if (class(projection_variables)[1] == "RasterStack") {
+                  suit_layers <- do.call(raster::stack,
+                                         lapply(maha_suit, function(x) {x[["s_layer"]]}))
                   names(suit_layers) <- nam_ell
                 } else {
                   suit_layers <- vector()
                 }
               } else {
-                suit_layers <- vector()
+                if (force_return == TRUE) {
+                  suitability <- data.frame(maha_suit[[return_name]][["suit"]])
+                  suit_layers <- maha_suit[[return_name]][["s_layer"]]
+                } else {
+                  suitability <- vector()
+                  suit_layers <- vector()
+                }
               }
 
               if (prediction == "both") {
                 if (is.null(name)) {
-                  if (class(projection_layers)[1] == "RasterStack") {
-                    indm <- ifelse(return_numeric == TRUE, 3, 1)
-                    maha_layers <- do.call(raster::stack, lapply(maha_suit, function(x) {x[[indm]]}))
+                  if (return_numeric == TRUE) {
+                    maha <- do.call(cbind, lapply(maha_suit, function(x) {x[["maha"]]}))
+                    colnames(maha) <- nam_ell
+                  } else {
+                    maha <- data.frame(maha_suit[[return_name]][["maha"]])
+                  }
+
+                  if (class(projection_variables)[1] == "RasterStack") {
+                    maha_layers <- do.call(raster::stack,
+                                           lapply(maha_suit, function(x) {x[["m_layer"]]}))
                     names(maha_layers) <- nam_ell
                   } else {
                     maha_layers <- vector()
                   }
                 } else {
-                  maha_layers <- vector()
+                  if (force_return == TRUE) {
+                    maha <- data.frame(maha_suit[[return_name]][["maha"]])
+                    maha_layers <- maha_suit[[return_name]][["m_layer"]]
+                  } else {
+                    maha <- vector()
+                    maha_layers <- vector()
+                  }
                 }
 
                 ## returning results for both type of predictions
-                if (return_numeric == TRUE) {
-                  maha <- do.call(cbind, lapply(maha_suit, function(x) {x[[1]]}))
-                  colnames(maha) <- nam_ell
-
-                  results <- ellipsoid_model_rep(ellipsoids = object@ellipsoids,
-                                                 mahalanobis = maha,
-                                                 suitability = suitability,
-                                                 prevalence = prevalence)
-                  slot(results, "prediction_maha", check = FALSE) <- maha_layers
-                  slot(results, "prediction_suit", check = FALSE) <- suit_layers
-                } else {
-                  results <- ellipsoid_model_rep(ellipsoids = object@ellipsoids,
-                                                 prevalence = prevalence)
-                  slot(results, "prediction_maha", check = FALSE) <- maha_layers
-                  slot(results, "prediction_suit", check = FALSE) <- suit_layers
-                }
+                results <- ellipsoid_model_rep(ellipsoids = object@ellipsoids,
+                                               prevalence = prevalence)
+                slot(results, "mahalanobis", check = FALSE) <- maha
+                slot(results, "suitability", check = FALSE) <- suitability
+                slot(results, "prediction_maha", check = FALSE) <- maha_layers
+                slot(results, "prediction_suit", check = FALSE) <- suit_layers
               } else {
                 ## returning results for suitability type of predictions
-                if (return_numeric == TRUE) {
-                  results <- ellipsoid_model_rep(ellipsoids = object@ellipsoids,
-                                                 suitability = suitability,
-                                                 prevalence = prevalence)
-                  slot(results, "prediction_suit", check = FALSE) <- suit_layers
-                } else {
-                  results <- ellipsoid_model_rep(ellipsoids = object@ellipsoids,
-                                                 prevalence = prevalence)
-                  slot(results, "prediction_suit", check = FALSE) <- suit_layers
-                }
+                results <- ellipsoid_model_rep(ellipsoids = object@ellipsoids,
+                                               prevalence = prevalence)
+                slot(results, "suitability", check = FALSE) <- suitability
+                slot(results, "prediction_suit", check = FALSE) <- suit_layers
               }
 
             } else {
@@ -372,62 +394,70 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 mah <-  mahalanobis(x = back, center = centroid[, x],
                                     cov = covariance_matrix[[x]], tol = tolerance)
 
-                if (class(projection_layers)[1] == "RasterStack") {
+                if (class(projection_variables)[1] == "RasterStack") {
                   maha_layer[!is.na(maha_layer[])] <- mah
                 } else {
                   maha_layer <- vector()
                 }
 
                 if (!is.null(name)) {
-                  if (class(projection_layers)[1] == "RasterStack") {
+                  mnamec <- paste0(ndir, enames[x], "_mahalanobis_", name, num_format)
+                  suppressMessages(data.table::fwrite(data.frame(mahalanobis = mah),
+                                                      file = mnamec))
+
+                  if (class(projection_variables)[1] == "RasterStack") {
                     mname <- paste0(ndir, enames[x], "_mahalanobis_", name, ras_format)
                     raster::writeRaster(maha_layer, filename = mname, format = format,
                                         overwrite = overwrite)
-
-                    mnamec <- paste0(ndir, enames[x], "_mahalanobis_", name, num_format)
-                    suppressMessages(data.table::fwrite(data.frame(mahalanobis = mah),
-                                                        file = mnamec))
                   }
 
-                  if (return_numeric == TRUE) {
-                    return(list(mah))
+                  if (return_numeric == TRUE & nam_ell[x] == return_name) {
+                    return(list(maha = mah, m_layer = maha_layer))
                   } else {
                     return(list())
                   }
-
                 } else {
                   if (return_numeric == TRUE) {
-                    return(list(mah, maha_layer))
+                    return(list(maha = mah, m_layer = maha_layer))
                   } else {
-                    return(list(maha_layer))
+                    if (nam_ell[x] == return_name) {
+                      return(list(maha = mah, m_layer = maha_layer))
+                    } else {
+                      return(list(m_layer = maha_layer))
+                    }
                   }
                 }
               })
 
               if (is.null(name)) {
-                if (class(projection_layers)[1] == "RasterStack") {
-                  indm <- ifelse(return_numeric == TRUE, 2, 1)
-                  maha_layers <- do.call(raster::stack, lapply(maha, function(x) {x[[indm]]}))
+                if (class(projection_variables)[1] == "RasterStack") {
+                  maha_layers <- do.call(raster::stack,
+                                         lapply(maha, function(x) {x[["m_layer"]]}))
                   names(maha_layers) <- nam_ell
                 } else {
                   maha_layers <- vector()
                 }
+
+                if (return_numeric == TRUE) {
+                  maha <- do.call(cbind, lapply(maha, function(x) {x[["maha"]]}))
+                  colnames(maha) <- nam_ell
+                } else {
+                  maha <- data.frame(maha[[return_name]][["maha"]])
+                }
               } else {
-                maha_layers <- vector()
+                if (force_return == TRUE) {
+                  maha_layers <- maha[[return_name]][["m_layer"]]
+                  maha <- data.frame(maha[[return_name]][["maha"]])
+                } else {
+                  maha <- vector()
+                  maha_layers <- vector()
+                }
               }
 
               ## returning results for mahalanobis type of predictions
-              if (return_numeric == TRUE) {
-                maha <- do.call(cbind, lapply(maha, function(x) {x[[1]]}))
-                colnames(maha) <- nam_ell
-
-                results <- ellipsoid_model_rep(ellipsoids = object@ellipsoids,
-                                               mahalanobis = maha)
-                slot(results, "prediction_maha", check = FALSE) <- maha_layers
-              } else {
-                results <- ellipsoid_model_rep(ellipsoids = object@ellipsoids)
-                slot(results, "prediction_maha", check = FALSE) <- maha_layers
-              }
+              results <- ellipsoid_model_rep(ellipsoids = object@ellipsoids)
+              slot(results, "mahalanobis", check = FALSE) <- maha
+              slot(results, "prediction_maha", check = FALSE) <- maha_layers
             }
 
             # -----------
