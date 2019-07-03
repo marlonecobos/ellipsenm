@@ -184,6 +184,10 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 class(projection_variables)[1] == "RasterStack" ) {
               return_name <- "ipmoisbsel392"
             }
+            if (return_numeric == FALSE & !is.null(name) & is.null(return_name) &
+                class(projection_variables)[1] == "RasterStack" ) {
+              return_name <- "ipmoisbsel392"
+            }
 
             # ellipsoids data
             centroid <- sapply(object@ellipsoids, function(x) {x@centroid})
