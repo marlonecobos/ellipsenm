@@ -12,8 +12,8 @@
 #' @param return_numeric (logical) whether or not to return values of mahalanobis
 #' distance and suitability as part of the results (it depends on the type of
 #' \code{prediction} selected). If \code{projection_variables} is a RasterStack,
-#' default = FALSE, but can be changed to TRUE; if \code{projection_variables} is a
-#' matrix, default = TRUE and cannot be changed.
+#' default = FALSE, but can be changed to TRUE; if \code{projection_variables} is
+#' a matrix, default = TRUE and cannot be changed.
 #' @param tolerance the tolerance for detecting linear dependencies.
 #' Default = 1e-60.
 #' @param name (character) optional, a name for the files to be writen. When
@@ -27,7 +27,8 @@
 #' overwrite an exitent file with the exact same name. Default = FALSE.
 #' @param force_return (logical) whether or not to force returning numeric and
 #' raster results as part of the ellipsoid* object when \code{name} is defined.
-#' Ignored if \code{projection_variables} is a matrix.
+#' Ignored if \code{projection_variables} is a matrix, when numeric results
+#' will always be returned.
 #'
 #' @return
 #' An ellipsoid_model_sim with new predictions. If \code{name} is defined, csv
@@ -42,11 +43,11 @@
 #' defined, .csv for numeric results and any of the ones described in
 #' \code{\link[raster]{writeFormats}} depending on \code{format}.
 #'
-#' For \code{projection_variables} variables can be given either as a RasterStack
-#' or as a matrix. If a matrix is given each column represents a variable and
-#' predictions are returned only as numeric vectors. In both cases, variable
-#' names must match exactly the order and name of variables used to create
-#' \code{object}.
+#' Argument \code{projection_variables} variables can be defined either as a
+#' RasterStack or as a matrix. If a matrix is given each column represents a
+#' variable and predictions are returned only as numeric vectors. In both cases,
+#' variable names must match exactly the order and name of variables used to
+#' create \code{object}.
 #'
 #' @export
 #'
@@ -268,58 +269,64 @@ setMethod("predict", signature(object = "ellipsoid"),
               stop("Argument prediction is not valid, see function's help.")
             }
 
-            if (!is.null(name) & class(projection_variables)[1] == "RasterStack") {
+            if (!is.null(name)) {
               ## excluding raster predictions if name exist and layers were rasters
               if (prediction != "mahalanobis") {
                 if (prediction == "both") {
-                  ## writing raster layers
-                  mname <- paste0(ndir, "mahalanobis_", name, ras_format)
-                  sname <- paste0(ndir, "suitability_", name, ras_format)
-                  raster::writeRaster(maha_layer, filename = mname, format = format,
-                                      overwrite = overwrite)
-                  raster::writeRaster(suit_layer, filename = sname, format = format,
-                                      overwrite = overwrite)
-
                   mnamec <- paste0(ndir, "mahalanobis_", name, num_format)
                   snamec <- paste0(ndir, "suitability_", name, num_format)
                   suppressMessages(data.table::fwrite(data.frame(mahalanobis = maha),
                                                       file = mnamec))
                   suppressMessages(data.table::fwrite(data.frame(suitability = suitability),
                                                       file = snamec))
-
-                  ## erasing slots
-                  if (force_return == FALSE) {
-                    slot(results, "prediction_maha", check = FALSE) <- vector()
-                    slot(results, "prediction_suit", check = FALSE) <- vector()
-                    slot(results, "mahalanobis", check = FALSE) <- vector()
-                    slot(results, "suitability", check = FALSE) <- vector()
-                  }
                 } else {
-                  sname <- paste0(ndir, "suitability_", name, ras_format)
-                  raster::writeRaster(suit_layer, filename = sname, format = format,
-                                      overwrite = overwrite)
-
                   snamec <- paste0(ndir, "suitability_", name, num_format)
                   suppressMessages(data.table::fwrite(data.frame(suitability = suitability),
                                                       file = snamec))
-
-                  if (force_return == FALSE) {
-                    slot(results, "prediction_suit", check = FALSE) <- vector()
-                    slot(results, "suitability", check = FALSE) <- vector()
-                  }
                 }
               } else {
-                mname <- paste0(ndir, "mahalanobis_", name, ras_format)
-                raster::writeRaster(maha_layer, filename = mname, format = format,
-                                    overwrite = overwrite)
-
                 mnamec <- paste0(ndir, "mahalanobis_", name, num_format)
                 suppressMessages(data.table::fwrite(data.frame(mahalanobis = maha),
                                                     file = mnamec))
+              }
 
-                if (force_return == FALSE) {
-                  slot(results, "prediction_maha", check = FALSE) <- vector()
-                  slot(results, "mahalanobis", check = FALSE) <- vector()
+              if (class(projection_variables)[1] == "RasterStack") {
+                if (prediction != "mahalanobis") {
+                  if (prediction == "both") {
+                    ## writing raster layers
+                    mname <- paste0(ndir, "mahalanobis_", name, ras_format)
+                    sname <- paste0(ndir, "suitability_", name, ras_format)
+                    raster::writeRaster(maha_layer, filename = mname, format = format,
+                                        overwrite = overwrite)
+                    raster::writeRaster(suit_layer, filename = sname, format = format,
+                                        overwrite = overwrite)
+
+                    ## erasing slots
+                    if (force_return == FALSE) {
+                      slot(results, "prediction_maha", check = FALSE) <- vector()
+                      slot(results, "prediction_suit", check = FALSE) <- vector()
+                      slot(results, "mahalanobis", check = FALSE) <- vector()
+                      slot(results, "suitability", check = FALSE) <- vector()
+                    }
+                  } else {
+                    sname <- paste0(ndir, "suitability_", name, ras_format)
+                    raster::writeRaster(suit_layer, filename = sname, format = format,
+                                        overwrite = overwrite)
+
+                    if (force_return == FALSE) {
+                      slot(results, "prediction_suit", check = FALSE) <- vector()
+                      slot(results, "suitability", check = FALSE) <- vector()
+                    }
+                  }
+                } else {
+                  mname <- paste0(ndir, "mahalanobis_", name, ras_format)
+                  raster::writeRaster(maha_layer, filename = mname, format = format,
+                                      overwrite = overwrite)
+
+                  if (force_return == FALSE) {
+                    slot(results, "prediction_maha", check = FALSE) <- vector()
+                    slot(results, "mahalanobis", check = FALSE) <- vector()
+                  }
                 }
               }
             }

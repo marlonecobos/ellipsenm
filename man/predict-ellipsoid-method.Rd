@@ -22,8 +22,8 @@ projected. See details.}
 \item{return_numeric}{(logical) whether or not to return values of mahalanobis
 distance and suitability as part of the results (it depends on the type of
 \code{prediction} selected). If \code{projection_variables} is a RasterStack,
-default = FALSE, but can be changed to TRUE; if \code{projection_variables} is a
-matrix, default = TRUE and cannot be changed.}
+default = FALSE, but can be changed to TRUE; if \code{projection_variables} is
+a matrix, default = TRUE and cannot be changed.}
 
 \item{tolerance}{the tolerance for detecting linear dependencies.
 Default = 1e-60.}
@@ -42,7 +42,8 @@ overwrite an exitent file with the exact same name. Default = FALSE.}
 
 \item{force_return}{(logical) whether or not to force returning numeric and
 raster results as part of the ellipsoid* object when \code{name} is defined.
-Ignored if \code{projection_variables} is a matrix.}
+Ignored if \code{projection_variables} is a matrix, when numeric results
+will always be returned.}
 }
 \value{
 An ellipsoid_model_sim with new predictions. If \code{name} is defined, csv
@@ -61,11 +62,11 @@ added to \code{name} depending on the type of prediction defined in
 defined, .csv for numeric results and any of the ones described in
 \code{\link[raster]{writeFormats}} depending on \code{format}.
 
-For \code{projection_variables} variables can be given either as a RasterStack
-or as a matrix. If a matrix is given each column represents a variable and
-predictions are returned only as numeric vectors. In both cases, variable
-names must match exactly the order and name of variables used to create
-\code{object}.
+Argument \code{projection_variables} variables can be defined either as a
+RasterStack or as a matrix. If a matrix is given each column represents a
+variable and predictions are returned only as numeric vectors. In both cases,
+variable names must match exactly the order and name of variables used to
+create \code{object}.
 }
 \examples{
 # reading data
