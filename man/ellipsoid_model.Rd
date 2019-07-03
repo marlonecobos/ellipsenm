@@ -7,9 +7,10 @@
 ellipsoid_model(data, species, longitude, latitude, raster_layers,
   method = "mve1", level = 95, replicates = 1,
   replicate_type = "bootstrap", bootstrap_percentage = 50,
-  projection_layers = NULL, prediction = "suitability",
+  projection_variables = NULL, prediction = "suitability",
   return_numeric = TRUE, tolerance = 1e-60, format = "GTiff",
-  overwrite = FALSE, output_directory = "ellipsenm_model")
+  overwrite = FALSE, color_palette = viridis::magma,
+  output_directory = "ellipsenm_model")
 }
 \arguments{
 \item{data}{data.frame of occurrence records. Columns must be: species,
@@ -42,7 +43,7 @@ produces a single model using all the data.}
 for each replicate. Default = 50. Valid if \code{replicates} > 1 and
 \code{replicate_type} = "bootstrap".}
 
-\item{projection_layers}{optional: (character) name of folder containing other
+\item{projection_variables}{optional: (character) name of folder containing other
 folders with raster layers that represent the scenarios for projections; a
 RasterStack of layers respresenting an only scenario for projection; or a
 named list of RasterStacks representing multiple scenarios for projection.
@@ -64,6 +65,9 @@ Default = 1e-60.}
 \item{overwrite}{(logical) whether or not to overwrite exitent results in
 \code{output_directory}. Default = FALSE.}
 
+\item{color_palette}{a color palette function to be used in plotting
+suitability values in an HTML report produced at the end of all analyses.}
+
 \item{output_directory}{name of the folder were all results will be written.
 This avoids saturation of the RAM.}
 }
@@ -78,7 +82,7 @@ from each other.
 \details{
 \code{replicate_type}
 
-\code{projection_layers}
+\code{projection_variables}
 }
 \examples{
 # reading data
