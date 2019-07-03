@@ -142,9 +142,6 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
               if (class(projection_variables)[1] != "RasterStack") {
                 message("\nArgument projection_variables is a matrix, no raster predictions will be returned.\n")
               }
-              if (force_return == TRUE & is.null(return_name)) {
-                return_name <- nam_ell[1]
-              }
             } else {
               force_return <- FALSE
             }
@@ -172,6 +169,10 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
               } else {
                 enames <- nam
                 nam_ell <- nam
+              }
+
+              if (force_return == TRUE & is.null(return_name)) {
+                return_name <- nam_ell[1]
               }
             }
 
