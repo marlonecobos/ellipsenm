@@ -5,14 +5,14 @@
 \alias{predict,ellipsoid-method}
 \title{Predict suitability derived from simple ellipsoid envelope models}
 \usage{
-\S4method{predict}{ellipsoid}(object, projection_layers,
+\S4method{predict}{ellipsoid}(object, projection_variables,
   prediction = "suitability", return_numeric, tolerance = 1e-60,
   name = NULL, format, overwrite = FALSE, force_return = FALSE)
 }
 \arguments{
 \item{object}{a fitted object of class ellipsoid or ellipsoid_model_sim.}
 
-\item{projection_layers}{RasterStack or matrix of variables representing
+\item{projection_variables}{RasterStack or matrix of variables representing
 environmental conditions of the scenario to which \code{object} will be
 projected. See details.}
 
@@ -21,8 +21,8 @@ projected. See details.}
 
 \item{return_numeric}{(logical) whether or not to return values of mahalanobis
 distance and suitability as part of the results (it depends on the type of
-\code{prediction} selected). If \code{projection_layers} is a RasterStack,
-default = FALSE, but can be changed to TRUE; if \code{projection_layers} is a
+\code{prediction} selected). If \code{projection_variables} is a RasterStack,
+default = FALSE, but can be changed to TRUE; if \code{projection_variables} is a
 matrix, default = TRUE and cannot be changed.}
 
 \item{tolerance}{the tolerance for detecting linear dependencies.
@@ -42,7 +42,7 @@ overwrite an exitent file with the exact same name. Default = FALSE.}
 
 \item{force_return}{(logical) whether or not to force returning numeric and
 raster results as part of the ellipsoid* object when \code{name} is defined.
-Ignored if \code{projection_layers} is a matrix.}
+Ignored if \code{projection_variables} is a matrix.}
 }
 \value{
 An ellipsoid_model_sim with new predictions. If \code{name} is defined, csv
@@ -61,7 +61,7 @@ added to \code{name} depending on the type of prediction defined in
 defined, .csv for numeric results and any of the ones described in
 \code{\link[raster]{writeFormats}} depending on \code{format}.
 
-For \code{projection_layers} variables can be given either as a RasterStack
+For \code{projection_variables} variables can be given either as a RasterStack
 or as a matrix. If a matrix is given each column represents a variable and
 predictions are returned only as numeric vectors. In both cases, variable
 names must match exactly the order and name of variables used to create
@@ -82,17 +82,17 @@ ellips1 <- ellipsoid_fit(data = occurrences, longitude = "longitude",
                          level = 99, raster_layers = vars)
 
 # predicting suitability (some slots will be empty if not required)
-prediction <- predict(object = ellips1, projection_layers = vars,
+prediction <- predict(object = ellips1, projection_variables = vars,
                       prediction = "suitability")
 
 class(prediction)
 
 # predicting mahalanobis distance
-prediction1 <- predict(object = ellips1, projection_layers = vars,
+prediction1 <- predict(object = ellips1, projection_variables = vars,
                        prediction = "mahalanobis")
 
 
 # predicting both things
-prediction2 <- predict(object = ellips1, projection_layers = vars,
+prediction2 <- predict(object = ellips1, projection_variables = vars,
                        prediction = "both")
 }

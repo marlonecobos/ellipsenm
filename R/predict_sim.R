@@ -4,15 +4,15 @@
 #' based on a centroid and a covariance matrix.
 #'
 #' @param object a fitted object of class ellipsoid or ellipsoid_model_sim.
-#' @param projection_layers RasterStack or matrix of variables representing
+#' @param projection_variables RasterStack or matrix of variables representing
 #' environmental conditions of the scenario to which \code{object} will be
 #' projected. See details.
 #' @param prediction (character) type of prediction to be made, options are:
 #' "suitability", "mahalanobis", and "both". Default = "suitability".
 #' @param return_numeric (logical) whether or not to return values of mahalanobis
 #' distance and suitability as part of the results (it depends on the type of
-#' \code{prediction} selected). If \code{projection_layers} is a RasterStack,
-#' default = FALSE, but can be changed to TRUE; if \code{projection_layers} is a
+#' \code{prediction} selected). If \code{projection_variables} is a RasterStack,
+#' default = FALSE, but can be changed to TRUE; if \code{projection_variables} is a
 #' matrix, default = TRUE and cannot be changed.
 #' @param tolerance the tolerance for detecting linear dependencies.
 #' Default = 1e-60.
@@ -27,7 +27,7 @@
 #' overwrite an exitent file with the exact same name. Default = FALSE.
 #' @param force_return (logical) whether or not to force returning numeric and
 #' raster results as part of the ellipsoid* object when \code{name} is defined.
-#' Ignored if \code{projection_layers} is a matrix.
+#' Ignored if \code{projection_variables} is a matrix.
 #'
 #' @return
 #' An ellipsoid_model_sim with new predictions. If \code{name} is defined, csv
@@ -42,7 +42,7 @@
 #' defined, .csv for numeric results and any of the ones described in
 #' \code{\link[raster]{writeFormats}} depending on \code{format}.
 #'
-#' For \code{projection_layers} variables can be given either as a RasterStack
+#' For \code{projection_variables} variables can be given either as a RasterStack
 #' or as a matrix. If a matrix is given each column represents a variable and
 #' predictions are returned only as numeric vectors. In both cases, variable
 #' names must match exactly the order and name of variables used to create
@@ -65,22 +65,22 @@
 #'                          level = 99, raster_layers = vars)
 #'
 #' # predicting suitability (some slots will be empty if not required)
-#' prediction <- predict(object = ellips1, projection_layers = vars,
+#' prediction <- predict(object = ellips1, projection_variables = vars,
 #'                       prediction = "suitability")
 #'
 #' class(prediction)
 #'
 #' # predicting mahalanobis distance
-#' prediction1 <- predict(object = ellips1, projection_layers = vars,
+#' prediction1 <- predict(object = ellips1, projection_variables = vars,
 #'                        prediction = "mahalanobis")
 #'
 #'
 #' # predicting both things
-#' prediction2 <- predict(object = ellips1, projection_layers = vars,
+#' prediction2 <- predict(object = ellips1, projection_variables = vars,
 #'                        prediction = "both")
 
 setMethod("predict", signature(object = "ellipsoid"),
-          function(object, projection_layers, prediction = "suitability",
+          function(object, projection_variables, prediction = "suitability",
                    return_numeric, tolerance = 1e-60, name = NULL,
                    format, overwrite = FALSE, force_return = FALSE) {
             # -----------
@@ -98,16 +98,16 @@ setMethod("predict", signature(object = "ellipsoid"),
                 stop("Argument format needs to be defined if argument name is given.")
               }
             }
-            if (!class(projection_layers)[1] %in% c("RasterStack", "RasterBrick", "matrix", "data.frame")) {
-              stop("Argument projection_layers needs to be either a RasterStack or a matrix.")
+            if (!class(projection_variables)[1] %in% c("RasterStack", "RasterBrick", "matrix", "data.frame")) {
+              stop("Argument projection_variables needs to be either a RasterStack or a matrix.")
             } else {
-              if (class(projection_layers)[1] == "RasterBrick") {
-                projection_layers <- raster::stack(projection_layers)
+              if (class(projection_variables)[1] == "RasterBrick") {
+                projection_variables <- raster::stack(projection_variables)
               }
             }
             if (!is.null(name)) {
-              if (class(projection_layers)[1] != "RasterStack") {
-                message("Argument projection_layers is a matrix, no raster predictions will be written.")
+              if (class(projection_variables)[1] != "RasterStack") {
+                message("Argument projection_variables is a matrix, no raster predictions will be returned.")
               }
             } else {
               force_return <- FALSE
@@ -129,12 +129,12 @@ setMethod("predict", signature(object = "ellipsoid"),
             level <- object@level
 
             # raster data
-            if (class(projection_layers)[1] == "RasterStack") {
+            if (class(projection_variables)[1] == "RasterStack") {
               return_numeric <- ifelse(missing(return_numeric), FALSE, return_numeric)
-              back <- na.omit(raster::values(projection_layers))
+              back <- na.omit(raster::values(projection_variables))
             } else {
               return_numeric <- TRUE
-              back <- as.matrix(projection_layers)
+              back <- as.matrix(projection_variables)
             }
             db <- !duplicated.matrix(back)
 
@@ -165,8 +165,8 @@ setMethod("predict", signature(object = "ellipsoid"),
                 prevalence <- c(prevalence_E_space = p_suit_e, prevalence_G_space = p_suit_g)
 
                 ## preparing RasterLayers suit
-                if (class(projection_layers)[1] == "RasterStack") {
-                  suit_layer <- projection_layers[[1]]
+                if (class(projection_variables)[1] == "RasterStack") {
+                  suit_layer <- projection_variables[[1]]
                   suit_layer[!is.na(suit_layer[])] <- suitability
                 } else {
                   suit_layer <- vector()
@@ -174,8 +174,8 @@ setMethod("predict", signature(object = "ellipsoid"),
 
                 if (prediction == "both") {
                   ## preparing RasterLayers maha
-                  if (class(projection_layers)[1] == "RasterStack") {
-                    maha_layer <- projection_layers[[1]]
+                  if (class(projection_variables)[1] == "RasterStack") {
+                    maha_layer <- projection_variables[[1]]
                     maha_layer[!is.na(maha_layer[])] <- maha
                   } else {
                     maha_layer <- vector()
@@ -235,8 +235,8 @@ setMethod("predict", signature(object = "ellipsoid"),
 
               } else {
                 ## preparing RasterLayers maha
-                if (class(projection_layers)[1] == "RasterStack") {
-                  maha_layer <- projection_layers[[1]]
+                if (class(projection_variables)[1] == "RasterStack") {
+                  maha_layer <- projection_variables[[1]]
                   maha_layer[!is.na(maha_layer[])] <- maha
                 } else {
                   maha_layer <- vector()
@@ -268,7 +268,7 @@ setMethod("predict", signature(object = "ellipsoid"),
               stop("Argument prediction is not valid, see function's help.")
             }
 
-            if (!is.null(name) & class(projection_layers)[1] == "RasterStack") {
+            if (!is.null(name) & class(projection_variables)[1] == "RasterStack") {
               ## excluding raster predictions if name exist and layers were rasters
               if (prediction != "mahalanobis") {
                 if (prediction == "both") {
