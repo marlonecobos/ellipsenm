@@ -6,8 +6,9 @@
 \title{Predict suitability derived from replicated ellipsoid envelope models}
 \usage{
 \S4method{predict}{ellipsoid_model_rep}(object, projection_layers,
-  prediction = "suitability", return_numeric = FALSE,
-  tolerance = 1e-60, name = NULL, format, overwrite = FALSE)
+  prediction = "suitability", return_numeric, tolerance = 1e-60,
+  name = NULL, format, overwrite = FALSE, force_return = FALSE,
+  return_name = NULL)
 }
 \arguments{
 \item{object}{a fitted object of class ellipsoid_model_rep.}
@@ -21,24 +22,38 @@ projected. See details.}
 
 \item{return_numeric}{(logical) whether or not to return values of mahalanobis
 distance and suitability as part of the results (it depends on the type of
-\code{prediction} selected). Default = FALSE.}
+\code{prediction} selected). If \code{projection_layers} is a RasterStack,
+default = FALSE; if \code{projection_layers} is a matrix, default = TRUE. For
+both options the default can be changed. See details.}
 
 \item{tolerance}{the tolerance for detecting linear dependencies.
 Default = 1e-60.}
 
-\item{name}{(character) optional, name of the file to be writen. Must include
-format extension (e.g., ".tif"). When defined, raster predictions are not
-returned to the environment. Default = NULL. See detals.}
+\item{name}{(character) optional, a name for the files to be writen. When
+defined, raster predictions and numeric results (with exceptions) are not
+returned as part of the ellipsoid_model_rep object unless
+\code{force_return} = TRUE. File extensions will be added as needed for
+writing raster and numeric results. Default = NULL. See detals.}
 
-\item{format}{(charater) if \code{name} is defined, file type to be written.
-Must correspond with format extension in \code{name}.
-See \code{\link[raster]{writeFormats}}.}
+\item{format}{(charater) if \code{name} is defined, raster type to be written.
+See \code{\link[raster]{writeFormats}} for details and options.}
 
 \item{overwrite}{(logical) if \code{name} is defined, whether or not to
 overwrite an exitent file with the exact same name. Default = FALSE.}
+
+\item{force_return}{(logical) whether or not to force returning numeric and
+raster results for one of the ellipsoids defined by name in \code{return_name},
+as part of the ellipsoid_model_rep object when \code{name} is defined. See
+details.}
+
+\item{return_name}{(character) names of the ellipsoid (part of \code{object})
+for which numeric and raster results will be forced to return if \code{name}
+is defined. Default = NULL.}
 }
 \value{
-An ellipsoid_model_rep with new predictions.
+An ellipsoid_model_rep with new predictions. If \code{name} is defined, csv
+files with numeric results and raster files with the geographic predictions
+will be written.
 }
 \description{
 predicts suitability values based on mahalanobis distances
@@ -48,13 +63,20 @@ based on a centroid and a covariance matrix.
 Predictions for all replicates will be performed. If \code{name} is defined,
 a prefix starting in 1 will be added to each replicate. After replicate number
 the word "suitability" or "mahalanobis" will be added depending on the type
-of prediction defined in \code{prediction}.
+of prediction defined in \code{prediction}. File type (extention) will be
+added to \code{name}, if defined, .csv for numeric results and any of the ones
+described in \code{\link[raster]{writeFormats}} depending on \code{format}.
 
 For \code{projection_layers} variables can be given either as a RasterStack
 or as a matrix. If a matrix is given each column represents a variable and
 predictions are returned only as numeric vectors. In both cases, variable
 names must match exactly the order and name of variables used to create
 \code{object}.
+
+If \code{projection_layers} is a matrix at least one numeric result will be
+returned even if \code{return numeric} is set as FALSE; if \code{return_name}
+is defined this indicates the ellipsoid for which the numeric result will
+return, if not defined, the results for the first ellipsoid will return.
 }
 \examples{
 # reading data

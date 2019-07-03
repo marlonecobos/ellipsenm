@@ -11,32 +11,51 @@
 #' "suitability", "mahalanobis", and "both". Default = "suitability".
 #' @param return_numeric (logical) whether or not to return values of mahalanobis
 #' distance and suitability as part of the results (it depends on the type of
-#' \code{prediction} selected). Default = FALSE.
+#' \code{prediction} selected). If \code{projection_layers} is a RasterStack,
+#' default = FALSE; if \code{projection_layers} is a matrix, default = TRUE. For
+#' both options the default can be changed. See details.
 #' @param tolerance the tolerance for detecting linear dependencies.
 #' Default = 1e-60.
-#' @param name (character) optional, name of the file to be writen. Must include
-#' format extension (e.g., ".tif"). When defined, raster predictions are not
-#' returned to the environment. Default = NULL. See detals.
-#' @param format (charater) if \code{name} is defined, file type to be written.
-#' Must correspond with format extension in \code{name}.
-#' See \code{\link[raster]{writeFormats}}.
+#' @param name (character) optional, a name for the files to be writen. When
+#' defined, raster predictions and numeric results (with exceptions) are not
+#' returned as part of the ellipsoid_model_rep object unless
+#' \code{force_return} = TRUE. File extensions will be added as needed for
+#' writing raster and numeric results. Default = NULL. See detals.
+#' @param format (charater) if \code{name} is defined, raster type to be written.
+#' See \code{\link[raster]{writeFormats}} for details and options.
 #' @param overwrite (logical) if \code{name} is defined, whether or not to
 #' overwrite an exitent file with the exact same name. Default = FALSE.
+#' @param force_return (logical) whether or not to force returning numeric and
+#' raster results for one of the ellipsoids defined by name in \code{return_name},
+#' as part of the ellipsoid_model_rep object when \code{name} is defined. See
+#' details.
+#' @param return_name (character) names of the ellipsoid (part of \code{object})
+#' for which numeric and raster results will be forced to return if \code{name}
+#' is defined. Default = NULL.
 #'
 #' @return
-#' An ellipsoid_model_rep with new predictions.
+#' An ellipsoid_model_rep with new predictions. If \code{name} is defined, csv
+#' files with numeric results and raster files with the geographic predictions
+#' will be written.
 #'
 #' @details
 #' Predictions for all replicates will be performed. If \code{name} is defined,
 #' a prefix starting in 1 will be added to each replicate. After replicate number
 #' the word "suitability" or "mahalanobis" will be added depending on the type
-#' of prediction defined in \code{prediction}.
+#' of prediction defined in \code{prediction}. File type (extention) will be
+#' added to \code{name}, if defined, .csv for numeric results and any of the ones
+#' described in \code{\link[raster]{writeFormats}} depending on \code{format}.
 #'
 #' For \code{projection_layers} variables can be given either as a RasterStack
 #' or as a matrix. If a matrix is given each column represents a variable and
 #' predictions are returned only as numeric vectors. In both cases, variable
 #' names must match exactly the order and name of variables used to create
 #' \code{object}.
+#'
+#' If \code{projection_layers} is a matrix at least one numeric result will be
+#' returned even if \code{return numeric} is set as FALSE; if \code{return_name}
+#' is defined this indicates the ellipsoid for which the numeric result will
+#' return, if not defined, the results for the first ellipsoid will return.
 #'
 #' @export
 #'
@@ -83,8 +102,8 @@
 
 setMethod("predict", signature(object = "ellipsoid_model_rep"),
           function(object, projection_layers, prediction = "suitability",
-                   return_numeric = FALSE, tolerance = 1e-60,
-                   name = NULL, format, overwrite = FALSE) {
+                   return_numeric, tolerance = 1e-60, name = NULL, format,
+                   overwrite = FALSE, force_return = FALSE, return_name = NULL) {
             # -----------
             # detecting potential errors
             if (!missing(object)) {
@@ -99,20 +118,38 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 stop("Argument format needs to be defined if argument name is given.")
               }
             }
-            if (!class(projection_layers)[1] %in% c("RasterStack", "matrix", "data.frame")) {
+            if (!class(projection_layers)[1] %in% c("RasterStack", "RasterBrick", "matrix", "data.frame")) {
               stop("Argument projection_layers needs to be either a RasterStack or a matrix.")
+            } else {
+              if (class(projection_layers)[1] == "RasterBrick") {
+                projection_layers <- raster::stack(projection_layers)
+              }
+              if (class(projection_layers)[1] == "RasterStack" & missing(return_numeric)) {
+                return_numeric <- FALSE
+              }
+              if (class(projection_layers)[1] != "RasterStack" & missing(return_numeric)){
+                return_numeric <- TRUE
+              }
             }
-            if (!is.null(name) & class(projection_layers)[1] != "RasterStack") {
-              warning("Argument projection_layers is matrix, no raster predictions will be written.")
+            if (!is.null(name)) {
+              if (class(projection_layers)[1] != "RasterStack") {
+                message("Argument projection_layers is a matrix, no raster predictions will be written.")
+              }
+            } else {
+              force_return <- FALSE
             }
 
             # -----------
             # preparing data
             ## solving potential problems with name and creting prefixes and colnames
-            name <- gsub("\\\\", "/", name)
-            name <- unlist(strsplit(name, "/"))
-            ndir <- paste0(paste(name[-length(name)], collapse = "/"), "/")
-            name <- name[length(name)]
+            if (!is.null(name)) {
+              name <- gsub("\\\\", "/", name)
+              name <- unlist(strsplit(name, "/"))
+              ndir <- paste0(paste(name[-length(name)], collapse = "/"), "/")
+              name <- name[length(name)]
+              num_format <- ".csv"
+              ras_format <- rformat_type(format)
+            }
 
             nam <- names(object@ellipsoids)
             if (is.null(nam)) {
@@ -125,6 +162,18 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
               } else {
                 enames <- nam
                 nam_ell <- nam
+              }
+            }
+
+            ## preparing variants
+            if (force_return == TRUE) {
+              if (class(projection_layers)[1] != "RasterStack" & return_numeric == FALSE) {
+
+                eret_pos <- s
+              }
+            } else {
+              if (class(projection_layers)[1] != "RasterStack" & return_numeric == FALSE) {
+                eret_pos <- s
               }
             }
 
@@ -196,13 +245,27 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 if (!is.null(name)) {
                   if (class(projection_layers)[1] == "RasterStack") {
                     if (prediction == "both") {
-                      mname <- paste0(ndir, enames[x], "_mahalanobis_", name)
-                      sname <- paste0(ndir, enames[x], "_suitability_", name)
-                      raster::writeRaster(maha_layer, filename = mname, format = format, overwrite = overwrite)
-                      raster::writeRaster(suit_layer, filename = sname, format = format)
+                      mname <- paste0(ndir, enames[x], "_mahalanobis_", name, ras_format)
+                      sname <- paste0(ndir, enames[x], "_suitability_", name, ras_format)
+                      raster::writeRaster(maha_layer, filename = mname, format = format,
+                                          overwrite = overwrite)
+                      raster::writeRaster(suit_layer, filename = sname, format = format,
+                                          overwrite = overwrite)
+
+                      mnamec <- paste0(ndir, enames[x], "_mahalanobis_", name, num_format)
+                      snamec <- paste0(ndir, enames[x], "_suitability_", name, num_format)
+                      suppressMessages(data.table::fwrite(data.frame(mahalanobis = mah),
+                                                          file = mnamec))
+                      suppressMessages(data.table::fwrite(data.frame(suitability = suitability),
+                                                          file = snamec))
                     } else {
-                      sname <- paste0(ndir, enames[x], "_suitability_", name)
-                      raster::writeRaster(suit_layer, filename = sname, format = format, overwrite = overwrite)
+                      sname <- paste0(ndir, enames[x], "_suitability_", name, ras_format)
+                      raster::writeRaster(suit_layer, filename = sname, format = format,
+                                          overwrite = overwrite)
+
+                      snamec <- paste0(ndir, enames[x], "_suitability_", name, num_format)
+                      suppressMessages(data.table::fwrite(data.frame(suitability = suitability),
+                                                          file = snamec))
                     }
                   }
 
@@ -317,8 +380,13 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
 
                 if (!is.null(name)) {
                   if (class(projection_layers)[1] == "RasterStack") {
-                    mname <- paste0(ndir, enames[x], "_mahalanobis_", name)
-                    raster::writeRaster(maha_layer, filename = mname, format = format, overwrite = overwrite)
+                    mname <- paste0(ndir, enames[x], "_mahalanobis_", name, ras_format)
+                    raster::writeRaster(maha_layer, filename = mname, format = format,
+                                        overwrite = overwrite)
+
+                    mnamec <- paste0(ndir, enames[x], "_mahalanobis_", name, num_format)
+                    suppressMessages(data.table::fwrite(data.frame(mahalanobis = mah),
+                                                        file = mnamec))
                   }
 
                   if (return_numeric == TRUE) {
