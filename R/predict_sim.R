@@ -27,8 +27,6 @@
 #' overwrite an exitent file with the exact same name. Default = FALSE.
 #' @param force_return (logical) whether or not to force returning numeric and
 #' raster results as part of the ellipsoid* object when \code{name} is defined.
-#' Ignored if \code{projection_variables} is a matrix, when numeric results
-#' will always be returned.
 #'
 #' @return
 #' An ellipsoid_model_sim with new predictions. If \code{name} is defined, csv
