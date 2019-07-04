@@ -4,16 +4,17 @@ Title: ellipsenm: An R package for ecological niche's characterization using ell
 Version: 0.2.1
 Author: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", 
-    role = c("aut","cre"), comment = c(ORCID = "https://orcid.org/0000-0002-2611-1767")),
+           role = c("aut","cre"), comment = c(ORCID = "https://orcid.org/0000-0002-2611-1767")),
     person("Luis", "Osorio-Olvera", email = "luismurao@gmail.com ", 
-    role = "aut", comment = c(ORCID = "https://orcid.org/0000-0003-0701-5398")),
+           role = "aut", comment = c(ORCID = "https://orcid.org/0000-0003-0701-5398")),
     person("Jorge", "Soberon", email = "jsoberon@ku.edu", 
-    role = "aut", comment = c(ORCID = "https://orcid.org/0000-0003-2160-4148")),
+           role = "aut", comment = c(ORCID = "https://orcid.org/0000-0003-2160-4148")),
     person("Vijay", "Barve", email = "vijay.barve@gmail.com", 
-    role = "aut", comment = c(ORCID = "https://orcid.org/0000-0002-4852-2567")),
+           role = "aut", comment = c(ORCID = "https://orcid.org/0000-0002-4852-2567")),
     person("Narayani", "Barve", email = "narayani.ku@gmail.com", 
-    role = "aut", comment = c(ORCID = "https://orcid.org/0000-0002-7893-8774")))
+           role = "aut", comment = c(ORCID = "https://orcid.org/0000-0002-7893-8774")))
 Maintainer: Marlon E. Cobos <manubio13@gmail.com>
+Date: 2019-07-03
 Description: ellipsenm is an R package that implements multiple tools to help in
     using ellipsoid envelopes to model ecological niches of species. Handly 
     options for calibrating and selecting models, producing models with replicates 
