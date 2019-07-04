@@ -5,15 +5,19 @@
 #' from each other.
 #'
 #' @param data data.frame of occurrence records. Columns must be: species,
-#' longitude, and latitude.
+#' longitude, and latitude. Optionally, if \code{raster_layers} is not defined,
+#' \code{data} must include more columns containing the values of at least two
+#' variables to be used for fitting ellipsoid* models.
 #' @param species (character) name of the column with the name of the species.
 #' @param longitude (character) name of the column with longitude data.
 #' @param latitude (character) name of the column with latitude data.
-#' @param raster_layers RasterStack of environmental variables to be extracted
-#' using geographic coordinates present in \code{data}.
+#' @param raster_layers RasterStack of at least two environmental variables to be
+#' extracted using geographic coordinates present in \code{data}. If not provided
+#' data must include additional columns containing values of variables to fit
+#' ellipsoid* models.
 #' @param method (character) method to construct the ellipsoid that characterizes
 #' the species ecological niche. Available methods are: "covmat", "mve1", and
-#' "mve2". See details of \code{\link{ellipsoid_fit}}. Default = "mve1".
+#' "mve2". See details of \code{\link{ellipsoid_fit}}. Default = "covmat".
 #' @param level (numeric) the confidence level of a pairwise confidence region
 #' for the ellipsoid, expresed as percentage. Default = 95.
 #' @param replicates (numeric) number of replicates to perform. Default = 1
@@ -37,7 +41,7 @@
 #' @param tolerance the tolerance for detecting linear dependencies.
 #' Default = 1e-60.
 #' @param format (charater) file type for raster outputs to be written in
-#' \code{output_directory}. Default = = "GTiff". See \code{\link[raster]{writeFormats}}.
+#' \code{output_directory}. Default = "GTiff". See \code{\link[raster]{writeFormats}}.
 #' @param overwrite (logical) whether or not to overwrite exitent results in
 #' \code{output_directory}. Default = FALSE.
 #' @param color_palette a color palette function to be used in plotting
@@ -75,7 +79,7 @@
 #' # check your directory, folder "ellipsenm_model"
 
 ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
-                             method = "mve1", level = 95, replicates = 1,
+                             method = "covmat", level = 95, replicates = 1,
                              replicate_type = "bootstrap", bootstrap_percentage = 50,
                              projection_variables = NULL, prediction = "suitability",
                              return_numeric = TRUE, tolerance = 1e-60, format = "GTiff",
@@ -86,11 +90,17 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   if (missing(data)) {
     stop("Argument occurrences is necessary to perform the analysis.")
   }
+  if (missing(species)) {
+    stop("Argument species is not defined.")
+  }
   if (missing(longitude)) {
     stop("Argument longitude is not defined.")
   }
   if (missing(latitude)) {
     stop("Argument latitude is not defined.")
+  }
+  if (missing(raster_layers)) {
+    stop("If raster_layers is not defined, data must contain information of at least\ntwo variables to fit ellipsoids. See function's help.")
   }
   if (overwrite == FALSE & dir.exists(output_directory)) {
     stop("output_directory already exists, to replace it use overwrite = TRUE.")
