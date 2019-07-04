@@ -172,6 +172,7 @@ setMethod("predict", signature(object = "ellipsoid"),
                 if (class(projection_variables)[1] == "RasterStack") {
                   suit_layer <- projection_variables[[1]]
                   suit_layer[!is.na(suit_layer[])] <- suitability
+                  names(suit_layer) <- "suitability"
                 } else {
                   suit_layer <- vector()
                 }
@@ -181,6 +182,7 @@ setMethod("predict", signature(object = "ellipsoid"),
                   if (class(projection_variables)[1] == "RasterStack") {
                     maha_layer <- projection_variables[[1]]
                     maha_layer[!is.na(maha_layer[])] <- maha
+                    names(maha_layer) <- "mahalanobis"
                   } else {
                     maha_layer <- vector()
                   }
@@ -242,6 +244,7 @@ setMethod("predict", signature(object = "ellipsoid"),
                 if (class(projection_variables)[1] == "RasterStack") {
                   maha_layer <- projection_variables[[1]]
                   maha_layer[!is.na(maha_layer[])] <- maha
+                  names(maha_layer) <- "mahalanobis"
                 } else {
                   maha_layer <- vector()
                 }
@@ -318,8 +321,6 @@ setMethod("predict", signature(object = "ellipsoid"),
                     if (force_return == FALSE) {
                       slot(results, "prediction_maha", check = FALSE) <- vector()
                       slot(results, "prediction_suit", check = FALSE) <- vector()
-                      slot(results, "mahalanobis", check = FALSE) <- vector()
-                      slot(results, "suitability", check = FALSE) <- vector()
                     }
                   } else {
                     sname <- paste0(ndir, "suitability_", name, ras_format)
@@ -328,7 +329,6 @@ setMethod("predict", signature(object = "ellipsoid"),
 
                     if (force_return == FALSE) {
                       slot(results, "prediction_suit", check = FALSE) <- vector()
-                      slot(results, "suitability", check = FALSE) <- vector()
                     }
                   }
                 } else {
@@ -338,7 +338,6 @@ setMethod("predict", signature(object = "ellipsoid"),
 
                   if (force_return == FALSE) {
                     slot(results, "prediction_maha", check = FALSE) <- vector()
-                    slot(results, "mahalanobis", check = FALSE) <- vector()
                   }
                 }
               }
