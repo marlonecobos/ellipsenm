@@ -355,7 +355,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
 
                 if (class(projection_variables)[1] == "RasterStack") {
                   suit_layers <- do.call(raster::stack,
-                                         lapply(maha_suit, function(x) {x[["s_layer"]]}))
+                                         unname(lapply(maha_suit, function(x) {x[["s_layer"]]})))
                   names(suit_layers) <- nam_ell
                 } else {
                   suit_layers <- vector()
@@ -384,7 +384,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
 
                   if (class(projection_variables)[1] == "RasterStack") {
                     maha_layers <- do.call(raster::stack,
-                                           lapply(maha_suit, function(x) {x[["m_layer"]]}))
+                                           unname(lapply(maha_suit, function(x) {x[["m_layer"]]})))
                     names(maha_layers) <- nam_ell
                   } else {
                     maha_layers <- vector()
@@ -469,7 +469,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
               if (is.null(name)) {
                 if (class(projection_variables)[1] == "RasterStack") {
                   maha_layers <- do.call(raster::stack,
-                                         lapply(maha, function(x) {x[["m_layer"]]}))
+                                         unname(lapply(maha, function(x) {x[["m_layer"]]})))
                   names(maha_layers) <- nam_ell
                 } else {
                   maha_layers <- vector()
