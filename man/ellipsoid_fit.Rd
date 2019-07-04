@@ -4,7 +4,7 @@
 \alias{ellipsoid_fit}
 \title{Fit ellipsoids based on distinct methods}
 \usage{
-ellipsoid_fit(data, longitude, latitude, method = "mve1", level = 95,
+ellipsoid_fit(data, longitude, latitude, method = "covmat", level = 95,
   raster_layers = NULL)
 }
 \arguments{
@@ -18,13 +18,15 @@ of environmental variables to be used as dimensions for fitting the ellipsoid.}
 
 \item{method}{(character) method to construct the ellipsoid that characterizes
 the species ecological niche. Available methods are: "covmat", "mve1", and
-"mve2". See details. Default = "mve1".}
+"mve2". See details. Default = "covmat".}
 
 \item{level}{(numeric) the confidence level of a pairwise confidence region
 for the ellipsoid, expresed as percentage. Default = 95.}
 
 \item{raster_layers}{optional RasterStack of environmental variables to be
-extracted using geographic coordinates present in \code{data}.}
+extracted using geographic coordinates present in \code{data}. If not defined
+\code{data} must include at least two other columns with values of the
+variables (dimesnions) used to fit the ellipsoid.}
 }
 \value{
 
@@ -35,13 +37,31 @@ define an ellipsoid. It uses distinct methods with asumptions that differ
 from each other.
 }
 \details{
-Methods details are as follows:
+The number of variables that can be used to created "ellipsoids" should be >=
+2 for the purposes of this package. When two variables are used "ellipsoids"
+are ellipses, with three variables "ellipsoids" are ellipsoids, and with more
+than three variables "ellipsoids" are hyper-ellipsoids.
 
-"covmat"
+Method details are as follows:
 
-"mve1"
+"covmat" creates ellipsoids based in the centriod and a matrix of covariances
+of the variables used. A particularity of this method is that the centroid
+will always be located in the center of the destribution of the entire data.
+This is, the density of points in the plane of analyses matters. Analyses are
+performed with base functions from R.
 
-"mve2"
+"mve1" generates an ellipsoid that reduces the volume contained it without
+loosing the data contained (i.e., minimum volume ellipsoid). This method may
+modify the position of the centroid and the values in the covariance matrix
+that can be obtained using the "covmat" method.
+
+"mve2" as with the previous method, this one also creates a minimum volume
+ellipsoid. However, the algorithm for creating ellipsoids used here is
+different. The ellipsoids created in this method are called moment based
+minimum volume ellipsoids and, as with the previous method, they may suffer
+changes in the position of the centroid and the values of the covariance
+matrix if compared to the "covmat" method. In general ellipsoids created with
+this method have smaller volumes than the ones created with previous methods.
 }
 \examples{
 # reading data
