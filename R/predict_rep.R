@@ -365,7 +365,9 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
               } else {
                 if (force_return == TRUE) {
                   suitability <- data.frame(maha_suit[[return_name]][["suit"]])
-                  colnames(suitability) <- return_name
+                  if (return_numeric == TRUE) {
+                    colnames(suitability) <- return_name
+                  }
                   suit_layers <- maha_suit[[return_name]][["s_layer"]]
                   names(suit_layers) <- return_name
                 } else {
@@ -396,7 +398,9 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 } else {
                   if (force_return == TRUE) {
                     maha <- data.frame(maha_suit[[return_name]][["maha"]])
-                    colnames(maha) <- return_name
+                    if (return_numeric == TRUE) {
+                      colnames(maha) <- return_name
+                    }
                     maha_layers <- maha_suit[[return_name]][["m_layer"]]
                     names(maha_layers) <- return_name
                   } else {
@@ -493,7 +497,9 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                   maha_layers <- maha[[return_name]][["m_layer"]]
                   names(maha_layers) <- return_name
                   maha <- data.frame(maha[[return_name]][["maha"]])
-                  colnames(maha) <- return_name
+                  if (return_numeric == TRUE) {
+                    colnames(maha) <- return_name
+                  }
                 } else {
                   maha <- vector()
                   maha_layers <- vector()
