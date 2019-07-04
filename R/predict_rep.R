@@ -369,7 +369,9 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                     colnames(suitability) <- return_name
                   }
                   suit_layers <- maha_suit[[return_name]][["s_layer"]]
-                  names(suit_layers) <- return_name
+                  if (class(projection_variables)[1] == "RasterStack") {
+                    names(suit_layers) <- return_name
+                  }
                 } else {
                   suitability <- vector()
                   suit_layers <- vector()
@@ -402,7 +404,9 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                       colnames(maha) <- return_name
                     }
                     maha_layers <- maha_suit[[return_name]][["m_layer"]]
-                    names(maha_layers) <- return_name
+                    if (class(projection_variables)[1] == "RasterStack") {
+                      names(maha_layers) <- return_name
+                    }
                   } else {
                     maha <- vector()
                     maha_layers <- vector()
@@ -495,7 +499,9 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
               } else {
                 if (force_return == TRUE) {
                   maha_layers <- maha[[return_name]][["m_layer"]]
-                  names(maha_layers) <- return_name
+                  if (class(projection_variables)[1] == "RasterStack") {
+                    names(maha_layers) <- return_name
+                  }
                   maha <- data.frame(maha[[return_name]][["maha"]])
                   if (return_numeric == TRUE) {
                     colnames(maha) <- return_name
