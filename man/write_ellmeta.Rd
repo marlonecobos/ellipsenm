@@ -4,22 +4,21 @@
 \alias{write_ellmeta}
 \title{Helperf function to get and write ellipsoid metadata}
 \usage{
-write_ellmeta(ellipsoid, name = "")
+write_ellmeta(ellipsoid, name = "ellipsoid_metadata")
 }
 \arguments{
 \item{ellipsoid}{object of class ellipsoid*.}
 
 \item{name}{(character) name of the file to be written. If the object in
-\code{ellipsoid} is replicated, number of replicates and mean, min, and max,
-are added as prefixes to each file. The suffix "ell_meta.txt" will be added
-to \code{name}. Default = "".}
+\code{ellipsoid} is replicated, names present in slot ellipsoids are added as
+prefixes to each file. Default = "ellipsoid_metadata".}
 }
 \value{
 A summary of ellipsoid metadata as a data.frame.
 
 Writes a csv file with the summary of ellipsoid metadata named
-"*_metadata_summary.csv" and txt files with the complete ellipsoid
-metadata in the working directory.
+"metadata_summary.csv" and txt files with the complete ellipsoid
+metadata (per each element if replicated) in the working directory.
 }
 \description{
 Helperf function to get and write ellipsoid metadata

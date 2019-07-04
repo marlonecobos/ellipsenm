@@ -6,7 +6,7 @@
 \usage{
 ellipsoid_model(data, species, longitude, latitude, raster_layers,
   method = "covmat", level = 95, replicates = 1,
-  replicate_type = "bootstrap", bootstrap_percentage = 50,
+  replicate_type = "bootstrap", bootstrap_percentage = 75,
   projection_variables = NULL, prediction = "suitability",
   return_numeric = TRUE, tolerance = 1e-60, format = "GTiff",
   overwrite = FALSE, color_palette = viridis::magma,

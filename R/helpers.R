@@ -21,18 +21,17 @@ rformat_type <- function(format) {
 #' Helperf function to get and write ellipsoid metadata
 #' @param ellipsoid object of class ellipsoid*.
 #' @param name (character) name of the file to be written. If the object in
-#' \code{ellipsoid} is replicated, number of replicates and mean, min, and max,
-#' are added as prefixes to each file. The suffix "ell_meta.txt" will be added
-#' to \code{name}. Default = "".
+#' \code{ellipsoid} is replicated, names present in slot ellipsoids are added as
+#' prefixes to each file. Default = "ellipsoid_metadata".
 #' @export
 #' @return
 #' A summary of ellipsoid metadata as a data.frame.
 #'
 #' Writes a csv file with the summary of ellipsoid metadata named
-#' "*_metadata_summary.csv" and txt files with the complete ellipsoid
-#' metadata in the working directory.
+#' "metadata_summary.csv" and txt files with the complete ellipsoid
+#' metadata (per each element if replicated) in the working directory.
 
-write_ellmeta <- function(ellipsoid, name = "") {
+write_ellmeta <- function(ellipsoid, name = "ellipsoid_metadata") {
   if (!missing(ellipsoid)) {
     cls <- class(ellipsoid)[1]
     if (!cls %in% c("ellipsoid", "ellipsoid_model_sim", "ellipsoid_model_rep")) {
@@ -45,8 +44,8 @@ write_ellmeta <- function(ellipsoid, name = "") {
   name <- gsub("\\\\", "/", name)
   name <- unlist(strsplit(name, "/"))
   ndir <- paste0(paste(name[-length(name)], collapse = "/"), "/")
-  namesum <- paste0(ndir, name[length(name)], "_metadata_summary.csv")
-  name <- paste0(name[length(name)], "_ell_meta.txt")
+  namesum <- paste0(ndir, "metadata_summary.csv")
+  name <- paste0(name[length(name)], ".txt")
 
   if (cls %in% c("ellipsoid", "ellipsoid_model_sim")) {
     namesim <- name

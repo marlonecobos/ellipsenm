@@ -80,7 +80,7 @@
 
 ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
                              method = "covmat", level = 95, replicates = 1,
-                             replicate_type = "bootstrap", bootstrap_percentage = 50,
+                             replicate_type = "bootstrap", bootstrap_percentage = 75,
                              projection_variables = NULL, prediction = "suitability",
                              return_numeric = TRUE, tolerance = 1e-60, format = "GTiff",
                              overwrite = FALSE, color_palette = viridis::magma,
@@ -100,7 +100,10 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
     stop("Argument latitude is not defined.")
   }
   if (missing(raster_layers)) {
-    stop("If raster_layers is not defined, data must contain information of at least\ntwo variables to fit ellipsoids. See function's help.")
+    variables <- data[, !colnames(data) %in% c(species, longitude, latitude)]
+    if (ncol(variables) < 2) {
+      stop("If raster_layers is not defined, data must contain information of at least\ntwo variables to fit ellipsoids. See function's help.")
+    }
   }
   if (overwrite == FALSE & dir.exists(output_directory)) {
     stop("output_directory already exists, to replace it use overwrite = TRUE.")
@@ -113,21 +116,26 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   # preparing data and variables
   cat("\nPreparing data...\n")
   sp <- as.character(data[1, species])
-  data <- cbind(data, raster::extract(raster_layers, data[, c(longitude, latitude)]))
 
-  raster_base <- raster_layers[[1]]
-  nona <- !is.na(raster::values(raster_base))
-  variable_names <- names(raster_layers)
-  variable1 <- raster_layers[[1]]
+  if (!missing(raster_layers)) {
+    data <- cbind(data, raster::extract(raster_layers, data[, c(longitude, latitude)]))
+    raster_base <- raster_layers[[1]]
+    nona <- !is.na(raster::values(raster_base))
+    variable1 <- raster_layers[[1]]
+    variable_names <- names(raster_layers)
+    r_values <- na.omit(raster::values(raster_layers))
+    nb <- nrow(r_values)
+    n_prop <- ifelse(nb > 100000, 0.1, 0.3)
+    set.seed(1)
+    samp <- sample(nb, ceiling(nb * n_prop))
+    r_values <- r_values[samp, ]
+    variables <- raster_layers
+  } else {
+    data <- cbind(data[, c(species, longitude, latitude)], variables)
+    variable_names <- colnames(variables)
+  }
+
   n_var <- length(variable_names)
-
-  r_values <- na.omit(raster::values(raster_layers))
-  nb <- nrow(r_values)
-  n_prop <- ifelse(nb > 100000, 0.1, 0.3)
-  set.seed(1)
-  samp <- sample(nb, ceiling(nb * n_prop))
-  r_values <- r_values[samp, ]
-
   mpos <- replicates + 1
 
   # -----------
@@ -153,14 +161,20 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   }
 
   # -----------
-  # prediction in raster_layers
+  # prediction in calibration area
   cat("\nPreparing raster predictions for calibration area:\n")
   nam_format <- rformat_type(format)
   namer <- paste0(output_directory, "/calibration_", sp, nam_format)
   dir.create(output_directory)
 
-  predictions <- predict(ellipsoids, raster_layers, prediction, return_numeric,
-                         tolerance, namer, format, overwrite)
+  if (replicates > 1) {
+    predictions <- predict(ellipsoids, variables, prediction, return_numeric,
+                           tolerance, namer, format, overwrite,
+                           force_return = TRUE, return_name = "mean_ellipsoid")
+  } else {
+    predictions <- predict(ellipsoids, variables, prediction, return_numeric,
+                           tolerance, namer, format, overwrite, force_return = TRUE)
+  }
 
   # -----------
   # model projections
@@ -175,23 +189,32 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   # returning metadata and preparing needed variables
   cat("\nObtaining and writing metadata of ellipsoid models and predictions:\n")
   cat("\tMetadata for ellipsoid models\n")
-  ell_meta <- write_ellmeta(predictions, name = paste0(output_directory, "/calibration"))
+  ell_meta <- write_ellmeta(predictions,
+                            name = paste0(output_directory, "/ellipsoid_metadata"))
 
   if (is.null(projection_variables)) {
     if (prediction != "mahalanobis") {
+      layer <- predictions@prediction_suit
       if (class(predictions)[1] == "ellipsoid_model_rep") {
-        suit_layer <- raster_base; suit_layer[nona] <- predictions@suitability[, mpos]
         mean_pred <- predictions@ellipsoids[[mpos]]
         prevalences <- predictions@prevalence
       } else {
-        suit_layer <- raster_base; suit_layer[nona] <- predictions@suitability
         mean_pred <- predictions
         prevalences <- data.frame(ellipsoid_model = predictions@prevalence)
       }
       write.csv(prevalences, paste0(output_directory, "/calibration_prevalences.csv"),
                 row.names = TRUE)
+      if (prediction == "both") {
+        layer <- raster::stack(layer, predictions@prediction_maha)
+      }
       cat("\tPrevalence in calibration area\n")
     } else {
+      layer <- predictions@prediction_maha
+      if (class(predictions)[1] == "ellipsoid_model_rep") {
+        mean_pred <- predictions@ellipsoids[[mpos]]
+      } else {
+        mean_pred <- predictions
+      }
       prevalences <- vector()
     }
   } else {
@@ -203,7 +226,7 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   # producing report
   cat("\nAnalyses finished. Producing HTML report...\n")
   save(data, variable_names, variable1, n_var, r_values, ell_meta, mean_pred,
-       suit_layer, prevalences, replicates, replicate_type, bootstrap_percentage,
+       layer, prevalences, replicates, replicate_type, bootstrap_percentage,
        color_palette, file = paste0(output_directory, "/enm_report_data.RData"))
 
   report_format(name = paste0(output_directory, "/report_format"))
