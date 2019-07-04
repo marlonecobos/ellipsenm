@@ -350,7 +350,9 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                   colnames(suitability) <- nam_ell
                 } else {
                   suitability <- data.frame(maha_suit[[return_name]][["suit"]])
-                  colnames(suitability) <- return_name
+                  if (return_name != "ipmoisbsel392") {
+                    colnames(suitability) <- return_name
+                  }
                 }
 
                 if (class(projection_variables)[1] == "RasterStack") {
@@ -379,7 +381,9 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                     colnames(maha) <- nam_ell
                   } else {
                     maha <- data.frame(maha_suit[[return_name]][["maha"]])
-                    colnames(maha) <- return_name
+                    if (return_name != "ipmoisbsel392") {
+                      colnames(maha) <- return_name
+                    }
                   }
 
                   if (class(projection_variables)[1] == "RasterStack") {
@@ -480,7 +484,9 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                   colnames(maha) <- nam_ell
                 } else {
                   maha <- data.frame(maha[[return_name]][["maha"]])
-                  colnames(maha) <- return_name
+                  if (return_name != "ipmoisbsel392") {
+                    colnames(maha) <- return_name
+                  }
                 }
               } else {
                 if (force_return == TRUE) {
