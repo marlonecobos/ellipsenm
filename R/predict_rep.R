@@ -350,6 +350,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                   colnames(suitability) <- nam_ell
                 } else {
                   suitability <- data.frame(maha_suit[[return_name]][["suit"]])
+                  colnames(suitability) <- return_name
                 }
 
                 if (class(projection_variables)[1] == "RasterStack") {
@@ -362,7 +363,9 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
               } else {
                 if (force_return == TRUE) {
                   suitability <- data.frame(maha_suit[[return_name]][["suit"]])
+                  colnames(suitability) <- return_name
                   suit_layers <- maha_suit[[return_name]][["s_layer"]]
+                  names(suit_layers) <- return_name
                 } else {
                   suitability <- vector()
                   suit_layers <- vector()
@@ -376,6 +379,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                     colnames(maha) <- nam_ell
                   } else {
                     maha <- data.frame(maha_suit[[return_name]][["maha"]])
+                    colnames(maha) <- return_name
                   }
 
                   if (class(projection_variables)[1] == "RasterStack") {
@@ -388,7 +392,9 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 } else {
                   if (force_return == TRUE) {
                     maha <- data.frame(maha_suit[[return_name]][["maha"]])
+                    colnames(maha) <- return_name
                     maha_layers <- maha_suit[[return_name]][["m_layer"]]
+                    names(maha_layers) <- return_name
                   } else {
                     maha <- vector()
                     maha_layers <- vector()
@@ -474,11 +480,14 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                   colnames(maha) <- nam_ell
                 } else {
                   maha <- data.frame(maha[[return_name]][["maha"]])
+                  colnames(maha) <- return_name
                 }
               } else {
                 if (force_return == TRUE) {
                   maha_layers <- maha[[return_name]][["m_layer"]]
+                  names(maha_layers) <- return_name
                   maha <- data.frame(maha[[return_name]][["maha"]])
+                  colnames(maha) <- return_name
                 } else {
                   maha <- vector()
                   maha_layers <- vector()
