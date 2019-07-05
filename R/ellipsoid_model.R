@@ -28,11 +28,16 @@
 #' @param bootstrap_percentage (numeric) percentage of data to be bootstrapped
 #' for each replicate. Default = 50. Valid if \code{replicates} > 1 and
 #' \code{replicate_type} = "bootstrap".
-#' @param projection_variables optional: (character) name of folder containing other
-#' folders with raster layers that represent the scenarios for projections; a
-#' RasterStack of layers respresenting an only scenario for projection; or a
-#' named list of RasterStacks representing multiple scenarios for projection.
-#' See details. Default = NULL.
+#' @param projection_variables optional, (RasterStack, list, or character): if
+#' RasterStack, a stack of layers respresenting an only scenario for projection;
+#' if list, a named list of RasterStacks representing multiple scenarios for
+#' projection; if character, name of the folder (in the working directory)
+#' containing other folders (scenarios for projection) with raster layers to be
+#' used as variables. See details. Default = NULL.
+#' @param prvariables_format (character) if \code{projection_variables} is a list,
+#' raster type of variables (raster layers) to be used and located in
+#' subdirectories. Default = NULL. See \code{\link[raster]{writeFormats}} for
+#' details and options.
 #' @param prediction (character) type of prediction to be made, options are:
 #' "suitability", "mahalanobis", and "both". Default = "suitability".
 #' @param return_numeric (logical) whether or not to return values of mahalanobis
@@ -81,8 +86,9 @@
 ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
                              method = "covmat", level = 95, replicates = 1,
                              replicate_type = "bootstrap", bootstrap_percentage = 75,
-                             projection_variables = NULL, prediction = "suitability",
-                             return_numeric = TRUE, tolerance = 1e-60, format = "GTiff",
+                             projection_variables = NULL, prvariables_format = NULL,
+                             prediction = "suitability", return_numeric = TRUE,
+                             tolerance = 1e-60, format = "GTiff",
                              overwrite = FALSE, color_palette = viridis::magma,
                              output_directory = "ellipsenm_model") {
   # -----------
@@ -110,6 +116,11 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   }
   if (overwrite == TRUE & dir.exists(output_directory)) {
     unlink(x = output_directory, recursive = TRUE, force = TRUE)
+  }
+  if (!is.null(projection_variables)) {
+    if (class(projection_variables)[1] == "character" & is.null(prvariables_format)) {
+      stop("Argument prvariables_format needs to be defined when projection_variables is a character.")
+    }
   }
 
   # -----------
@@ -166,68 +177,90 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   nam_format <- rformat_type(format)
   namer <- paste0(output_directory, "/calibration_", sp, nam_format)
   dir.create(output_directory)
+  force_return <- TRUE
+  return_name <- "mean_ellipsoid"
 
   if (replicates > 1) {
     predictions <- predict(ellipsoids, variables, prediction, return_numeric,
-                           tolerance, namer, format, overwrite,
-                           force_return = TRUE, return_name = "mean_ellipsoid")
+                           tolerance, namer, format, overwrite, force_return,
+                           return_name)
   } else {
     predictions <- predict(ellipsoids, variables, prediction, return_numeric,
-                           tolerance, namer, format, overwrite, force_return = TRUE)
+                           tolerance, namer, format, overwrite, force_return)
+  }
+
+  # -----------
+  # returning metadata and preparing needed variables for calibration area
+  cat("\nPreparing metadata of ellipsoid models and predictions in the calibration area:\n")
+  cat("\tMetadata for ellipsoid models\n")
+  ell_meta <- write_ellmeta(predictions,
+                            name = paste0(output_directory, "/ellipsoid_metadata"))
+
+  if (prediction != "mahalanobis") {
+    layer <- predictions@prediction_suit
+    if (class(predictions)[1] == "ellipsoid_model_rep") {
+      mean_pred <- predictions@ellipsoids[[mpos]]
+      prevalences <- predictions@prevalence
+    } else {
+      mean_pred <- predictions
+      prevalences <- data.frame(ellipsoid_model = predictions@prevalence)
+    }
+    write.csv(prevalences, paste0(output_directory, "/calibration_prevalence.csv"),
+              row.names = TRUE)
+    if (prediction == "both") {
+      layer <- raster::stack(layer, predictions@prediction_maha)
+    }
+    cat("\tPrevalence in calibration area\n")
+  } else {
+    layer <- predictions@prediction_maha
+    if (class(predictions)[1] == "ellipsoid_model_rep") {
+      mean_pred <- predictions@ellipsoids[[mpos]]
+    } else {
+      mean_pred <- predictions
+    }
+    prevalences <- vector()
   }
 
   # -----------
   # model projections
   if (!is.null(projection_variables)) {
-    cat("\nProducing results for projection  scenario(s):\n")
+    cat("\nProducing results for projection scenario(s):\n")
     projections <- model_projection(predictions, projection_variables, sp,
-                                    return_numeric, prediction, tolerance,
-                                    format, overwrite, output_directory)
+                                    prediction, return_numeric, format,
+                                    overwrite, force_return, return_name,
+                                    output_directory)
   }
 
-  # -----------
-  # returning metadata and preparing needed variables
-  cat("\nObtaining and writing metadata of ellipsoid models and predictions:\n")
-  cat("\tMetadata for ellipsoid models\n")
-  ell_meta <- write_ellmeta(predictions,
-                            name = paste0(output_directory, "/ellipsoid_metadata"))
 
-  if (is.null(projection_variables)) {
-    if (prediction != "mahalanobis") {
-      layer <- predictions@prediction_suit
-      if (class(predictions)[1] == "ellipsoid_model_rep") {
-        mean_pred <- predictions@ellipsoids[[mpos]]
-        prevalences <- predictions@prevalence
-      } else {
-        mean_pred <- predictions
-        prevalences <- data.frame(ellipsoid_model = predictions@prevalence)
-      }
-      write.csv(prevalences, paste0(output_directory, "/calibration_prevalences.csv"),
-                row.names = TRUE)
-      if (prediction == "both") {
-        layer <- raster::stack(layer, predictions@prediction_maha)
-      }
-      cat("\tPrevalence in calibration area\n")
-    } else {
-      layer <- predictions@prediction_maha
-      if (class(predictions)[1] == "ellipsoid_model_rep") {
-        mean_pred <- predictions@ellipsoids[[mpos]]
-      } else {
-        mean_pred <- predictions
-      }
-      prevalences <- vector()
-    }
-  } else {
-
-  }
 
 
   # -----------
   # producing report
   cat("\nAnalyses finished. Producing HTML report...\n")
-  save(data, variable_names, variable1, n_var, r_values, ell_meta, mean_pred,
-       layer, prevalences, replicates, replicate_type, bootstrap_percentage,
-       color_palette, file = paste0(output_directory, "/enm_report_data.RData"))
+  if (is.null(projection_variables)) {
+    if (!missing(raster_layers)) {
+      save(data, variable_names, variable1, n_var, r_values, ell_meta, mean_pred,
+           layer, prevalences, replicates, replicate_type, bootstrap_percentage,
+           color_palette, file = paste0(output_directory, "/enm_report_data.RData"))
+    } else {
+      save(data, variable_names, n_var, ell_meta, mean_pred, prevalences,
+           replicates, replicate_type, bootstrap_percentage, color_palette,
+           file = paste0(output_directory, "/enm_report_data.RData"))
+    }
+  } else {
+    if (!missing(raster_layers)) {
+      save(data, variable_names, variable1, n_var, r_values, ell_meta, mean_pred,
+           layer, prevalences, pvariable1, pr_values, layer_projection,
+           prevalences_p, replicates, replicate_type, bootstrap_percentage,
+           color_palette, file = paste0(output_directory, "/enm_report_data.RData"))
+    } else {
+      save(data, variable_names, n_var, ell_meta, mean_pred, prevalences,
+           replicates, pvariable1, pr_values, layer_projection,
+           prevalences_p, replicate_type, bootstrap_percentage, color_palette,
+           file = paste0(output_directory, "/enm_report_data.RData"))
+    }
+  }
+
 
   report_format(name = paste0(output_directory, "/report_format"))
   if (prediction != "mahalanobis") {
