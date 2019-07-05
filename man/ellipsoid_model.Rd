@@ -7,10 +7,10 @@
 ellipsoid_model(data, species, longitude, latitude, raster_layers,
   method = "covmat", level = 95, replicates = 1,
   replicate_type = "bootstrap", bootstrap_percentage = 75,
-  projection_variables = NULL, prediction = "suitability",
-  return_numeric = TRUE, tolerance = 1e-60, format = "GTiff",
-  overwrite = FALSE, color_palette = viridis::magma,
-  output_directory = "ellipsenm_model")
+  projection_variables = NULL, prvariables_format = NULL,
+  prediction = "suitability", return_numeric = TRUE,
+  tolerance = 1e-60, format = "GTiff", overwrite = FALSE,
+  color_palette = viridis::magma, output_directory = "ellipsenm_model")
 }
 \arguments{
 \item{data}{data.frame of occurrence records. Columns must be: species,
@@ -47,11 +47,17 @@ produces a single model using all the data.}
 for each replicate. Default = 50. Valid if \code{replicates} > 1 and
 \code{replicate_type} = "bootstrap".}
 
-\item{projection_variables}{optional: (character) name of folder containing other
-folders with raster layers that represent the scenarios for projections; a
-RasterStack of layers respresenting an only scenario for projection; or a
-named list of RasterStacks representing multiple scenarios for projection.
-See details. Default = NULL.}
+\item{projection_variables}{optional, (RasterStack, list, or character): if
+RasterStack, a stack of layers respresenting an only scenario for projection;
+if list, a named list of RasterStacks representing multiple scenarios for
+projection; if character, name of the folder (in the working directory)
+containing other folders (scenarios for projection) with raster layers to be
+used as variables. See details. Default = NULL.}
+
+\item{prvariables_format}{(character) if \code{projection_variables} is a list,
+raster type of variables (raster layers) to be used and located in
+subdirectories. Default = NULL. See \code{\link[raster]{writeFormats}} for
+details and options.}
 
 \item{prediction}{(character) type of prediction to be made, options are:
 "suitability", "mahalanobis", and "both". Default = "suitability".}
