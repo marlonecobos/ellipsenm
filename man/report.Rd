@@ -4,14 +4,20 @@
 \alias{report}
 \title{Creation of HTML reports from ellipsenm main processes}
 \usage{
-report(report_type, name = "results_report")
+report(report_type, prediction, projected, output_directory = getwd())
 }
 \arguments{
-\item{name}{(character) name of the HTML file to be produced, file extention
-does not need to be defined.}
+\item{prediction}{(character) if report_type = "enm". Type of prediction that
+was performed, oprions are: "suitability", "mahalanobis", and "both".}
+
+\item{projected}{(logical) if report_type = "enm", whether or not the model
+was projected to distinct scenarios.}
+
+\item{output_directory}{(character) name of the directory where the HTML file
+will be produced. Default = working directory.}
 
 \item{repor_type}{(character) type of report to be produced. Options are:
-"calibration", "enm_suitability", "enm_mahalanobis", "enm_both", and "overlap".}
+"calibration", "enm", and "overlap".}
 }
 \value{
 An HTML file summarizing results from the main processes that the ellipsenm
@@ -25,8 +31,4 @@ the main processes that the ellipsenm package performs.
 This function is used along with the \code{\link{ellipsoid_model}},
 ellipsoid_calibration, and ellipsoid_overlap functions. To obtain nice reports
 a css file with format instructions should exist. See \code{\link{report_format}}.
-}
-\examples{
-# for results from modeling processes
-report(report_type = "enm_suitability", name = "enm_suitability_report")
 }
