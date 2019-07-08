@@ -17,14 +17,9 @@ css: report_format.css
 
 ```{r knitr_init, echo=FALSE, cache=FALSE, message=FALSE}
 # packages to load
-suppressWarnings(library(ellipse))
-suppressWarnings(library(ellipsenm))
-suppressWarnings(library(knitr))
-suppressWarnings(library(maps))
-suppressWarnings(library(raster))
-suppressWarnings(library(rgl))
-suppressWarnings(library(rmdformats))
-suppressWarnings(library(viridis))
+packages <- c("ellipse", "ellipsenm", "knitr", "maps", "raster", "rgl", 
+              "rmdformats", "viridis")
+suppressWarnings(s <- sapply(packages, function(x) {library(x, character.only = T)}))
 
 # global options
 opts_chunk$set(echo=FALSE, cache=FALSE, prompt=FALSE, tidy=TRUE, comment=NA,
@@ -39,11 +34,11 @@ load("enm_report_data.RData")
 body {text-align: justify}
 </style>
 
-This is the final report produced during the execution of the function `ellipsoid_model` from the <a href="https://github.com/marlonecobos/ellipsenm" target="_blank">**`ellipsenm`**</a> package. Following, a complete description of the ecological niche modeling process for the species *`r as.character(data[1, 1])`* is presented. Models created with the **`ellipsenm`** package are ellipsoid envelope models and assume that a species ecological niche is convex, has an only optimum, and the species response to each variable covaries with the response to other variables. Mahalanobis distances are used to represent how far is each combination of environmental conditions from the optimum (ellipsoid centroid). Suitability values result by default from a multivariate normal transformation of the mahalanobis distances measured form ellipsoid centroid. Therefore, maximum values of suitability will be close to the centroid and minimum values of suitability will be close to the border of the ellipsoid.
+This is the final report produced during the execution of the function `ellipsoid_model` from the <a href="https://github.com/marlonecobos/ellipsenm" target="_blank">**`ellipsenm`**</a> package. Following, a complete description of the ecological niche modeling process for the species *`r as.character(data[1, 1])`* is presented. An ecological niche, from a Grinnellian perspective, is the set of environmental conditions that allow a species to maintain populations for long periods of time, without immigration events (Peterson et al. 2011). Models created with the **`ellipsenm`** package are ellipsoid envelope models and assume that a species ecological niche is convex, has an only optimum, and the species response to each variable covaries with the response to other variables (see Brown 1984, Jimenéz et al. 2019, Osorio-Olvera 2019). Mahalanobis distances are used to represent how far is each combination of environmental conditions from the optimum (ellipsoid centroid). Suitability values result by default from a multivariate normal transformation of mahalanobis distances. Therefore, maximum values of suitability will be close to the centroid and minimum values will be close to the border of the ellipsoid.
 
 Note 1: If only one replicate was performed, results are obtained using the hole set of data. If multiple replicates were performed, results are produced per replicate; as each replicate is build with a sub-sample of the data, results may differ among replicates. For replicated models, mean results are shown in this report, results for all replicates, as well as mean, minimum, and maximum can be found in the output directory defined in the function `ellipsoid_model`. 
 
-Note 2: If more than tree dimensions were used to create the model, only the first three of them will be used in graphical representations.
+Note 2: If more than tree dimensions were used to create the model, up to three of them will be used in graphical representations.
 
 Tip: To see two dimensional figures in their actual size click on them. Three dimensional figures are interactive.
 
@@ -74,14 +69,14 @@ The plot below shows the arrangement of the occurrence data in environmental spa
 
 ```{r Figure2, fig.cap="Representation of species occurrence data in environmental space."}
 if (n_var > 2) {
-  plot3d(data[, 4:6], col = "black", size = 5)
+  plot3d(data[, 4:6], col = "blue3", size = 5)
   plot3d(r_values[, 1:3], col = "gray65", add = TRUE)
   rglwidget()
   
 } else {
   par(mar = c(2, 2, 1, 1))
   plot(r_values, col = "gray65")
-  points(data[, 4:5], pch = 16) 
+  points(data[, 4:5], pch = 16, col = "blue3") 
 }
 ```
 
@@ -131,8 +126,14 @@ if (n_var > 2) {
             level = mean_pred@level)
   suit <- predict(ob, r_values[, 1:3], "suitability", TRUE)
   
-  plot3d(data[, 4:6], col = "black", size = 5)
-  plot3d(r_values[order(suit@suitability, decreasing = F), 1:3], col = col1, add = TRUE)
+  vals <- cbind(r_values[, 1:3], suit@suitability)
+  vals <- vals[order(vals[, 4], decreasing = F), ]
+  vals1 <- vals[vals[, 4] > 0, -4]
+  vals0 <- vals[vals[, 4] == 0, -4]
+  
+  plot3d(data[, 4:6], col = "blue3", size = 5)
+  plot3d(vals1, col = col1[vals[, 4] > 0], add = TRUE)
+  plot3d(vals0, col = col1[1], add = TRUE)
   wire3d(el3d, col = "darkgreen", alpha = 0.5)
   rglwidget()
   
@@ -140,6 +141,8 @@ if (n_var > 2) {
   el1 <- ellipse(x = mean_pred@covariance_matrix[1:2, 1:2], 
                  centre = mean_pred@centroid[1:2], 
                  level = mean_pred@level / 100)
+  xlim <- range(range(el1[, 1]), range(r_values[, 1]))
+  ylim <- range(range(el1[, 2]), range(r_values[, 2])) 
   
   ob <- new("ellipsoid", method = mean_pred@method, 
             centroid = mean_pred@centroid[1:2], 
@@ -147,9 +150,16 @@ if (n_var > 2) {
             level = mean_pred@level)
   suit <- predict(ob, r_values[, 1:2], "suitability", TRUE)
   
+  vals <- cbind(r_values[, 1:2], suit@suitability)
+  vals <- vals[order(vals[, 3], decreasing = F), ]
+  vals1 <- vals[vals[, 3] > 0, -3]
+  vals0 <- vals[vals[, 3] == 0, -3]
+  
   par(mar = c(4, 4, 1, 1))
-  plot(r_values[order(suit@suitability, decreasing = F), 1:2], col = col1)
-  points(data[, 4:5], pch = 19) 
+  plot(vals0, col = col1[1], xlim = xlim, ylim = ylim, 
+       xlab = variable_names[1], ylab = variable_names[2])
+  points(vals1, col = col1[vals[, 3] > 0])
+  points(data[, 4:5], pch = 19, col = "blue3") 
   lines(el1, col = "darkgreen", lwd = 1.5)
 }
 ```
@@ -183,3 +193,12 @@ citation("ellipsenm")
 ```
 
 The code for producing this report (if needed) can be found in the file `enm_suitability_report.Rmd`; the data used is in `enm_report_data.RData`.
+
+<hr>
+
+# References
+
+* Brown, J.H., 1984. On the relationship between abundance and distribution of a species. Am. Nat. 124, 255–279.
+* Jiménez, L., Soberón, J., Christen, J.A., Soto, D., 2019. On the problem of modeling a fundamental niche from occurrence data. Ecol. Modell. 397, 74–83.
+* Osorio‐Olvera, L., Soberón, J., Falconi, M., 2019. On population abundance and niche structure. Ecography 42. https://doi.org/10.1111/ecog.04442.
+* Peterson, A.T., Soberón, J., Pearson, R.G., Anderson, R.P., Martínez-Meyer, E., Nakamura, M., Araújo, M.B., 2011. Ecological Niches and Geographic Distributions. Princeton University Press, Princeton.
