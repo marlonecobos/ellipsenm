@@ -1,11 +1,11 @@
 #' Helper function to format function reports
 #'
 #' @param col (character) hexadecimal code for the main color to be used in the
-#' report. Default = "#0000FF"; blue.
+#' html report. Default = "#0000FF"; blue.
 #' @param name (character) name of the CSS file to be written. File format does
 #' not need to be added. Default = "eenm_report_format".
 #'
-#' @return CSS file containing formating instructions.
+#' @return CSS file containing HTML formatting instructions.
 #'
 #' @export
 #'
@@ -14,6 +14,7 @@
 #' report_format(col = "#15AB0A")
 
 report_format <- function(col = "#0000FF", name = "eenm_report_format") {
+  # html style
   sink(paste0(name, ".css"))
   cat("#main .nav-pills > li.active > a,\n#main .nav-pills > li.active > a:hover,
 #main .nav-pills > li.active > a:focus {\n\tbackground-color: ")

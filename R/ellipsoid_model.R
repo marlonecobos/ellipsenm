@@ -246,7 +246,7 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
            file = paste0(output_directory, "/enm_report_data.RData"))
     }
   } else {
-    pr_values <- na.omit(projections$r_values)
+    pr_values <- projections$r_values
     layer_projection <- projections$s_layer
     prevalences_p <- projections$prevalence
 
