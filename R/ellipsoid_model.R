@@ -263,17 +263,9 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
     }
   }
 
-
   report_format(name = paste0(output_directory, "/report_format"))
-  if (prediction != "mahalanobis") {
-    if (prediction == "both") {
-      report("enm_both", name = paste0(output_directory, "/enm_both_report"))
-    } else {
-      report("enm_suitability", name = paste0(output_directory, "/enm_suitability_report"))
-    }
-  } else {
-    report("enm_mahalanobis", name = paste0(output_directory, "/enm_mahalanobis_report"))
-  }
+  projected <- ifelse(is.null(projection_variables), FALSE, TRUE)
+  report(report_type = "enm", prediction, projected, output_directory)
 
   # -----------
   # returning results
