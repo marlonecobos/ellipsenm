@@ -8,13 +8,13 @@ report_format(col = "#0000FF", name = "eenm_report_format")
 }
 \arguments{
 \item{col}{(character) hexadecimal code for the main color to be used in the
-report. Default = "#0000FF"; blue.}
+html report. Default = "#0000FF"; blue.}
 
 \item{name}{(character) name of the CSS file to be written. File format does
 not need to be added. Default = "eenm_report_format".}
 }
 \value{
-CSS file containing formating instructions.
+CSS file containing HTML formatting instructions.
 }
 \description{
 Helper function to format function reports
