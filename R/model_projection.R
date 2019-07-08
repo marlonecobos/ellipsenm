@@ -84,6 +84,7 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
     nam_format <- rformat_type(format)
 
     if (cclas == "RasterStack") {
+      r_values <- na.omit(projection_variables)
       lnames <- "projection"
       if (all(ellv_names == names(projection_variables))) {
         namer <- paste0(output_directory, "/", lnames, "_", sp_name, nam_format)
@@ -106,6 +107,7 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
       for (i in 1:length(lnames)) {
         cat("   Projection to", lnames[i], "\n")
         if (all(ellv_names == names(projection_variables[[i]]))) {
+          if (i == 1) {r_values <- na.omit(projection_variables[[i]])}
           namer <- paste0(output_directory, "/", lnames, "_", sp_name, nam_format)
 
           predictions[[i]] <- predict(ellipsoid, projection_variables[[i]], prediction,
@@ -130,6 +132,7 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
         if (all(ellv_names == namest)) {
           p_layers <- raster::stack(list.files(dirs[i], pattern = format_pl,
                                                full.names = TRUE))
+          if (i == 1) {r_values <- na.omit(p_layers)}
 
           namer <- paste0(output_directory, "/", lnames[i], "_", sp_name, nam_format)
 
@@ -185,14 +188,26 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
     }
   }
 
+  # -----------
+  # returning results
+  nb <- nrow(r_values)
+  n_prop <- ifelse(nb > 100000, 0.1, 0.3)
+  set.seed(1)
+  samp <- sample(nb, ceiling(nb * n_prop))
+  r_values <- r_values[samp, ]
+
+
+  # -----------
+  # returning results
   if (prediction != "mahalanobis") {
     if (prediction == "both") {
-      results <- list(s_layer = suit, m_layer = maha, prevalence = prevalence)
+      results <- list(s_layer = suit, m_layer = maha, prevalence = prevalence,
+                      r_values = r_values)
     } else {
-      results <- list(s_layer = suit, prevalence = prevalence)
+      results <- list(s_layer = suit, prevalence = prevalence, r_values = r_values)
     }
   } else {
-    results <- list(m_layer = maha)
+    results <- list(m_layer = maha, prevalence = vector(), r_values = r_values)
   }
 
   return(results)

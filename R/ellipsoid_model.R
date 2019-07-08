@@ -191,7 +191,7 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
 
   # -----------
   # returning metadata and preparing needed variables for calibration area
-  cat("\nPreparing metadata of ellipsoid models and predictions in the calibration area:\n")
+  cat("\nPreparing metadata of ellipsoid models and predictions in calibration area:\n")
   cat("\tMetadata for ellipsoid models\n")
   ell_meta <- write_ellmeta(predictions,
                             name = paste0(output_directory, "/ellipsoid_metadata"))
@@ -225,14 +225,12 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   # model projections
   if (!is.null(projection_variables)) {
     cat("\nProducing results for projection scenario(s):\n")
-    projections <- model_projection(predictions, projection_variables, sp,
-                                    prediction, return_numeric, format,
+    projections <- model_projection(predictions, projection_variables,
+                                    prvariables_format, sp, prediction,
+                                    return_numeric, tolerance, format,
                                     overwrite, force_return, return_name,
                                     output_directory)
   }
-
-
-
 
   # -----------
   # producing report
@@ -248,15 +246,19 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
            file = paste0(output_directory, "/enm_report_data.RData"))
     }
   } else {
+    pr_values <- na.omit(projections$r_values)
+    layer_projection <- projections$s_layer
+    prevalences_p <- projections$prevalence
+
     if (!missing(raster_layers)) {
       save(data, variable_names, variable1, n_var, r_values, ell_meta, mean_pred,
-           layer, prevalences, pvariable1, pr_values, layer_projection,
+           layer, prevalences, pr_values, layer_projection,
            prevalences_p, replicates, replicate_type, bootstrap_percentage,
            color_palette, file = paste0(output_directory, "/enm_report_data.RData"))
     } else {
       save(data, variable_names, n_var, ell_meta, mean_pred, prevalences,
-           replicates, pvariable1, pr_values, layer_projection,
-           prevalences_p, replicate_type, bootstrap_percentage, color_palette,
+           pr_values, layer_projection, prevalences_p, replicates,
+           replicate_type, bootstrap_percentage, color_palette,
            file = paste0(output_directory, "/enm_report_data.RData"))
     }
   }
