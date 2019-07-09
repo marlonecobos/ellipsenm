@@ -34,7 +34,7 @@ load("enm_report_data.RData")
 body {text-align: justify}
 </style>
 
-This is the final report produced during the execution of the function `ellipsoid_model` from the <a href="https://github.com/marlonecobos/ellipsenm" target="_blank">**`ellipsenm`**</a> package. Following, a complete description of the ecological niche modeling process for the species *`r as.character(data[1, 1])`* is presented. An ecological niche, from a Grinnellian perspective, is the set of environmental conditions that allow a species to maintain populations for long periods of time, without immigration events (Peterson et al. 2011). Models created with the **`ellipsenm`** package are ellipsoid envelope models and assume that a species ecological niche is convex, has an only optimum, and the species response to each variable covaries with the response to other variables (see Brown 1984, Jimenéz et al. 2019, Osorio-Olvera 2019). Mahalanobis distances are used to represent how far is each combination of environmental conditions from the optimum (ellipsoid centroid). Given the type of prediction selected in the execution of the `ellipsoid_model` function, this report presents results for mahalanobis distances.
+This is the final report produced during the execution of the function `ellipsoid_model` from the <a href="https://github.com/marlonecobos/ellipsenm" target="_blank">**`ellipsenm`**</a> package. Following, a complete description of the ecological niche modeling process for the species *`r as.character(data[1, 1])`* is presented. An ecological niche, from a Grinnellian perspective, is the set of environmental conditions that allow a species to maintain populations for long periods of time, without immigration events (Peterson et al. 2011). Models created with the **`ellipsenm`** package are ellipsoid envelope models and assume that a species ecological niche is convex, has an only optimum, and the species response to each variable covaries with the response to other variables (see Brown 1984, Jimenéz et al. 2019, Osorio-Olvera 2019). Mahalanobis distances are used to represent how far is each combination of environmental conditions from the optimum (ellipsoid centroid). Given the type of prediction selected in the execution of the `ellipsoid_model` function, this report presents results for Mahalanobis distances.
 
 Note 1: If only one replicate was performed, results are obtained using the hole set of data. If multiple replicates were performed, results are produced per replicate; as each replicate is build with a sub-sample of the data, results may differ among replicates. For replicated models, mean results are shown in this report, results for all replicates, as well as for mean, minimum, and maximum ellipsoidal models can be found in the output directory defined in the function `ellipsoid_model`. If the model was performed with replicates, further raster calculations can be performed to show model variability (e.g., range or other indicators of model variability; see Peterson et al. 2018)  
 
@@ -102,9 +102,9 @@ Given the data and the characteristics that define the species ellipsoidal niche
 
 ## Calibration area
 
-The calibration area is represented by the variables given to fit the ellipsoid using the `ellipsoid_model` function. This area is recommended to be a region that has been accessible to the species for a relevant period of time (see Barve et al. 2011). Although most methods used in the **`ellipsenm`**  package are not sensible to a background (environmental conditions in the calibration area), having a well defined accessible area helps with interpretations. Bellow, a `r paste(ifelse(n_var > 2, "3", "2"), "dimensional")` representation of the ellipsoidal niche model and the mahalanobis distances is shown in environmental space for the calibration area.
+The calibration area is represented by the variables given to fit the ellipsoid using the `ellipsoid_model` function. This area is recommended to be a region that has been accessible to the species for a relevant period of time (see Barve et al. 2011). Although most methods used in the **`ellipsenm`**  package are not sensible to a background (environmental conditions in the calibration area), having a well defined accessible area helps with interpretations. Bellow, a `r paste(ifelse(n_var > 2, "3", "2"), "dimensional")` representation of the ellipsoidal niche model and the Mahalanobis distances is shown in environmental space for the calibration area.
 
-```{r Figure3, fig.cap="Representation of mahalanobis distances in environmental space. Occurrence data is represented in blue. Cold colors represent long distances and warm colors short distances."}
+```{r Figure3, fig.cap="Representation of Mahalanobis distances in environmental space. Occurrence data is represented in blue. Cold colors represent long distances and warm colors short distances."}
 col1 <- rev(color_palette(nrow(r_values)))
 
 if (n_var > 2) {
@@ -154,13 +154,13 @@ if (n_var > 2) {
 
 # Predictions in geographic space
 
-Given the data and the characteristics that define the species ellipsoidal niche (see [Data used for modeling] and [Ellipsoid characteristics]) the results in geographic space for mahalanobis distances are presented bellow. 
+Given the data and the characteristics that define the species ellipsoidal niche (see [Data used for modeling] and [Ellipsoid characteristics]) the results in geographic space for Mahalanobis distances are presented bellow. 
 
 ## Calibration area
 
-The geographic prediction in the calibration area is presented below. Colors correspond with values of mahalanobis distances according to figure legend.
+The geographic prediction in the calibration area is presented below. Colors correspond with values of Mahalanobis distances according to figure legend.
 
-```{r Figure4, fig.cap="Representation of mahalanobis distances in geographic space. Occurrence data is represented in blue. Cold colors represent long distances and warm colors short distances. Grey lines represent country borders."}
+```{r Figure4, fig.cap="Representation of Mahalanobis distances in geographic space. Occurrence data is represented in blue. Cold colors represent long distances and warm colors short distances. Grey lines represent country borders."}
 par(mar = c(2, 2, 1, 1))
 plot(layer, col = rev(color_palette(255)))
 map(add = TRUE, col = "gray50")
@@ -187,7 +187,6 @@ The code for producing this report (if needed) can be found in the file `enm_mah
 
 * Barve, N., Barve, V., Jiménez-Valverde, A., Lira-Noriega, A., Maher, S.P., Peterson, A.T., Soberón, J., Villalobos, F., 2011. The crucial role of the accessible area in ecological niche modeling and species distribution modeling. Ecol. Modell. 222, 1810–1819.
 * Brown, J.H., 1984. On the relationship between abundance and distribution of a species. Am. Nat. 124, 255–279.
-* Colwell, R.K., Rangel, T.F., 2009. Hutchinson’s duality: The once and future niche. PNAS 106, 19651–19658.
 * Jiménez, L., Soberón, J., Christen, J.A., Soto, D., 2019. On the problem of modeling a fundamental niche from occurrence data. Ecol. Modell. 397, 74–83.
 * Osorio‐Olvera, L., Soberón, J., Falconi, M., 2019. On population abundance and niche structure. Ecography 42. https://doi.org/10.1111/ecog.04442.
 * Peterson, A.T., Cobos, M.E., Jiménez‐García, D., 2018. Major challenges for correlational ecological niche model projections to future climate conditions. Ann. N. Y. Acad. Sci. 1429, 66–77.
