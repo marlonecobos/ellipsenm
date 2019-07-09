@@ -56,7 +56,7 @@ A total of `r nrow(data)` occurrences and `r n_var` variables (`r paste(variable
 
 The plot below shows the geographic arrangement of occurrence data on the variable `r variable_names[1]`. Colors correspond with values of the variable according to figure legend.
 
-```{r Figure1, fig.cap="Representation of species occurrence data in geographic space. Grey lines represent country borders."}
+```{r Figure1, fig.cap="Representation of species occurrence data in geographic space. Occurrence data is represented in black. Grey lines represent country borders."}
 par(mar = c(2, 2, 1, 1))
 plot(variable1, col = viridis(255))
 map(add = TRUE, col = "gray50")
