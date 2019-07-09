@@ -214,7 +214,7 @@ The geographic prediction of suitability values in the calibration area is prese
 
 ```{r Figure5, fig.cap="Representation of suitability values in geographic space. Occurrence data is represented in blue. Cold colors represent low suitabilities and warm colors high suitabilities. Grey lines represent country borders."}
 par(mar = c(2, 2, 1, 1))
-plot(layer, col = color_palette(255))
+plot(layer[[1]], col = color_palette(255))
 map(add = TRUE, col = "gray50")
 points(data[, 2:3], col = "blue3")
 ```
@@ -223,7 +223,7 @@ A geographic prediction of Mahalanobis distances in the calibration area is pres
 
 ```{r Figure6, fig.cap="Representation of Mahalanobis distances in geographic space. Occurrence data is represented in blue. Cold colors represent long distances and warm colors short distances. Grey lines represent country borders."}
 par(mar = c(2, 2, 1, 1))
-plot(layer, col = rev(color_palette(255)))
+plot(layer[[2]], col = rev(color_palette(255)))
 map(add = TRUE, col = "gray50")
 points(data[, 2:3], col = "blue3")
 ```
