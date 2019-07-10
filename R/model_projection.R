@@ -160,8 +160,7 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
   if (cclas == "RasterStack") {
     if (prediction != "mahalanobis") {
       suit <- predictions@prediction_suit
-      prevalence <- predictions@prevalence
-      colnames(prevalence) <- "ellipsoid_model"
+      prevalence <- data.frame(ellipsoid_model = predictions@prevalence)
       if (prediction == "both") {
         maha <- predictions@prediction_maha
       }
@@ -174,8 +173,7 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
   } else {
     if (prediction != "mahalanobis") {
       suit <- predictions[[1]]@prediction_suit
-      prevalence <- predictions[[1]]@prevalence
-      colnames(prevalence) <- "ellipsoid_model"
+      prevalence <- data.frame(ellipsoid_model = predictions[[1]]@prevalence)
       if (prediction == "both") {
         maha <- predictions[[1]]@prediction_maha
       }
