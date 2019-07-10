@@ -38,7 +38,7 @@ This is the final report produced during the execution of the function `ellipsoi
 
 Note 1: If only one replicate was performed, results are obtained using the hole set of data. If multiple replicates were performed, results are produced per replicate; as each replicate is build with a sub-sample of the data, results may differ among replicates. For replicated models, mean results are shown in this report, results for all replicates, as well as for mean, minimum, and maximum ellipsoidal models can be found in the output directory defined in the function `ellipsoid_model`. If the model was performed with replicates, further raster calculations can be performed to show model variability (e.g., suitability range or other indicators of model variability; see Peterson et al. 2018)  
 
-Note 2: This is the report for a model projected into scenarios other than the one used for calibration. Therefore, other results correspondent to predictions for each of the projection scenarios were created in the output directory defined in the function `ellipsoid_model`. This report includes graphical and numeric results for only one of these projections (generally the first of all projections if multiple, or the only projection if a single one was performed). The reason for presenting only one of the projection is the prevention of RAM-related issues.
+Note 2: This is the report for a model projected into scenarios other than the one used for calibration. Therefore, other results correspondent to predictions for each of the projection scenarios were created in the output directory defined in the function `ellipsoid_model`. This report includes graphical and numeric results for only one of these projections (generally the first of all projections if multiple, or the only projection if a single one was performed). The reason for presenting only one projection is the prevention of RAM-related issues.
 
 Note 3: If more than tree dimensions were used to create the model, up to three of them will be used in graphical representations.
 
@@ -50,7 +50,7 @@ Tip: To see two dimensional figures in their actual size click on them. Three di
 
 The model presented in this report was produced for the species *`r as.character(data[1, 1])`* to characterize its ecological niche using an approach based in ellipsoid envelopes. The  modeling process was performed with `r ifelse(replicates > 1, paste0(replicates, " replicates"), "1 replicate")`.`r if (replicates > 1) {ifelse(replicate_type == "bootstrap", paste0(" Replicates were produced using bootstrapped subsamples of ", bootstrap_percentage, "% of the data.", " Replicates were produced by excluding one occurrence record at the time."))}` Based on the level used to produce the ellipsoids (`r as.character(mean_pred@level)`) the error (*E*) assumed for the occurrence data was `r as.character(100 - mean_pred@level)`%. This is, `r as.character(100 - mean_pred@level)`% of the occurrence data is considered as potentially erroneous (i.e., environmental outliers); therefore, this data is not included in the ellipsoid envelope model for the species ecological niche.
 
-This model was projected to `r length(scenarios)` scenario(s). The results for all projections can be found in the output directory defined in the function `ellipsoid_model` under the name(s) (`r paste(scenarios, collapse = ", ")`). Graphical and numerical results are presented only for the `r as.character(scenarios[1])` scenario.
+This model was projected to `r length(scenarios)` scenario(s). The results for all projections can be found in the output directory defined in the function `ellipsoid_model` under the name(s): `r paste0(paste(scenarios[-length(scenarios)], collapse = ", "), ", and ", scenarios[length(scenarios)])`. Graphical and numerical results are presented only for the `r as.character(scenarios[1])` scenario.
 
 ## Data used for modeling
 
@@ -198,16 +198,12 @@ if (n_var > 2) {
 
 ## Projection scenario
 
-A `r paste(ifelse(n_var > 2, "3", "2"), "dimensional")` representation of the ellipsoidal niche model and the suitability values is shown in environmental space for a scenario `r as.character(scenarios[1])`.
+A `r paste(ifelse(n_var > 2, "3", "2"), "dimensional")` representation of the ellipsoidal niche model and the suitability values is shown in environmental space for the `r as.character(scenarios[1])` scenario.
 
 ```{r Figure5, fig.cap="Representation of suitability values in environmental space for a scenario of projection. Occurrence data is represented in blue. Cold colors represent low suitabilities and warm colors high suitabilities."}
 col1 <- color_palette(nrow(pr_values))
 
 if (n_var > 2) {
-  el3d <- ellipse3d(mean_pred@covariance_matrix[1:3, 1:3],
-                    centre = mean_pred@centroid[1:3], 
-                    level = mean_pred@level / 100)
-  
   suit <- predict(ob, pr_values[, 1:3], "suitability", TRUE)
   
   vals <- cbind(pr_values[, 1:3], suit@suitability)
@@ -222,9 +218,6 @@ if (n_var > 2) {
   rglwidget()
   
 } else {
-  el1 <- ellipse(x = mean_pred@covariance_matrix[1:2, 1:2], 
-                 centre = mean_pred@centroid[1:2], 
-                 level = mean_pred@level / 100)
   xlim <- range(range(el1[, 1]), range(pr_values[, 1]))
   ylim <- range(range(el1[, 2]), range(pr_values[, 2])) 
   
@@ -284,3 +277,14 @@ citation("ellipsenm")
 
 The code for producing this report (if needed) can be found in the file `enm_suitability_pr_report.Rmd`; the data used is in `enm_report_data.RData`.
 
+<hr>
+
+# References
+
+* Barve, N., Barve, V., Jiménez-Valverde, A., Lira-Noriega, A., Maher, S.P., Peterson, A.T., Soberón, J., Villalobos, F., 2011. The crucial role of the accessible area in ecological niche modeling and species distribution modeling. Ecol. Modell. 222, 1810–1819.
+* Brown, J.H., 1984. On the relationship between abundance and distribution of a species. Am. Nat. 124, 255–279.
+* Colwell, R.K., Rangel, T.F., 2009. Hutchinson’s duality: The once and future niche. PNAS 106, 19651–19658.
+* Jiménez, L., Soberón, J., Christen, J.A., Soto, D., 2019. On the problem of modeling a fundamental niche from occurrence data. Ecol. Modell. 397, 74–83.
+* Osorio‐Olvera, L., Soberón, J., Falconi, M., 2019. On population abundance and niche structure. Ecography 42. https://doi.org/10.1111/ecog.04442.
+* Peterson, A.T., Cobos, M.E., Jiménez‐García, D., 2018. Major challenges for correlational ecological niche model projections to future climate conditions. Ann. N. Y. Acad. Sci. 1429, 66–77.
+* Peterson, A.T., Soberón, J., Pearson, R.G., Anderson, R.P., Martínez-Meyer, E., Nakamura, M., Araújo, M.B., 2011. Ecological Niches and Geographic Distributions. Princeton University Press, Princeton.
