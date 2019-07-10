@@ -249,15 +249,16 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
     pr_values <- projections$r_values
     layer_projection <- projections$s_layer
     prevalences_p <- projections$prevalence
+    scenarios <- projections$scenarios
 
     if (!missing(raster_layers)) {
       save(data, variable_names, variable1, n_var, r_values, ell_meta, mean_pred,
-           layer, prevalences, pr_values, layer_projection,
-           prevalences_p, replicates, replicate_type, bootstrap_percentage,
+           layer, prevalences, pr_values, layer_projection, prevalences_p,
+           scenarios, replicates, replicate_type, bootstrap_percentage,
            color_palette, file = paste0(output_directory, "/enm_report_data.RData"))
     } else {
       save(data, variable_names, n_var, ell_meta, mean_pred, prevalences,
-           pr_values, layer_projection, prevalences_p, replicates,
+           pr_values, layer_projection, prevalences_p, scenarios, replicates,
            replicate_type, bootstrap_percentage, color_palette,
            file = paste0(output_directory, "/enm_report_data.RData"))
     }

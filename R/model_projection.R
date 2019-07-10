@@ -202,12 +202,14 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
   if (prediction != "mahalanobis") {
     if (prediction == "both") {
       results <- list(s_layer = suit, m_layer = maha, prevalence = prevalence,
-                      r_values = r_values)
+                      r_values = r_values, scenarios = lnames)
     } else {
-      results <- list(s_layer = suit, prevalence = prevalence, r_values = r_values)
+      results <- list(s_layer = suit, prevalence = prevalence,
+                      r_values = r_values, scenarios = lnames)
     }
   } else {
-    results <- list(m_layer = maha, prevalence = vector(), r_values = r_values)
+    results <- list(m_layer = maha, prevalence = vector(),
+                    r_values = r_values, scenarios = lnames)
   }
 
   return(results)
