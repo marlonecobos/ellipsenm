@@ -2,7 +2,7 @@
 % Please edit documentation in R/model_projection.R
 \name{model_projection}
 \alias{model_projection}
-\title{Helper function to project models in ellipsoid model}
+\title{Helper function to project models to distinct scenarios}
 \usage{
 model_projection(ellipsoid, projection_variables,
   prvariables_format = NULL, sp_name, prediction = "suitability",
@@ -66,5 +66,5 @@ Additionally all results of projections will be written in the folder defined
 in \code{output_directory}.
 }
 \description{
-Helper function to project models in ellipsoid model
+Helper function to project models to distinct scenarios
 }

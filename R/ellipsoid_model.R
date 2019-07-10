@@ -1,6 +1,6 @@
-#' Fit ellipsoids based on distinct methods
+#' Ellipsoid-based ecological niche models
 #'
-#' @description ellipsoid_fit helps in finding the centroid and matrix that
+#' @description ellipsoid_model helps in finding the centroid and matrix that
 #' define an ellipsoid. It uses distinct methods with asumptions that differ
 #' from each other.
 #'
@@ -75,13 +75,41 @@
 #' # creating the model with no replicates
 #' ell_model <- ellipsoid_model(data = occurrences, species = "species",
 #'                              longitude = "longitude", latitude = "latitude",
-#'                              raster_layers = vars, method = "mve1", level = 99,
+#'                              raster_layers = vars, method = "covmat", level = 99,
 #'                              replicates = 1, prediction = "suitability",
 #'                              return_numeric = TRUE, format = "GTiff",
 #'                              overwrite = FALSE, output_directory = "ellipsenm_model")
 #'
 #' class(ell_model)
 #' # check your directory, folder "ellipsenm_model"
+#'
+#' # creating the model with replicates
+#' ell_model1 <- ellipsoid_model(data = occurrences, species = "species",
+#'                               longitude = "longitude", latitude = "latitude",
+#'                               raster_layers = vars, method = "covmat", level = 99,
+#'                               replicates = 5, prediction = "suitability",
+#'                               return_numeric = TRUE, format = "GTiff",
+#'                               overwrite = FALSE, output_directory = "ellipsenm_model1")
+#'
+#' class(ell_model1)
+#' # check your directory, folder "ellipsenm_model1"
+#'
+#' # creating the model with projections
+#' pr_vars <- raster::stack(system.file("extdata", "proj_variables.tif",
+#'                                      package = "ellipsenm"))
+#' names(pr_vars) <- names(vars)
+#'
+#' ell_model2 <- ellipsoid_model(data = occurrences, species = "species",
+#'                               longitude = "longitude", latitude = "latitude",
+#'                               raster_layers = vars, method = "covmat", level = 99,
+#'                               replicates = 3, replicate_type = "bootstrap",
+#'                               bootstrap_percentage = 75, projection_variables = pr_vars,
+#'                               prediction = "suitability", return_numeric = TRUE,
+#'                               format = "GTiff", overwrite = FALSE,
+#'                               output_directory = "ellipsenm_model2")
+#'
+#' class(ell_model2)
+#' # check your directory, folder "ellipsenm_model2"
 
 ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
                              method = "covmat", level = 95, replicates = 1,

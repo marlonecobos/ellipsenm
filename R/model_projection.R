@@ -1,4 +1,4 @@
-#' Helper function to project models in ellipsoid model
+#' Helper function to project models to distinct scenarios
 #'
 #' @param ellipsoid a fitted object of class ellipsoid*.
 #' @param projection_variables (RasterStack, list, or character): if RasterStack,
@@ -173,7 +173,7 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
   } else {
     if (prediction != "mahalanobis") {
       suit <- predictions[[1]]@prediction_suit
-      prevalence <- data.frame(ellipsoid_model = predictions[[1]]@prevalence)
+      prevalence <- predictions[[1]]@prevalence
       if (prediction == "both") {
         maha <- predictions[[1]]@prediction_maha
       }
