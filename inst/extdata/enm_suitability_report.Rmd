@@ -50,7 +50,7 @@ The model presented in this report was produced for the species *`r as.character
 
 ## Data used for modeling
 
-A total of `r nrow(data)` occurrences and `r n_var` variables (`r paste0(paste(variable_names[-length(variable_names)], collapse = ", "), ", and ", variable_names[length(variable_names)]))`) were used to produce the models.
+A total of `r nrow(data)` occurrences and `r n_var` variables (`r paste0(paste(variable_names[-length(variable_names)], collapse = ", "), ", and ", variable_names[length(variable_names)])`) were used to produce the models.
 
 ### Data in geographic space
 

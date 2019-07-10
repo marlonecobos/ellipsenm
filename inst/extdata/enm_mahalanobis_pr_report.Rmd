@@ -50,11 +50,11 @@ Tip: To see two dimensional figures in their actual size click on them. Three di
 
 The model presented in this report was produced for the species *`r as.character(data[1, 1])`* to measure distances from the centroid of its niche to each of the available environmental conditions in the area of interest. The  modeling process was performed with `r ifelse(replicates > 1, paste0(replicates, " replicates"), "1 replicate")`.`r if (replicates > 1) {ifelse(replicate_type == "bootstrap", paste0(" Replicates were produced using bootstrapped subsamples of ", bootstrap_percentage, "% of the data.", " Replicates were produced by excluding one occurrence record at the time."))}` Based on the level used to produce the ellipsoids (`r as.character(mean_pred@level)`) the error (*E*) assumed for the occurrence data was `r as.character(100 - mean_pred@level)`%. This is, `r as.character(100 - mean_pred@level)`% of the occurrence data is considered as potentially erroneous (i.e., environmental outliers); therefore, this data is not included in the ellipsoid envelope model for the species ecological niche.
 
-This model was projected to `r length(scenarios)` scenario(s). The results for all projections can be found in the output directory defined in the function `ellipsoid_model` under the name(s): `r if (length(scenarios) > 1) {(paste0(paste(scenarios[-length(scenarios)], collapse = ", "), ", and ", scenarios[length(scenarios)]))} else {as.character(scenarios[1])}`. Graphical and numerical results are presented only for the `r as.character(scenarios[1])` scenario.
+This model was projected to `r length(scenarios)` scenario(s). The results for all projections can be found in the output directory defined in the function `ellipsoid_model` under the name(s): `r if (length(scenarios) > 1) {paste0(paste(scenarios[-length(scenarios)], collapse = ", "), ", and ", scenarios[length(scenarios)])} else {as.character(scenarios[1])}`. Graphical and numerical results are presented only for the `r as.character(scenarios[1])` scenario.
 
 ## Data used for modeling
 
-A total of `r nrow(data)` occurrences and `r n_var` variables (`r paste0(paste(variable_names[-length(variable_names)], collapse = ", "), ", and ", variable_names[length(variable_names)]))`) were used to produce the models.
+A total of `r nrow(data)` occurrences and `r n_var` variables (`r paste0(paste(variable_names[-length(variable_names)], collapse = ", "), ", and ", variable_names[length(variable_names)])`) were used to produce the models.
 
 ### Data in geographic space
 
