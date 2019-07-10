@@ -91,6 +91,16 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
 
         predictions <- predict(ellipsoid, projection_variables, prediction, return_numeric,
                                tolerance, namer, format, overwrite)
+
+        if (cls == "ellipsoid_model_rep") {
+          predictions <- predict(ellipsoid, projection_variables, prediction,
+                                 return_numeric, tolerance, namer, format,
+                                 overwrite, force_return, return_name)
+        } else {
+          predictions <- predict(ellipsoid, projection_variables, prediction,
+                                 return_numeric, tolerance, namer, format,
+                                 overwrite, force_return)
+        }
       } else {
         stop("Variable names of projection_variables do not match variable names in ellipsoid.")
       }
@@ -110,8 +120,15 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
           if (i == 1) {r_values <- na.omit(raster::values(projection_variables[[i]]))}
           namer <- paste0(output_directory, "/", lnames, "_", sp_name, nam_format)
 
-          predictions[[i]] <- predict(ellipsoid, projection_variables[[i]], prediction,
-                                      return_numeric, tolerance, namer, format, overwrite)
+          if (cls == "ellipsoid_model_rep") {
+            predictions[[i]] <- predict(ellipsoid, projection_variables[[i]], prediction,
+                                        return_numeric, tolerance, namer, format, overwrite,
+                                        force_return, return_name)
+          } else {
+            predictions[[i]] <- predict(ellipsoid, projection_variables[[i]], prediction,
+                                        return_numeric, tolerance, namer, format, overwrite,
+                                        force_return)
+          }
         } else {
           stop("Variable names of projection_variables do not match variable names in ellipsoid.")
         }
