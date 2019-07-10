@@ -84,7 +84,7 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
     nam_format <- rformat_type(format)
 
     if (cclas == "RasterStack") {
-      r_values <- na.omit(projection_variables)
+      r_values <- na.omit(raster::values(projection_variables))
       lnames <- "projection"
       if (all(ellv_names == names(projection_variables))) {
         namer <- paste0(output_directory, "/", lnames, "_", sp_name, nam_format)
@@ -107,7 +107,7 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
       for (i in 1:length(lnames)) {
         cat("   Projection to", lnames[i], "\n")
         if (all(ellv_names == names(projection_variables[[i]]))) {
-          if (i == 1) {r_values <- na.omit(projection_variables[[i]])}
+          if (i == 1) {r_values <- na.omit(raster::values(projection_variables[[i]]))}
           namer <- paste0(output_directory, "/", lnames, "_", sp_name, nam_format)
 
           predictions[[i]] <- predict(ellipsoid, projection_variables[[i]], prediction,
@@ -132,7 +132,7 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
         if (all(ellv_names == namest)) {
           p_layers <- raster::stack(list.files(dirs[i], pattern = format_pl,
                                                full.names = TRUE))
-          if (i == 1) {r_values <- na.omit(p_layers)}
+          if (i == 1) {r_values <- na.omit(raster::values(p_layers))}
 
           namer <- paste0(output_directory, "/", lnames[i], "_", sp_name, nam_format)
 
@@ -161,6 +161,7 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
     if (prediction != "mahalanobis") {
       suit <- predictions@prediction_suit
       prevalence <- predictions@prevalence
+      colnames(prevalence) <- "ellipsoid_model"
       if (prediction == "both") {
         maha <- predictions@prediction_maha
       }
@@ -174,6 +175,7 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
     if (prediction != "mahalanobis") {
       suit <- predictions[[1]]@prediction_suit
       prevalence <- predictions[[1]]@prevalence
+      colnames(prevalence) <- "ellipsoid_model"
       if (prediction == "both") {
         maha <- predictions[[1]]@prediction_maha
       }
