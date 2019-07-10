@@ -160,11 +160,10 @@ Given the data and the characteristics that define the species ellipsoidal niche
 
 The geographic prediction in the calibration area is presented below. Colors correspond with values of Mahalanobis distances according to figure legend.
 
-```{r Figure4, fig.cap="Representation of Mahalanobis distances in geographic space. Occurrence data is represented in blue. Cold colors represent long distances and warm colors short distances. Grey lines represent country borders."}
+```{r Figure4, fig.cap="Representation of Mahalanobis distances in geographic space. Cold colors represent long distances and warm colors short distances. Grey lines represent country borders."}
 par(mar = c(2, 2, 1, 1))
 plot(layer, col = rev(color_palette(255)))
 map(add = TRUE, col = "gray50")
-points(data[, 2:3], col = "blue3")
 ```
 
 <hr>
