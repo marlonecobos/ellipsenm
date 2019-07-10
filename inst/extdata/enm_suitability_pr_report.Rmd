@@ -144,7 +144,7 @@ Given the data and the characteristics that define the species ellipsoidal niche
 
 The calibration area is represented by the variables given to fit the ellipsoid using the `ellipsoid_model` function. This area is recommended to be a region that has been accessible to the species for a relevant period of time (see Barve et al. 2011). Although most methods used in the **`ellipsenm`**  package are not sensible to a background (environmental conditions in the calibration area), having a well defined accessible area helps with interpretations. Bellow, a `r paste(ifelse(n_var > 2, "3", "2"), "dimensional")` representation of the ellipsoidal niche model and the suitability values is shown in environmental space for the calibration area.
 
-```{r Figure3, fig.cap="Representation of suitability values in environmental space for the calibration area. Occurrence data is represented in blue. Cold colors represent low suitabilities and warm colors high suitabilities."}
+```{r Figure4, fig.cap="Representation of suitability values in environmental space for the calibration area. Occurrence data is represented in blue. Cold colors represent low suitabilities and warm colors high suitabilities."}
 col1 <- color_palette(nrow(r_values))
 
 if (n_var > 2) {
@@ -200,7 +200,7 @@ if (n_var > 2) {
 
 A `r paste(ifelse(n_var > 2, "3", "2"), "dimensional")` representation of the ellipsoidal niche model and the suitability values is shown in environmental space for a scenario `r as.character(scenarios[1])`.
 
-```{r Figure4, fig.cap="Representation of suitability values in environmental space for a scenario of projection. Occurrence data is represented in blue. Cold colors represent low suitabilities and warm colors high suitabilities."}
+```{r Figure5, fig.cap="Representation of suitability values in environmental space for a scenario of projection. Occurrence data is represented in blue. Cold colors represent low suitabilities and warm colors high suitabilities."}
 col1 <- color_palette(nrow(pr_values))
 
 if (n_var > 2) {
@@ -254,7 +254,7 @@ Given the data and the characteristics that define the species ellipsoidal niche
 
 The geographic prediction in the calibration area is presented below. Colors correspond with values of suitability according to figure legend.
 
-```{r Figure5, fig.cap="Representation of suitability values in geographic space. Occurrence data is represented in blue. Cold colors represent low suitabilities and warm colors high suitabilities. Grey lines represent country borders."}
+```{r Figure6, fig.cap="Representation of suitability values in geographic space. Occurrence data is represented in blue. Cold colors represent low suitabilities and warm colors high suitabilities. Grey lines represent country borders."}
 par(mar = c(2, 2, 1, 1))
 plot(layer, col = color_palette(255))
 map(add = TRUE, col = "gray50")
@@ -265,7 +265,7 @@ points(data[, 2:3], col = "blue3")
 
 A geographic prediction in a projection scenario is shown below. This example corresponds to the scenario `r as.character(scenarios[1])`.
 
-```{r Figure6, fig.cap="Representation of suitability values in geography for a projection scenario. Occurrence data is represented in blue. Cold colors represent low suitabilities and warm colors high suitabilities. Grey lines represent country borders."}
+```{r Figure7, fig.cap="Representation of suitability values in geography for a projection scenario. Occurrence data is represented in blue. Cold colors represent low suitabilities and warm colors high suitabilities. Grey lines represent country borders."}
 par(mar = c(2, 2, 1, 1))
 plot(layer_projection, col = color_palette(255))
 map(add = TRUE, col = "gray50")
