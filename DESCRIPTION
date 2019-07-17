@@ -1,7 +1,7 @@
 Package: ellipsenm
 Type: Package
 Title: An R package for ecological niche's characterization using ellipsoids
-Version: 0.2.1
+Version: 0.2.2
 Authors@R: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", role = c("aut","cre")),
     person("Luis", "Osorio-Olvera", email = "luismurao@gmail.com ", role = "aut"),
