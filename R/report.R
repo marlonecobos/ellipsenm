@@ -96,9 +96,9 @@ report <- function(report_type, prediction, projected, output_directory = getwd(
 
   # report for calibration
   if (report_type == "calibration") {
-    name <- paste0(output_directory, "/enm_calibration_report.Rmd")
+    name <- paste0(output_directory, "/enm_calibration_guide.Rmd")
     suppressMessages(
-      file.copy(from = system.file("extdata", "enm_calibration_report.Rmd",
+      file.copy(from = system.file("extdata", "enm_calibration_guide.Rmd",
                                    package = "ellipsenm"), to = name)
     )
   }
@@ -114,7 +114,9 @@ report <- function(report_type, prediction, projected, output_directory = getwd(
 
   # -----------
   # rendering
-  suppressWarnings(rmarkdown::render(name, "all", quiet = TRUE))
+  if (report_type != "calibration") {
+    suppressWarnings(rmarkdown::render(name, "all", quiet = TRUE))
+  }
 
   # -----------
   # reporting
