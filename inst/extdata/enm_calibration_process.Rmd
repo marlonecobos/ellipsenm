@@ -22,7 +22,7 @@ This section is only for loading the packages and formatting the guide for model
 ```{r knitr_init, echo=TRUE, cache=FALSE, message=FALSE}
 # packages to load
 packages <- c("ellipse", "ellipsenm", "knitr", "maps", "raster", "rgl", 
-              "rmdformats", "viridis")
+              "rmdformats", "viridis", "scales")
 suppressWarnings(s <- sapply(packages, function(x) {library(x, character.only = T)}))
 
 # global options
@@ -85,13 +85,39 @@ split_data(data = calibration_data, method = split_method, longitude = longitude
 
 As may have been noticed, background conditions are not considered when common ellipsoids are fit; however, important desicions can be made if adequate explorations are carried out using a good hypthesis of an accessible area (also known as **M** in the BAM diagram; Soberon and Peterson 2005). For more information on the importance of the accessible areas when modeling ecological niches other resources can be consoulted (e.g., Barve et al. 2011, Peterson et al. 2011, Soberon and Peterson 2005). Here the use of the accessible areas will be specially related to the desicion of what type of ellipsoid is better to test given the arrangement of occurrences in environemntal space, and the goal of the research.
 
-The following chunk of code helps to visualize the accessible area to be used in further explorations.
+The following chunk of code helps to visualize the accessible area in geographic space.
 
-```{r loading_M}
+```{r M_visualization1}
+# limits for figure
+xlims <- extent(accessible_area)[1:2] 
+ylims <- extent(accessible_area)[3:4] 
+
+# map of accesible area in the world
+plot(raster_layers[[1]], xlim = xlims, ylim = ylims, col = viridis)
+map("world", col = "gray40", add = TRUE)
+plot(accessible_area, add = TRUE)
+points(data[, c(longitude, latitude)])
+```
+
+Masking raster layers using the accessible area.
+
+```{r masking_layers}
+masked_layers <- mask(crop(raster_layers, accessible_area), accessible_area)
+```
+
+
+The following chunk of code helps to visualize the accessible area in environmental space (the most relevant space considering the goal of ellipsoid ENMs). A multipanel figure representing the arrangement of data in two dimensions per panel will be created for explorations.  
+
+```{r M_visualization2}
+# producing the figure
+explore_espace(data, species, longitude, latitude, masked_layers)
+
+# saving the figure
+explore_espace(data, species, longitude, latitude, masked_layers, save = TRUE, 
+               name = "e_space_exploration.png", resolution = 300)
 
 ```
 
-If the user does not have a shapefile or raster of a hypothesis of **M** you can create explore different options. Three potential options can be used to define the **M**: a manual definition of accessible areas for the species, the use of geographic polygons (e.g., buffers, convex hulls, or concave hulls). A manual definition of the M can be done using distinct software, then it can be exported and 
 
 ## Selection of sets of variables to be used
 
