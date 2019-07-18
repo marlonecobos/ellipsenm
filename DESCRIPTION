@@ -29,6 +29,7 @@ Imports:
     rgl (>= 0.100),
     rmarkdown (>= 1.13),
     rmdformats (>= 0.3),
+    scales (>= 1.0),
     sp (>= 1.2),
     viridis (>= 0.5)
 Depends:
