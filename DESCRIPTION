@@ -17,6 +17,7 @@ Description: ellipsenm is an R package that implements multiple tools to help in
     package. Other functions implemented here are useful to perform a series of 
     pre- and post-modeling analyses.
 Imports:
+    cowplot (>= 1.0),
     data.table (>= 1.12),
     ellipse (>= 0.4),
     formatR (>= 1.7),
