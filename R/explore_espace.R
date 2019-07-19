@@ -1,6 +1,44 @@
+#' Exploration of data in enviornmental space
+#'
+#' @description explore_espace helps in eploring the patterns of arrangement of
+#' species occurrence data and accessible areas in environmental space.
+#'
+#' @param data data.frame of occurrence records. Columns must be: species,
+#' longitude, and latitude.
+#' @param species (character) name of the column with the name of the species.
+#' @param longitude (character) name of the column with longitude data.
+#' @param latitude (character) name of the column with latitude data.
+#' @param raster_layers RasterStack of at least two environmental variables to be
+#' extracted using geographic coordinates present in \code{data}.
+#' @param name (character) name (including the extention .pdf) of the PDF file to
+#' be created with the exploratory figures. Default = "e_space_exploration.pdf".
+#' @param open (logical) whether or not to open the file created directly.
+#' Default = TRUE
+#'
+#' @export
+#'
+#' @return
+#' A PDF document with indications and figures to explore the data in environmental
+#' space and make desicions on which methods and variables are worth to explore
+#' during model calibration.
+
 explore_espace <- function(data, species, longitude, latitude, raster_layers,
-                           color_palette = viridis::viridis, save = FALSE,
-                           name = "e_space_exploration.pdf") {
+                           name = "e_space_exploration.pdf", open = TRUE) {
+  if (missing(data)) {
+    stop("Argument occurrences is necessary to perform the analysis.")
+  }
+  if (missing(species)) {
+    stop("Argument species is not defined.")
+  }
+  if (missing(longitude)) {
+    stop("Argument longitude is not defined.")
+  }
+  if (missing(latitude)) {
+    stop("Argument latitude is not defined.")
+  }
+  if (missing(raster_layers)) {
+    stop("Argument raster_layers is not defined.")
+  }
 
   suppressPackageStartupMessages(library(GGally))
   suppressPackageStartupMessages(library(ggplot2))
@@ -53,7 +91,7 @@ explore_espace <- function(data, species, longitude, latitude, raster_layers,
                  progress = T) +
     my_theme
 
-  pdf("C:/Marlon/test/E_space_exploration.pdf", height = 8, width = 17)
+  pdf(name, height = 8, width = 17)
   plot.new()
   title(main = paste0("ellipsenm: model calibration process"),
         cex.main = 2)
@@ -73,6 +111,15 @@ explore_espace <- function(data, species, longitude, latitude, raster_layers,
          cex = 1.1, bty = "n")
   cowplot::plot_grid(ggmatrix_gtable(gp1), ggmatrix_gtable(gp2))
   invisible(dev.off())
+
+  # opening the file
+  path <- paste0(getwd(), "/", name)
+  if (open == TRUE) {
+    invisible(system(paste0('open "', path, '"')))
+  }
+
+  cat("A PDF file named", name, "has been created, check your working directory:\n",
+      getwd())
 }
 
 

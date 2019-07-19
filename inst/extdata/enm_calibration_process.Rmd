@@ -114,7 +114,7 @@ explore_espace(data, species, longitude, latitude, masked_layers)
 
 # saving the figure
 explore_espace(data, species, longitude, latitude, masked_layers, save = TRUE, 
-               name = "e_space_exploration.png", resolution = 300)
+               name = "e_space_exploration.png")
 
 ```
 
