@@ -1,6 +1,8 @@
-#' An Rmarkdown guide for ellipsoid ENM calibration
+#' A guide for ellipsoid ENM calibration
 #'
-#' @description
+#' @description calibration_guide generates an Rmarkdown file with information,
+#' instructions, and details, to guide users through the process of model
+#' calibration.
 #'
 #' @param data data.frame of occurrence records. Columns must be: species,
 #' longitude, and latitude. Optionally, if \code{raster_layers} is not defined,
@@ -23,6 +25,8 @@
 #' A folder containing an Rmarkdown file that serves as a guide to perform the
 #' process of model calibration. The Rmarkdown will be automatically open after
 #' running the function and all processes can be performed there.
+#'
+#' @export
 #'
 #' @details
 #' \code{accessible_area}: if the user does not have a hypothesis of this area,

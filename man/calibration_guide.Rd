@@ -2,7 +2,7 @@
 % Please edit documentation in R/calibration_guide.R
 \name{calibration_guide}
 \alias{calibration_guide}
-\title{An Rmarkdown guide for ellipsoid ENM calibration}
+\title{A guide for ellipsoid ENM calibration}
 \usage{
 calibration_guide(data, species, longitude, latitude, raster_layers,
   accessible_area, output_directory = "ellipsenm_calibration")
@@ -37,7 +37,9 @@ process of model calibration. The Rmarkdown will be automatically open after
 running the function and all processes can be performed there.
 }
 \description{
-
+calibration_guide generates an Rmarkdown file with information,
+instructions, and details, to guide users through the process of model
+calibration.
 }
 \details{
 \code{accessible_area}: if the user does not have a hypothesis of this area,
