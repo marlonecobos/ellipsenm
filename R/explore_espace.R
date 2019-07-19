@@ -110,3 +110,56 @@ explore_espace <- function(data, species, longitude, latitude, raster_layers,
   }
   invisible(dev.off())
 }
+
+
+library(GGally)
+library(ggplot2)
+
+vo <- rbind(v, o)
+
+my_theme <- theme(panel.background = element_rect(fill = "white", colour = "black"))
+
+f_1 <- function(data, mapping, subset = NULL) {
+  ggplot(mapping = mapping) +
+    geom_point(data = data[subset[[1]], ], colour = "lightblue1", alpha = 0.3) +
+    geom_point(data = data[subset[[2]], ], colour = "grey25", shape = 1) +
+    my_theme
+}
+
+f_2 <- function(data, mapping, subset = NULL) {
+  ggplot(mapping = mapping) +
+    stat_density_2d(data = data[subset[[1]], ], geom = "polygon",
+                    show.legend = FALSE, bins = 350) +
+    scale_fill_continuous(low = "lightblue1", high = "dodgerblue4") +
+    stat_density_2d(data = data[subset[[2]], ], colour = "black",
+                    show.legend = FALSE, bins = 10) +
+    my_theme
+}
+
+cors <- function(data, mapping, subset = NULL){
+  data <- data[subset[[2]], ]
+  x <- as.numeric(data[, 1])
+  y <- as.numeric(data[, 2])
+  est <- cor(x, y)
+  lb_size <- 5 * abs(est)
+  lbl <- paste0("r = ", round(est, 3))
+
+  ggplot(data = data, mapping = mapping) +
+    annotate("text", x = mean(x), y = mean(y), label = lbl, size = lb_size) +
+    my_theme
+}
+
+
+subsets <- list(as.character(vo$code) == "M", as.character(vo$code) == "Species")
+ggpairs(vo, columns = 2:ncol(vo),
+        upper = list(continuous = wrap(cors, subset = subsets)),
+        lower = list(continuous = wrap(f_1, subset = subsets))) +
+  my_theme
+
+
+ggpairs(vo, columns = 2:ncol(vo),
+        upper = list(continuous = wrap(cors, subset = subsets)),
+        lower = list(continuous = wrap(f_2, subset = subsets))) +
+  my_theme
+
+
