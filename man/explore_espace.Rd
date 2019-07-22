@@ -5,7 +5,8 @@
 \title{Exploration of data in enviornmental space}
 \usage{
 explore_espace(data, species, longitude, latitude, raster_layers,
-  name = "e_space_exploration.pdf", open = TRUE)
+  save = FALSE, name = "e_space_exploration.pdf", height = 8,
+  width = 17, open = TRUE)
 }
 \arguments{
 \item{data}{data.frame of occurrence records. Columns must be: species,
@@ -20,16 +21,22 @@ longitude, and latitude.}
 \item{raster_layers}{RasterStack of at least two environmental variables to be
 extracted using geographic coordinates present in \code{data}.}
 
+\item{save}{(logical) whether or not to save the plot as pdf file.}
+
 \item{name}{(character) name (including the extention .pdf) of the PDF file to
 be created with the exploratory figures. Default = "e_space_exploration.pdf".}
+
+\item{height}{(numeric) height of the figure; default = 8.}
+
+\item{width}{(numeric) width of the figure; default = 17.}
 
 \item{open}{(logical) whether or not to open the file created directly.
 Default = TRUE}
 }
 \value{
-A PDF document with indications and figures to explore the data in environmental
-space and make desicions on which methods and variables are worth to explore
-during model calibration.
+A plot and a PDF document with figures to explore the data in environmental
+space, which could help to make desicions on which methods and variables are
+worth to explore during model calibration.
 }
 \description{
 explore_espace helps in eploring the patterns of arrangement of
