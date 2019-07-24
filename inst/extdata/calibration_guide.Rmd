@@ -1,0 +1,165 @@
+---
+title: "ellipsenm: ENM calibration guide"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    thumbnails: true
+    lightbox: true
+    gallery: false
+    highlight: tango
+    fig_width: 7
+    fig_height: 6
+    toc_depth: 3
+    use_bookdown: true
+    number_sections: false
+css: guide_format.css
+---
+
+# Preparing environment for model calibration
+
+This section is only for loading the packages and formatting the guide for model calibration. Please, run this chunk of code and do not change it. To run all the lines of code in each chunk use the "`play`" button in the top-rigth part of each chunk, to run each line individually use `Ctrl + Enter` or the `Run` button in the menu bar.
+
+```{r knitr_init, echo=TRUE, cache=FALSE, message=FALSE}
+# packages to load
+packages <- c("ellipse", "ellipsenm", "knitr", "maps", "raster", "rgl", 
+              "rmdformats", "viridis", "scales")
+suppressWarnings(s <- sapply(packages, function(x) {library(x, character.only = T)}))
+
+# global options
+opts_chunk$set(echo=FALSE, cache=FALSE, prompt=FALSE, tidy=TRUE, comment=NA,
+               message=FALSE, warning=FALSE, fig.align='center', webgl=hook_webgl)
+opts_knit$set(width=100)
+
+# reading data
+load("calibration_data.RData")
+```
+
+<style>
+body {text-align: justify}
+</style>
+
+<hr>
+
+# General information
+
+The package <a href="https://github.com/marlonecobos/ellipsenm" target="_blank">**`ellipsenm`**</a> uses ellipsoids for modeling ecological niches. An ecological niche, from a Grinnellian perspective, is the set of environmental conditions that allow a species to maintain populations for long periods of time, without immigration events (Peterson et al. 2011). Models created with the **`ellipsenm`** package are ellipsoid envelope models and assume that a species ecological niche is convex, has an only optimum, and the species response to each variable covaries with the response to other variables (see Brown 1984, Jimenéz et al. 2019, Osorio-Olvera et al. 2019). 
+
+This Rmarkdown document has been created to help users going through a series of exploratory analyses that will end in fiding appropriate parametrizations for creating an ellipsoid envelope ecological niche model. Please read the entire document and perform all the steps to ensure that desicions are taken based on adequate explorations. At the end this Rmarkdown notebook can be exported to an HTML file for obtaining a better presentation and make your research methods more reproducible and sharable. To do so, use the `Knit` button in your menu (note that only HTML files are already configured, other file types can be used if this document is mdified appropriately).
+
+<hr>
+
+# Ecological niche model calibration process
+
+## Calibration of ecological niche models (ENMs)
+
+Model calibration is a process which aim is to determine the combination of parameter settings that best represents the phenomenon of interest by finding the best fit with the data (Steele & Werndl, 2013). Model calibration approaches in ecological niche modeling have already been developed for other algorithms (specially Maxent; Muscarella et al. 2014; Cobos et al. 2019). What these programs do is to test which of a set of distinct models created with combinations of regularization multipliers, feature classes, and sets of variables (this last one only in kuenm; Cobos et al. 2019) have acceptable performances based on a series of indicators. 
+
+Finding adequate parameterizations is withouth doubt important; however, other recent studies have also highlighted the importance of other considerations. Among these considerations, appropriateness of evaluation metrics, selection of variables (predictors), and a predefinition of potential parameterizations to be used, are the most challenging to be considered. How good evaluation metrics are to detect best models is of high importance because each ENM algorithm has its particularities (e.g., some use only presences, some consider the background, and others use presences and absences). The variables used to fit a model are of special relevance; for instance, these predictors must represent a dimension that is relevant for the species (conisdering its ecology nad natural history). Finally, a predefinition of paramters that are appropriate for studying the phenomenom of interest can be crucial. For instance, depending of the main goal of the ENM, the researcher may be more interested in sets of parameters that charaterizes better the ecological niche rathern than the species distribution, or visceversa. All this considerations are important during model calibration and should not be obvied; which is why this document is meant to help the researcher to perform a series of explorations and analyses that help to find appropiate model parameters of ellipsoid-based ENMs.     
+
+## Calibration of ellipsoid ENMs
+
+Ellipsoids are special ENMs, they are not like Maxent, GLMs, or other correlative algortihms. Ellipsoid ENMs are more like other envelope-based ecological niche models (e.g., Bioclim), but with crucial differences, specially related to the way in which environments are involved and clasified in suitable and non-suitable. These differences are the ones that make the calibration process for ellipsoid envelope ENMs particular and not comparable to others processes that already exist.
+
+### Important ellipsoid theretical facts to consider
+
+Ellipsoid volume 
+
+Ellipsoid prediction
+
+### How ellipsoid ENMs are created?
+
+ENMs created with ellipsoids try to characterize the set of environmental conditions contained in an ellipsoid with its centroid (generally) located in the coordinate given by the mean of all environental values of all occurrences for each variable. The limits of the ellipsoids are so that a user defined percentage of the occurrence are enclosed in the ellipsoid. Limiting the ellipsoid with a percentage of the data (generally 95% or more) is a very important decision because it allows to avoid potential errors (environmental outlyrs). With that, all environmental conditions inside the ellipsoids are considered to be suitable and the ones outside it are thought to be non-suitable. Mahalanobis distances are used then to represent how far is each combination of environmental conditions from the optimum (ellipsoid centroid). Suitability values result by default from a multivariate normal transformation of Mahalanobis distances. Therefore, maximum values of suitability will be close to the centroid and minimum values will be close to the border of the ellipsoid.     
+
+## Species occurrence data
+
+Splitting occurrences in training and testing data.
+
+```{r occurrence_split}
+data_split <- split_data(calibration_data, split_method, longitude, 
+                         latitude, train_proportion = 0.75, save = TRUE, 
+                         name = "occurrences")
+```
+
+
+## Accessible geographic area for the species
+
+As may have been noticed, background conditions are not considered when common ellipsoids are fit; however, important desicions can be made if adequate explorations are carried out using a good hypthesis of an accessible area (also known as **M** in the BAM diagram; Soberon and Peterson 2005). For more information on the importance of the accessible areas when modeling ecological niches other resources can be consoulted (e.g., Barve et al. 2011, Peterson et al. 2011, Soberon and Peterson 2005). Here the use of the accessible areas will be specially related to the desicion of what type of ellipsoid is better to test given the arrangement of occurrences in environemntal space, and the goal of the research.
+
+The following chunk of code helps to visualize the accessible area in geographic space.
+
+```{r M_visualization1}
+# limits for figure
+xlims <- extent(accessible_area)[1:2] 
+ylims <- extent(accessible_area)[3:4] 
+
+# map of accesible area in the world
+plot(raster_layers[[1]], xlim = xlims, ylim = ylims, col = viridis)
+map("world", col = "gray40", add = TRUE)
+plot(accessible_area, add = TRUE)
+points(data[, c(longitude, latitude)])
+```
+
+Masking raster layers using the accessible area.
+
+```{r masking_layers}
+masked_layers <- mask(crop(raster_layers, accessible_area), accessible_area)
+```
+
+
+The following chunk of code helps to visualize the accessible area in environmental space (the most relevant space considering the goal of ellipsoid ENMs). A multipanel figure representing the arrangement of data in two dimensions per panel will be created for explorations.  
+
+```{r M_visualization2}
+# producing the figure
+explore_espace(data, species, longitude, latitude, masked_layers)
+
+# saving the figure and opening the pdf for exploration
+explore_espace(data, species, longitude, latitude, masked_layers, save = T,
+               name = "espace_exploration.pdf", open = TRUE)
+
+```
+
+
+## Selection of sets of variables to be used
+
+```{r variable_selection}
+# sets of variables (example)
+sets <- list(set_1 = c("name1", "name2", "name3"),
+             set_2 = c("name1", "name3", "name4")) # change as needed
+
+selected_layers <- prepare_sets(masked_layers, sets, output_directory)
+
+# or prepare sets by all potential combinations 
+# selected_layers <- prepare_sets(masked_layers, all_combinations = TRUE, 
+#                                 output_directory)
+```
+
+
+## Model calibration and selection
+
+```{r calibration_arguments}
+data  <- data_split
+variables <- selected_layers # object created with prepare_sets or name of folder
+                             # with sets of environmental variables
+methods <- c("covmat") # which method to use, can be more than two
+output_directory <- getwd() # where to write results
+```
+
+
+```{r calibration}
+calibration <- ellipsoid_calibration(data, species, longitude, latitude, 
+                                     variables, methods, 
+                                     output_directory = getwd())
+```
+
+<hr>
+
+# Summary of results
+
+```{r summary}
+summary(calibration)
+```
+
+```{r summary_plot}
+plot(calibration)
+```
+
