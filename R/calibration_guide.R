@@ -71,14 +71,14 @@ calibration_guide <- function(data, species, longitude, latitude,
   }
 
   # -----------
-  # preparing and saving data
+  # preparing directory and saving data
+  dir.create(output_directory)
+
   save(data, species, longitude, latitude, raster_layers, accessible_area,
        file = paste0(output_directory, "/calibration_data.RData"))
 
   # -----------
   # producing guide
-  report_format(col = "#1e84b6", name = "calibration_format")
-  report(report_type = "calibration", output_directory)
-
-  file.edit(paste0(output_directory, "/enm_calibration_guide.Rmd"))
+  report_format(col = "#1e84b6", name = paste0(output_directory, "guide_format"))
+  guide(guide_type = "calibration", output_directory)
 }
