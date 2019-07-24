@@ -43,7 +43,7 @@ ellipsoid_calibration <- function(data, species, longitude, latitude,
     }
 
   } else {
-    stop("class of data is not compatible. See function's help.")
+    stop("data must be either character or list. See function's help.")
   }
 
 

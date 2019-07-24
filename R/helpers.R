@@ -132,31 +132,3 @@ write_ellmeta <- function(ellipsoid, name = "ellipsoid_metadata") {
   write.csv(ell_meta, namesum, row.names = TRUE)
   return(ell_meta)
 }
-
-
-#' Prepare sets of variables for calibration
-#' @param variables (character or RasterStack) if character, name of the folder
-#' containing only the variables to be subsetted; if RasterStack, stack of
-#' variables to be subsetted.
-#' @param sets named list of character vectors with the names of the variables
-#'  per each subset. Default = NULL.
-#' @param all_combinations (logical) whether or not to prepare sets based on all
-#' potential combinations of two or more \code{variables}. Ignored if sets is
-#' defined and default = FALSE changes to TRUE if sets = NULL.
-#' @param format_in (character) if \code{variables} is character, format of the
-#' variables found in the folder.
-#' @param format_out (character) format of the variables to be written in
-#' \code{output_directory}. Default = "GTiff".
-#' @param output_directory name of the folder were subsets will be written.
-#' @export
-#' @return
-#' A list of character vectors containing the names of the variables to be used
-#' in each set. A folder with subfolders (sets) and variables subsetted.
-
-prepare_sets <- function(variables, sets, all_combinations = FALSE, format_in,
-                         format_out = "GTiff", output_directory = "Variable_sets") {
-
-
-
-  return(sets)
-}
