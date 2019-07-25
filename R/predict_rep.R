@@ -9,6 +9,9 @@
 #' projected. See details.
 #' @param prediction (character) type of prediction to be made, options are:
 #' "suitability", "mahalanobis", and "both". Default = "suitability".
+#' @param truncate (logical) whether or not to truncate values of suitability
+#' based on ellipsoid limits. All values outside the ellipsoid will be zero.
+#' Default = TRUE.
 #' @param return_numeric (logical) whether or not to return values of mahalanobis
 #' distance and suitability as part of the results (it depends on the type of
 #' \code{prediction} selected). If \code{projection_variables} is a RasterStack,
@@ -109,8 +112,9 @@
 
 setMethod("predict", signature(object = "ellipsoid_model_rep"),
           function(object, projection_variables, prediction = "suitability",
-                   return_numeric, tolerance = 1e-60, name = NULL, format,
-                   overwrite = FALSE, force_return = FALSE, return_name = NULL) {
+                   truncate = TRUE, return_numeric, tolerance = 1e-60,
+                   name = NULL, format, overwrite = FALSE, force_return = FALSE,
+                   return_name = NULL) {
             # -----------
             # detecting potential errors
             if (!missing(object)) {
@@ -244,8 +248,8 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                   }
                 }
 
-                suitability <- exp(-0.5 * mah)
-                suitability <- ifelse(mah / chi_sq[x] <= 1, suitability, 0)
+                suitab <- exp(-0.5 * mah)
+                suitability <- ifelse(mah / chi_sq[x] <= 1, suitab, 0)
 
                 if (class(projection_variables)[1] == "RasterStack") {
                   suit_layer[!is.na(suit_layer[])] <- suitability
@@ -257,6 +261,9 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
                 u_suit <- suitability[db]
                 p_suit_e <- sum(u_suit != 0) / length(u_suit)
                 prevalence <- c(prevalence_E_space = p_suit_e, prevalence_G_space = p_suit_g)
+
+                ## redefining suitability by trucate option
+                if (truncate == FALSE) {suitability <- suitab}
 
                 if (!is.null(name)) {
                   if (prediction == "both") {

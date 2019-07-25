@@ -9,6 +9,9 @@
 #' projected. See details.
 #' @param prediction (character) type of prediction to be made, options are:
 #' "suitability", "mahalanobis", and "both". Default = "suitability".
+#' @param truncate (logical) whether or not to truncate values of suitability
+#' based on ellipsoid limits. All values outside the ellipsoid will be zero.
+#' Default = TRUE.
 #' @param return_numeric (logical) whether or not to return values of mahalanobis
 #' distance and suitability as part of the results (it depends on the type of
 #' \code{prediction} selected). If \code{projection_variables} is a RasterStack,
@@ -85,7 +88,7 @@
 
 setMethod("predict", signature(object = "ellipsoid"),
           function(object, projection_variables, prediction = "suitability",
-                   return_numeric, tolerance = 1e-60, name = NULL,
+                   truncate = TRUE, return_numeric, tolerance = 1e-60, name = NULL,
                    format, overwrite = FALSE, force_return = FALSE) {
             # -----------
             # detecting potential errors
@@ -158,8 +161,8 @@ setMethod("predict", signature(object = "ellipsoid"),
                 chi_sq <- qchisq(alpha, ncol(back))
 
                 ## distances to suitabilities considering a multivariate normal distribution
-                suitability <- exp(-0.5 * maha)
-                suitability <- ifelse(maha / chi_sq <= 1, suitability, 0) # inside only
+                suitab <- exp(-0.5 * maha)
+                suitability <- ifelse(maha / chi_sq <= 1, suitab, 0) # inside only
 
                 ## prevalence
                 p_suit_g <- sum(suitability != 0) / length(suitability)
@@ -167,6 +170,9 @@ setMethod("predict", signature(object = "ellipsoid"),
                 p_suit_e <- sum(u_suit != 0) / length(u_suit)
 
                 prevalence <- c(prevalence_E_space = p_suit_e, prevalence_G_space = p_suit_g)
+
+                ## redefining suitability by trucate option
+                if (truncate == FALSE) {suitability <- suitab}
 
                 ## preparing RasterLayers suit
                 if (class(projection_variables)[1] == "RasterStack") {

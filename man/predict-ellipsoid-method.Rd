@@ -6,8 +6,9 @@
 \title{Predict suitability derived from simple ellipsoid envelope models}
 \usage{
 \S4method{predict}{ellipsoid}(object, projection_variables,
-  prediction = "suitability", return_numeric, tolerance = 1e-60,
-  name = NULL, format, overwrite = FALSE, force_return = FALSE)
+  prediction = "suitability", truncate = TRUE, return_numeric,
+  tolerance = 1e-60, name = NULL, format, overwrite = FALSE,
+  force_return = FALSE)
 }
 \arguments{
 \item{object}{a fitted object of class ellipsoid or ellipsoid_model_sim.}
@@ -18,6 +19,10 @@ projected. See details.}
 
 \item{prediction}{(character) type of prediction to be made, options are:
 "suitability", "mahalanobis", and "both". Default = "suitability".}
+
+\item{truncate}{(logical) whether or not to truncate values of suitability
+based on ellipsoid limits. All values outside the ellipsoid will be zero.
+Default = TRUE.}
 
 \item{return_numeric}{(logical) whether or not to return values of mahalanobis
 distance and suitability as part of the results (it depends on the type of
