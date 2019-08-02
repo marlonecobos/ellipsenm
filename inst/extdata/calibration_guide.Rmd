@@ -126,11 +126,12 @@ explore_espace(data, species, longitude, latitude, masked_layers, save = T,
 sets <- list(set_1 = c("name1", "name2", "name3"),
              set_2 = c("name1", "name3", "name4")) # change as needed
 
-selected_layers <- prepare_sets(masked_layers, sets, output_directory)
+selected_layers <- prepare_sets(masked_layers, sets)
 
-# or prepare sets by all potential combinations 
+# or prepare sets by all combinations of two or more variables 
 # selected_layers <- prepare_sets(masked_layers, all_combinations = TRUE, 
 #                                 output_directory)
+# you can also save the sets created, see functions help
 ```
 
 
@@ -149,6 +150,7 @@ output_directory <- getwd() # where to write results
 calibration <- ellipsoid_calibration(data, species, longitude, latitude, 
                                      variables, methods, 
                                      output_directory = getwd())
+# check the output directory, where all results were written
 ```
 
 <hr>
@@ -156,10 +158,5 @@ calibration <- ellipsoid_calibration(data, species, longitude, latitude,
 # Summary of results
 
 ```{r summary}
-summary(calibration)
+browseURL("C:/Marlon/test/ellipsenm_model_both/enm_both_report.html")
 ```
-
-```{r summary_plot}
-plot(calibration)
-```
-

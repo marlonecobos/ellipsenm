@@ -1,5 +1,28 @@
-ellipsoid_calibration <- function(data, species, longitude, latitude,
-                                  variables, methods, overwrite = FALSE,
+#' Calibration of ellipsoid-based ecological niche models
+#'
+#' @description ellipsoid_calibration helps in creating and evaluating multiple
+#' candidate ellipsoid envelop models to find parameter settings that produce
+#' the best results.
+#'
+#' @param data (character or list) if character, vector of names of csv files
+#' containing all, training, and testing occurrences located in the working
+#' directory; if list, object resulted from \code{\link{split_data}}. Columns of
+#' tables must include: species, longitude, and latitude.
+#' @param species (character) name of the column with the name of the species.
+#' @param longitude (character) name of the column with longitude data.
+#' @param latitude (character) name of the column with latitude data.
+#' @param variables (character or list) if character, name of a folder containing
+#' subfolders of at least one set of variables; if list, object derived from
+#' \code{\link{prepare sets}}. Sets of variables must contain at least two layers.
+#' @param methods (character) methods to construct the ellipsoid ecological niche
+#' models to be tested. Available methods are: "covmat", "mve1", and "mve2".
+#' See details of \code{\link{ellipsoid_fit}}.
+#' @param level (numeric) the confidence level of a pairwise confidence region
+#' for the ellipsoid, expresed as percentage. Default = 95.
+
+ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
+                                  methods, level = 95, parallel = FALSE,
+                                  overwrite = FALSE,
                                   output_directory = "calibration_results") {
   # -----------
   # detecting potential errors, other potential problems tested in code
@@ -37,10 +60,8 @@ ellipsoid_calibration <- function(data, species, longitude, latitude,
       data <- lapply(data, function(x) {
         read.csv(x)
       })
-      sp <- as.character(data[[1]][1, species])
-    } else {
-      sp <- as.character(data[[1]][1, species])
     }
+    sp <- as.character(data[[1]][1, species])
 
   } else {
     stop("data must be either character or list. See function's help.")
