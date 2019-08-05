@@ -4,52 +4,47 @@
 \alias{partial_roc}
 \title{Partial ROC calculation for ecological niche models}
 \usage{
-partial_roc(occ.test, model, threshold = 5, rand.percent = 50,
-  iterations = 500)
+partial_roc(prediction, test_data, longitude, latitude, error = 5,
+  iterations = 500, percentage = 50)
 }
 \arguments{
-\item{occ.test}{a numerical matrix containing coordinates of the occurrences
-used to test the ecological niche model to be evaluated; columns must be:
-longitude and latitude.}
+\item{prediction}{RasterLayer or numeric vector of ecological niche model
+predictions to be evaluated. If RasterLayer, layer of predicted suitability.
+If numeric vector, predicted suitability values.}
 
-\item{model}{a RasterLayer of the ecological niche model to be evaluated.}
+\item{test_data}{matrix, data.frame, or numeric vector containing coordinates
+of occurrences to test model predictions to be evaluated. If matrix or
+data.frame, columns must include longitude and latitude to extract values of
+raster prediction. If numeric, values of suitability in such occurrences. If
+a matrix or a data.frame is provided, \code{prediction} must be a RasterLayer.}
 
-\item{threshold}{(numeric) value from 0 to 100 that will be used as threshold (E);
-default = 5.}
-
-\item{rand.percent}{(numeric) value from 0 to 100 representing the percent of testing data
-to be used for performing the bootstrap process for calculating the partial ROC;
-default = 50.}
+\item{error}{(numeric) value from 0 to 100 to represent the percentage of
+potential error (E) that the data could have due to any source of uncertainty.
+Default = 5.}
 
 \item{iterations}{(numeric) number of bootstrap iterations to be performed;
 default = 500.}
 
-\item{parallel}{(logical) if TRUE, calculations will be performed in parallel using the available
-cores of the computer. This will demand more RAM and almost full use of the CPU; hence, its use
-is more recommended in high-performance computers. Using this option will speed up the analyses
-only if \code{model} is a large RasterLayer or if \code{iterations} are more than 5000.
-Default = FALSE.}
+\item{percentage}{(numeric) percentage of testing data to be used in each
+bootstrapped process for calculating the partial ROC. Default = 50.}
 }
 \value{
-A data.frame containing the AUC values and AUC ratios calculated for each iteration.
+A list with the summary of the results and a data.frame containing
+the AUC values and AUC ratios calculated for all iterations.
 }
 \description{
-partial_roc applies partial ROC tests to single models.
+partial_roc applies partial ROC tests to model predictions.
 }
 \details{
-Partial ROC is calculated following Peterson et al.
-(2008; \url{http://dx.doi.org/10.1016/j.ecolmodel.2007.11.008}). This function is a modification
-of the \code{\link[ntbox]{pROC}} funcion, available at \url{https://github.com/luismurao/ntbox}.
+Partial ROC is calculated following Peterson et al. (2008;
+\url{http://dx.doi.org/10.1016/j.ecolmodel.2007.11.008}).
 }
 \examples{
-occ <- read.csv(list.files(system.file("extdata", package = "ellipsenm"),
-                           pattern = "sp_test.csv", full.names = TRUE))
-model <- raster::raster(list.files(system.file("extdata", package = "ellipsenm"),
-                                   pattern = "sp_model.tif", full.names = TRUE))
-thres <- 5
-rand_perc <- 50
-iterac <- 500
+occurrences <- read.csv(system.file("extdata", "occurrences.csv",
+                        package = "ellipsenm"))
+prediction <- raster::raster(system.file("extdata", "prediction.tif",
+                                      package = "ellipsenm"))
 
-p_roc <- partial_roc(occ.test = occ, model = model, threshold = thres,
-                   rand.percent = rand_perc, iterations = iterac)
+p_roc <- partial_roc(prediction = prediction, test_data = occurrences,
+                     longitude = "Longitude", latitude = "Latitude")
 }
