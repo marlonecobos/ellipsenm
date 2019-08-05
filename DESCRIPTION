@@ -1,7 +1,7 @@
 Package: ellipsenm
 Type: Package
 Title: An R package for ecological niche's characterization using ellipsoids
-Version: 0.2.3
+Version: 0.2.4
 Authors@R: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", role = c("aut","cre")),
     person("Luis", "Osorio-Olvera", email = "luismurao@gmail.com ", role = "aut"),
@@ -19,6 +19,7 @@ Description: ellipsenm is an R package that implements multiple tools to help in
 Imports:
     cowplot (>= 1.0),
     data.table (>= 1.12),
+    dplyr (>= 0.8),
     ellipse (>= 0.4),
     formatR (>= 1.7),
     GGally (>= 1.4),
@@ -26,7 +27,9 @@ Imports:
     knitr (>= 1.23),
     maps (>= 3.3),
     MASS (>= 7.3),
+    purrr (>= 0.3),
     raster (>= 2.6),
+    Rcpp (>= 1.0),
     rgdal (>= 1.4),
     rgeos (>= 0.3),
     rgl (>= 0.100),
@@ -36,9 +39,10 @@ Imports:
     sp (>= 1.2),
     viridis (>= 0.5)
 Depends:
-    R (>= 3.4.0)
+    R (>= 3.5.0)
 VignetteBuilder: knitr
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
+LinkingTo: Rcpp
