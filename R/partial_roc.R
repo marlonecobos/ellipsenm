@@ -59,6 +59,14 @@ partial_roc <- function(prediction, test_data, longitude, latitude, error = 5,
   if (c_pred == "numeric" & c_tdat != "numeric") {
     stop("test_data must be of class numeric if prediction is a numeric vector.")
   }
+  if (c_tdat != "numeric") {
+    if (missing(longitude)) {
+      stop("Argument longitude is not defined.")
+    }
+    if (missing(latitude)) {
+      stop("Argument latitude is not defined.")
+    }
+  }
 
   # -----------
   # package and function needed
