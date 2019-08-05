@@ -52,10 +52,10 @@ a definition of the M can be done via simulations of dispersal based on the
 species ecological characteristics. For the latter see (****).
 
 See functions \code{\link{buffer_area}}, \code{\link{convex_area}},
-concave_area, and polygon_selection, for options to create accessible areas
-based on geographic polygons and selection of relevant parts of existing
-SpatialPolygon areas.
+\code{\link{concave_area}}, and \code{\link{polygon_selection}}, for options
+to create accessible areas based on geographic polygons and selection of
+relevant parts of existing SpatialPolygon areas.
 
-For creation of accessible areas from simulations see function
-\code{\link[grinnell]{M_simulation}} from the grinnell package.
+For creation of accessible areas from simulations see function M_simulation
+from the grinnell package \url{https://github.com/fmachados/grinnell}.
 }

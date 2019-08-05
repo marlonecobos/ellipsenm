@@ -18,6 +18,10 @@ data.frame, columns must include longitude and latitude to extract values of
 raster prediction. If numeric, values of suitability in such occurrences. If
 a matrix or a data.frame is provided, \code{prediction} must be a RasterLayer.}
 
+\item{longitude}{(character) name of the column with longitude data.}
+
+\item{latitude}{(character) name of the column with latitude data.}
+
 \item{error}{(numeric) value from 0 to 100 to represent the percentage of
 potential error (E) that the data could have due to any source of uncertainty.
 Default = 5.}
