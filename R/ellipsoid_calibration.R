@@ -13,16 +13,58 @@
 #' @param latitude (character) name of the column with latitude data.
 #' @param variables (character or list) if character, name of a folder containing
 #' subfolders of at least one set of variables; if list, object derived from
-#' \code{\link{prepare sets}}. Sets of variables must contain at least two layers.
+#' \code{\link{prepare_sets}}. Sets of variables must contain at least two layers.
+#' @param format_in (character) if \code{variables} is character, format of the
+#' variables found in folders. Default = NULL.
 #' @param methods (character) methods to construct the ellipsoid ecological niche
 #' models to be tested. Available methods are: "covmat", "mve1", and "mve2".
 #' See details of \code{\link{ellipsoid_fit}}.
 #' @param level (numeric) the confidence level of a pairwise confidence region
 #' for the ellipsoid, expresed as percentage. Default = 95.
+#' @param selection_criteria (character) set of criteria to select best models,
+#' options are: "S_OR" (statistical significance and low omission) and
+#' "S_OR_P" (statistical significance, low omission, and low prevalence).
+#' See details. Default = "Sig_OR_Prev".
+#' @param error (numeric) value from 0 to 100 to represent the percentage of
+#' potential error (E) that the data could have due to any source of uncertainty.
+#' Default = 5.
+#' @param iterations (numeric) number of bootstrap iterations to be performed;
+#' default = 500.
+#' @param percentage (numeric) percentage of testing data to be used in each
+#' bootstrapped process for calculating the partial ROC. Default = 50.
+#' @param parallel (logical) whether or not to run analyses in parallel. If
+#' defined as TRUE, it will only run in parallel if the number of parameter
+#' settings to be tested is equal or larger than the number of cores available.
+#' @param overwrite (logical) whether or not to overwrite exitent results in
+#' \code{output_directory}. Default = FALSE.
+#' @param output_directory (character) name of the folder were results of model
+#' calibration and selection will be written.
+#'
+#' @return
+#' A calibration_ellipsoid object with all results and details derived from the
+#' calibration process. A folder named \code{output_directory}, containing all
+#' results as well as a detailed HTML report will also be created.
+#'
+#' @export
+#'
+#' @details
+#' Statistical significance is assessed using the partial_ROC test, omission
+#' rates refer to the proportion of testing data known to be in suitable areas
+#' but predicted as unsuitable, and prevalence is the proportion of geographic
+#' and environmental space predicted as suitable.
+#'
+#' The maximum expected omission rates are 1 - (\code{level} / 100). Thus, if
+#' \code{level} is determined as 95, an adequate omission rate should not be
+#' higher than 0.5.
+#'
+#' Good models are expected to have low omission rates and low prevalence. This
+#' implies that the model is predicting correctly in smaller areas.
 
 ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
-                                  methods, level = 95, parallel = FALSE,
-                                  overwrite = FALSE,
+                                  format_in = NULL, methods, level = 95,
+                                  selection_criteria = "S_OR_P",
+                                  error, iterations, percentage,
+                                  parallel = FALSE, overwrite = FALSE,
                                   output_directory = "calibration_results") {
   # -----------
   # detecting potential errors, other potential problems tested in code
@@ -50,10 +92,21 @@ ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
   if (overwrite == TRUE & dir.exists(output_directory)) {
     unlink(x = output_directory, recursive = TRUE, force = TRUE)
   }
+  cl_var <- class(variables)[1]
+  if (!cl_var %in% c("character", "list")) {
+    stop("variables must of class character or list, see function's help.")
+  } else {
+    if (cl_var == "character") {
+      if (is.null(format_in)) {
+        stop("Argument fomat_in cannot be NULL if variables is of class character.")
+      }
+    }
+  }
 
   # -----------
   # preparing data and variables
   cat("\nPreparing data...\n")
+  ## occurrences
   clocc <- class(data)[1]
   if (clocc == "character" | clocc == "list") {
     if (clocc == "character") {
@@ -67,23 +120,68 @@ ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
     stop("data must be either character or list. See function's help.")
   }
 
+  ## variables
+  if (cl_var == "character") {
+    patt <- paste0(rformat_type(format_in), "$")
+    vars <- list.files(variables, pattern = patt, full.names = TRUE,
+                       recursive = TRUE)
+    varss <- list.files(variables, pattern = patt, recursive = TRUE)
+    places <- !duplicated(varss)
 
+    dirs <- dir(variables)
+    sets <- lapply(1:length(dirs), function(x) {
+      vs <- list.files(dirs[x], pattern = patt)
+      gsub(patt, "", vs)
+    })
+    names(sets) <- paste0("set_", 1:length(sets))
 
+    variables <- list(raster_layers = raster::stack(vars[places]),
+                      variable_sets = sets)
+  }
+
+  # -----------
+  # calibration process
+  cat("\nRunning model calibration:\n")
+  if (parallel == FALSE) {
+    calibration <- sapply(1:length(settings), function(x) {
+      ellip <- ellipsoid_fit(data[[2]], longitude, latitude, method, level)
+
+      var_vals <- na.omit(raster::values(vs))
+      pred_all <- predict(ellip, projection_variables = var_vals, truncate = FALSE)
+
+      occ_vals <- na.omit(raster::extract(vs, data[[3]][, c(longitude, latitude)]))
+      pred_all <- predict(ellip, projection_variables = occ_vals)
+
+      proc <- partial_roc(pred_all, occ_vals, longitude, latitude, error,
+                          iterations, percentage)
+
+      om_rate <- sum(pred_all == 0) / length(pred_all)
+
+      cat("\tParameter setting", x, "of", length(settings), "\n")
+    })
+  } else {
+
+  }
+
+  # -----------
+  # parameter selection
+  selected
 
   # -----------
   # producing report
+  cat("\nAnalyses finished. Producing HTML report...\n")
   report_format(name = paste0(output_directory, "/report_format"))
   report(report_type = "calibration", output_directory)
 
   # -----------
   # returning results
-  results <- calibration_ellipsoid(methods = "character",
-                                   data = "data.frame",
-                                   variable_sets = "list",
-                                   level = "numeric",
-                                   results = "data.frame",
-                                   selection_criteria = "character",
-                                   selected_parameters = "character")
+  results <- calibration_ellipsoid(methods = methods,
+                                   data = data,
+                                   variable_sets = variables,
+                                   level = level,
+                                   results = calibration,
+                                   selection_criteria = selection_criteria,
+                                   selected_parameters = selected)
 
   return(results)
 }

@@ -5,7 +5,9 @@
 \title{Calibration of ellipsoid-based ecological niche models}
 \usage{
 ellipsoid_calibration(data, species, longitude, latitude, variables,
-  methods, level = 95, parallel = FALSE, overwrite = FALSE,
+  format_in = NULL, methods, level = 95,
+  selection_criteria = "S_OR_P", error, iterations, percentage,
+  parallel = FALSE, overwrite = FALSE,
   output_directory = "calibration_results")
 }
 \arguments{
@@ -22,7 +24,10 @@ tables must include: species, longitude, and latitude.}
 
 \item{variables}{(character or list) if character, name of a folder containing
 subfolders of at least one set of variables; if list, object derived from
-\code{\link{prepare sets}}. Sets of variables must contain at least two layers.}
+\code{\link{prepare_sets}}. Sets of variables must contain at least two layers.}
+
+\item{format_in}{(character) if \code{variables} is character, format of the
+variables found in folders. Default = NULL.}
 
 \item{methods}{(character) methods to construct the ellipsoid ecological niche
 models to be tested. Available methods are: "covmat", "mve1", and "mve2".
@@ -30,9 +35,52 @@ See details of \code{\link{ellipsoid_fit}}.}
 
 \item{level}{(numeric) the confidence level of a pairwise confidence region
 for the ellipsoid, expresed as percentage. Default = 95.}
+
+\item{selection_criteria}{(character) set of criteria to select best models,
+options are: "S_OR" (statistical significance and low omission) and
+"S_OR_P" (statistical significance, low omission, and low prevalence).
+See details. Default = "Sig_OR_Prev".}
+
+\item{error}{(numeric) value from 0 to 100 to represent the percentage of
+potential error (E) that the data could have due to any source of uncertainty.
+Default = 5.}
+
+\item{iterations}{(numeric) number of bootstrap iterations to be performed;
+default = 500.}
+
+\item{percentage}{(numeric) percentage of testing data to be used in each
+bootstrapped process for calculating the partial ROC. Default = 50.}
+
+\item{parallel}{(logical) whether or not to run analyses in parallel. If
+defined as TRUE, it will only run in parallel if the number of parameter
+settings to be tested is equal or larger than the number of cores available.}
+
+\item{overwrite}{(logical) whether or not to overwrite exitent results in
+\code{output_directory}. Default = FALSE.}
+
+\item{output_directory}{(character) name of the folder were results of model
+calibration and selection will be written.}
+}
+\value{
+A calibration_ellipsoid object with all results and details derived from the
+calibration process. A folder named \code{output_directory}, containing all
+results as well as a detailed HTML report will also be created.
 }
 \description{
 ellipsoid_calibration helps in creating and evaluating multiple
 candidate ellipsoid envelop models to find parameter settings that produce
 the best results.
+}
+\details{
+Statistical significance is assessed using the partial_ROC test, omission
+rates refer to the proportion of testing data known to be in suitable areas
+but predicted as unsuitable, and prevalence is the proportion of geographic
+and environmental space predicted as suitable.
+
+The maximum expected omission rates are 1 - (\code{level} / 100). Thus, if
+\code{level} is determined as 95, an adequate omission rate should not be
+higher than 0.5.
+
+Good models are expected to have low omission rates and low prevalence. This
+implies that the model is predicting correctly in smaller areas.
 }

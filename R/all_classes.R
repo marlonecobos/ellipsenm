@@ -39,12 +39,12 @@ ellipsoid_model_rep <- setClass("ellipsoid_model_rep",
 
 calibration_ellipsoid <- setClass("calibration_ellipsoid",
                                   slots = c(methods = "character",
-                                            data = "data.frame",
+                                            data = "list",
                                             variable_sets = "list",
                                             level = "numeric",
                                             results = "data.frame",
                                             selection_criteria = "character",
-                                            selected_parameters = "character"))
+                                            selected_parameters = "data.frame"))
 
 data_overlap <- setClass("data_overlap",
                          slots = c(method = "character",
