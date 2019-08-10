@@ -53,6 +53,7 @@ data_overlap <- setClass("data_overlap",
                                    raster_layers = "S4"))
 
 overlap_ellipsoid <- setClass("overlap_ellipsoid",
-                              slots = c(spp_data = "list",
-                                        ellipsoids = "list",
+                              slots = c(ellipsoids = "list",
+                                        spp_data = "list",
+                                        background = "list",
                                         overlap = "data.frame"))
