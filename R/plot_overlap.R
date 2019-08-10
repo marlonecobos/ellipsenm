@@ -1,4 +1,4 @@
-plot_ellipsoids3d <- function(object, level = 0.95, ocurrences = NULL,
+plot_ellipsoids3d <- function(object, level = 0.95, spp_data = FALSE,
                               col = c("black", "red", "darkgreen"),
                               background_points = NULL, proportion = 0.3,
                               background_col = NULL) {
@@ -11,12 +11,12 @@ plot_ellipsoids3d <- function(object, level = 0.95, ocurrences = NULL,
 
   # -----------
   # plotting
-  if (!is.null(sp_coords)) {
-    points <- lapply(1:length(sp_coords), function(x) {
+  if (!is.null(spp_data)) {
+    points <- lapply(1:length(spp_data), function(x) {
       if (x == 1) {
-        plot3d(sp_coords[[x]], col = col[x], size = 6)
+        plot3d(spp_data[[x]], col = col[x], size = 6)
       } else {
-        plot3d(sp_coords[[x]], col = col[x], size = 6, add = TRUE)
+        plot3d(spp_data[[x]], col = col[x], size = 6, add = TRUE)
       }
     })
   }
@@ -25,7 +25,6 @@ plot_ellipsoids3d <- function(object, level = 0.95, ocurrences = NULL,
     meta_data <- object[[x]]
     ell <- ellipse3d(meta_data$covariance[, 1:3],
                      centre = meta_data$centroid[1:3], level = level)
-
     wire3d(ell, col = col[x], alpha = 0.1)
   })
 
@@ -43,7 +42,7 @@ plot_ellipsoids3d <- function(object, level = 0.95, ocurrences = NULL,
       col1 <- background_col
     }
 
-    if (!is.null(sp_coords)) {
+    if (!is.null(spp_data)) {
       plot3d(mh_sort, col = col1, add = TRUE)
     } else {
       plot3d(mh_sort, col = col1)
@@ -54,7 +53,6 @@ plot_ellipsoids3d <- function(object, level = 0.95, ocurrences = NULL,
     meta_data <- object[[x]]
     ell <- ellipse3d(meta_data$covariance[, 1:3],
                      centre = meta_data$centroid[1:3],level = level)
-
     wire3d(ell, col = col[x], alpha = 0.5)
   })
 }
