@@ -132,3 +132,28 @@ write_ellmeta <- function(ellipsoid, name = "ellipsoid_metadata") {
   write.csv(ell_meta, namesum, row.names = TRUE)
   return(ell_meta)
 }
+
+
+
+
+#' Helper funtion to perform Montecarlo simulation
+#'
+
+hypercube_boundaries <- function(ellipsoid_metadataL, rand_points_size){
+
+  axis_list <- get_ellipmeta(ellipsoid_metadataL,
+                             attribute = "axis_coordinates")
+  ellipsoid_axis <- do.call(rbind,   axis_list)
+  min_env <- apply(ellipsoid_axis, 2, min)
+  max_env <- apply(ellipsoid_axis, 2, max)
+  data_rand <- matrix(nrow = rand_points_size,
+                      ncol = length(max_env))
+  for(i in 1:length(min_env)){
+    rand_var <- runif(rand_points_size,
+                      min = min_env[i],
+                      max = max_env[i])
+    data_rand[, i] <- rand_var
+  }
+
+  return(data_rand)
+}
