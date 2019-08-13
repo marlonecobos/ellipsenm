@@ -6,8 +6,8 @@
 \usage{
 ellipsoid_calibration(data, species, longitude, latitude, variables,
   format_in = NULL, methods, level = 95,
-  selection_criteria = "S_OR_P", error, iterations, percentage,
-  parallel = FALSE, overwrite = FALSE,
+  selection_criteria = "S_OR_P", error = 5, iterations = 500,
+  percentage = 50, parallel = FALSE, overwrite = FALSE,
   output_directory = "calibration_results")
 }
 \arguments{

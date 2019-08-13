@@ -135,6 +135,47 @@ write_ellmeta <- function(ellipsoid, name = "ellipsoid_metadata") {
 
 
 
+#' Helper funtion to select best parameter settings
+#' @param calibration_table data.frame of results from model calibration in
+#' ellipsenm.
+#' @param selection_criteria (character) set of criteria to select best models,
+#' options are: "S_OR" (statistical significance and low omission) and
+#' "S_OR_P" (statistical significance, low omission, and low prevalence).
+#' See details. Default = "Sig_OR_Prev".
+#' @param level (numeric) the confidence level of a pairwise confidence region
+#' for the ellipsoid, expresed as percentage. Default = 95.
+#' @param error (numeric) value from 0 to 100 to represent the percentage of
+#' potential error (E) that the data could have due to any source of uncertainty.
+#' Default = 5.
+
+select_best <- function(calibration_table, selection_criteria = "S_OR_P",
+                        level = 95, error = 5) {
+  if (selection_criteria %in% c("S_OR", "S_OR_P")) {
+    sig <- calibration_table[calibration_table[, 3] <= error / 100, ]
+    if (nrow(sig) == 0) {
+      sig <- calibration_table[calibration_table[, 3] ==
+                                 min(calibration_table[, 3]), ]
+      warning("None of the parameter settings resulted in significant models.\nThe ones with the lowest partial ROC values were selected.\n")
+    }
+
+    res <- sig[sig[, 5] <= ((100 - level) / 100), ]
+    if (nrow(res) == 0) {
+      res <- sig[sig[, 5] == min(sig[, 5]), ]
+      warning("None of the models had omission rates lower or equal than expected.\nThe ones with the lowest omission rates were selected.\n")
+    }
+
+    if (selection_criteria == "S_OR_P") {
+      res <- res[res[, 7] == min(res[, 7]), ]
+    }
+  } else {
+    stop("Argument selection_criteria is not valid, see function's help.")
+  }
+
+  cat("\tA total of", nrow(res), "paramter settings were selected.\n")
+  return(res)
+}
+
+
 
 #' Helper funtion to perform Montecarlo simulation
 #'
