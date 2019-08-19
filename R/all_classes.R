@@ -47,9 +47,9 @@ calibration_ellipsoid <- setClass("calibration_ellipsoid",
                                             selected_parameters = "data.frame"))
 
 data_overlap <- setClass("data_overlap",
-                         slots = c(method = "character",
+                         slots = c(data = "data.frame",
+                                   method = "character",
                                    level = "numeric",
-                                   data = "data.frame",
                                    raster_layers = "S4"))
 
 overlap_ellipsoid <- setClass("overlap_ellipsoid",
