@@ -190,15 +190,11 @@ overlap_object <- function(data, method = "covmat", level = 95,
   if (missing(raster_layers)) {
     stop("Argument raster_layers is needed for creating data_overlap object.")
   }
-  if (is.null(raster_layers)) {
-    object <- data_overlap(method = method,
-                           level = level,
-                           data = data)
-  } else {
-    object <- data_overlap(method = method,
-                           level = level,
-                           data = data,
-                           raster_layers = raster_layers)
+  object <- data_overlap(method = method,
+                         level = level,
+                         data = data)
+  if (!is.null(raster_layers)) {
+    slot(object, "raster_layers", check = FALSE) <- raster_layers
   }
   return(object)
 }
