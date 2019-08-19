@@ -40,7 +40,6 @@ write_ellmeta <- function(ellipsoid, name = "ellipsoid_metadata") {
   } else {
     stop("Argument ellipsoid is necessary to perform the analysis.")
   }
-
   name <- gsub("\\\\", "/", name)
   name <- unlist(strsplit(name, "/"))
   ndir <- paste0(paste(name[-length(name)], collapse = "/"), "/")
@@ -157,25 +156,52 @@ select_best <- function(calibration_table, selection_criteria = "S_OR_P",
                                  min(calibration_table[, 3]), ]
       warning("None of the parameter settings resulted in significant models.\nThe ones with the lowest partial ROC values were selected.\n")
     }
-
     res <- sig[sig[, 5] <= ((100 - level) / 100), ]
     if (nrow(res) == 0) {
       res <- sig[sig[, 5] == min(sig[, 5]), ]
       warning("None of the models had omission rates lower or equal than expected.\nThe ones with the lowest omission rates were selected.\n")
     }
-
     if (selection_criteria == "S_OR_P") {
       res <- res[res[, 7] == min(res[, 7]), ]
     }
   } else {
     stop("Argument selection_criteria is not valid, see function's help.")
   }
-
   cat("\tA total of", nrow(res), "paramter settings were selected.\n")
   return(res)
 }
 
+#' Helper funtion to create data_overlap objects
+#' @param data data.frame of species' occurrence records. Columns must be
+#' species, longitude, and latitude.
+#' @param method (character) method to construct the ellipsoid that characterizes
+#' the species ecological niche. Available methods are: "covmat", "mve1", and
+#' "mve2". See details. Default = "covmat".
+#' @param level (numeric) the confidence level of a pairwise confidence region
+#' for the ellipsoid, expresed as percentage. Default = 95.
+#' @param raster_layers (optional) RasterStack of at least two variables to
+#' represent a set of conditions relevant for overlap analyses.
 
+overlap_object <- function(data, method = "covmat", level = 95,
+                           raster_layers = NULL) {
+  if (missing(data)) {
+    stop("Argument data is needed for creating data_overlap object.")
+  }
+  if (missing(raster_layers)) {
+    stop("Argument raster_layers is needed for creating data_overlap object.")
+  }
+  if (is.null(raster_layers)) {
+    object <- data_overlap(method = method,
+                           level = level,
+                           data = data)
+  } else {
+    object <- data_overlap(method = method,
+                           level = level,
+                           data = data,
+                           raster_layers = raster_layers)
+  }
+  return(object)
+}
 
 #' Helper funtion to perform Montecarlo simulation
 #'
