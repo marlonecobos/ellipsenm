@@ -202,7 +202,7 @@ overlap_object <- function(data, method = "covmat", level = 95,
 }
 
 #' Helper funtion to get attributes from ellipsoid lists
-#' @param ellipsoids list of ellipsoid* objects.
+#' @param ellipsoids list of ellipsoid objects.
 #' @param attribute (character) name of the attribute to be obtained from elements
 #' in \code{ellipsoids}. Options are: method, centroid, covariance_matrix, level,
 #' niche_volume, semi_axes_length, and axes_coordinates. Default = "method".
@@ -224,24 +224,37 @@ get_attribute <- function(ellipsoids, attribute = "method"){
 }
 
 
-#' Helper funtion to perform Montecarlo simulation
-#'
+#' Helper funtion to perform Montecarlo simulations
+#' @param ellipsoids list of ellipsoid objects.
+#' @param n_points (numeric) number of random points to be generated.
 
-hypercube_boundaries <- function(ellipsoid_metadataL, rand_points_size){
-
-  axis_list <- get_ellipmeta(ellipsoid_metadataL,
-                             attribute = "axis_coordinates")
-  ellipsoid_axis <- do.call(rbind,   axis_list)
+hypercube_boundaries <- function(ellipsoids, n_points = 1000000) {
+  if (missing(ellipsoids)) {
+    stop("Argument ellipsoids is needed, see function's help.")
+  }
+  axis_list <- get_attribute(ellipsoids, attribute = "axis_coordinates")
+  ellipsoid_axis <- do.call(rbind, axis_list)
   min_env <- apply(ellipsoid_axis, 2, min)
   max_env <- apply(ellipsoid_axis, 2, max)
-  data_rand <- matrix(nrow = rand_points_size,
-                      ncol = length(max_env))
-  for(i in 1:length(min_env)){
-    rand_var <- runif(rand_points_size,
-                      min = min_env[i],
-                      max = max_env[i])
+  data_rand <- matrix(nrow = n_points, ncol = length(max_env))
+  for (i in 1:length(min_env)) {
+    rand_var <- runif(n_points, min = min_env[i], max = max_env[i])
     data_rand[, i] <- rand_var
   }
-
   return(data_rand)
+}
+
+
+# Helper function to detect what is in and out- not needed, see predict
+in_ellipsoid <- function(ellipsoids, level, variables){
+  centroids <- get_attribute(ellipsoids, "centroid")
+  cov_mat <- get_attribute(ellipsoids, "covariance")
+  in_ellipsoidh1 <- sapply(1:length(ellipsoids), function(x) {
+    mh_dist <- mahalanobis(variables, center = centroids[[x]], cov = cov_mat[[x]])
+    in_ellipsoid1 <- mh_dist <= qchisq(level, length(centroids[[x]]))
+    in_ellipsoid1 <- in_ellipsoid1 * 1
+    in_ellipsoid1_mh <- data.frame(in_ellipsoid1, mh_dist )
+    return(in_ellipsoid1_mh)
+  })
+  return(in_ellipsoidh1)
 }

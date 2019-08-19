@@ -7,7 +7,7 @@
 get_attribute(ellipsoids, attribute = "method")
 }
 \arguments{
-\item{ellipsoids}{list of ellipsoid* objects.}
+\item{ellipsoids}{list of ellipsoid objects.}
 
 \item{attribute}{(character) name of the attribute to be obtained from elements
 in \code{ellipsoids}. Options are: method, centroid, covariance_matrix, level,
