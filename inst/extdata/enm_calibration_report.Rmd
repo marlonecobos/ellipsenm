@@ -1,0 +1,207 @@
+---
+title: "ellipsenm: model calibration results"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    thumbnails: true
+    lightbox: true
+    gallery: false
+    highlight: tango
+    fig_width: 7
+    fig_height: 6
+    toc_depth: 3
+    use_bookdown: true
+    number_sections: false
+css: report_format.css
+---
+
+```{r knitr_init, echo=FALSE, cache=FALSE, message=FALSE}
+# packages to load
+packages <- c("ellipse", "ellipsenm", "knitr", "maps", "raster", "rgl", 
+              "rmdformats", "viridis")
+suppressWarnings(s <- sapply(packages, function(x) {library(x, character.only = T)}))
+
+# global options
+opts_chunk$set(echo=FALSE, cache=FALSE, prompt=FALSE, tidy=TRUE, comment=NA,
+               message=FALSE, warning=FALSE, fig.align='center', webgl=hook_webgl)
+opts_knit$set(width=100)
+
+# reading data
+load("enm_report_data.RData")
+```
+
+<style>
+body {text-align: justify}
+</style>
+
+This is the final report produced during the execution of the function `ellipsoid_calibration` from the <a href="https://github.com/marlonecobos/ellipsenm" target="_blank">**`ellipsenm`**</a> package. Following, a complete description of the model calibration process for the species *`r as.character(data[1, 1])`* is presented. An ecological niche, from a Grinnellian perspective, is the set of environmental conditions that allow a species to maintain populations for long periods of time, without immigration events (Peterson et al. 2011). Models created with the **`ellipsenm`** package are ellipsoid envelope models and assume that a species ecological niche is convex, has an only optimum, and the species response to each variable covaries with the response to other variables (see Brown 1984, Jimenéz et al. 2019, Osorio-Olvera et al. 2019). Mahalanobis distances are used to represent how far is each combination of environmental conditions from the optimum (ellipsoid centroid). Suitability values result by default from a multivariate normal transformation of Mahalanobis distances. Therefore, maximum values of suitability will be close to the centroid and minimum values will be close to the border of the ellipsoid. To obtain binary layers from the ones written in the output_directory for suitability predictions, reclassify the values in the layers as follows: 0 = 0 (non-suitable, outside ellipsoid), and values other than 0 = 1 (suitable, inside ellipsoid).
+
+Note 1: If only one replicate was performed, results are obtained using the hole set of data. If multiple replicates were performed, results are produced per replicate; as each replicate is build with a sub-sample of the data, results may differ among replicates. For replicated models, mean results are shown in this report, results for all replicates, as well as for mean, minimum, and maximum ellipsoidal models can be found in the output directory defined in the function `ellipsoid_model`. If the model was performed with replicates, further raster calculations can be performed to show model variability (e.g., suitability range or other indicators of model variability; see Peterson et al. 2018)  
+
+Note 2: If more than tree dimensions were used to create the model, up to three of them will be used in graphical representations.
+
+Tip: To see two dimensional figures in their actual size click on them. Three dimensional figures are interactive.
+
+<hr>
+
+# Summary
+
+The model presented in this report was produced for the species *`r as.character(data[1, 1])`* to characterize its ecological niche using an approach based in ellipsoid envelopes. The  modeling process was performed with `r ifelse(replicates > 1, paste0(replicates, " replicates"), "1 replicate")`.`r if (replicates > 1) {ifelse(replicate_type == "bootstrap", paste0(" Replicates were produced using bootstrapped subsamples of ", bootstrap_percentage, "% of the data.", " Replicates were produced by excluding one occurrence record at the time."))}` Based on the level used to produce the ellipsoids (`r as.character(mean_pred@level)`) the error (*E*) assumed for the occurrence data was `r as.character(100 - mean_pred@level)`%. This is, `r as.character(100 - mean_pred@level)`% of the occurrence data is considered as potentially erroneous (i.e., environmental outliers); therefore, this data is not included in the ellipsoid envelope model for the species ecological niche.
+
+## Data used for modeling
+
+A total of `r nrow(data)` occurrences and `r n_var` variables (`r paste0(paste(variable_names[-length(variable_names)], collapse = ", "), ", and ", variable_names[length(variable_names)])`) were used to produce the models.
+
+### Data in geographic space
+
+The plot below shows the geographic arrangement of occurrence data on the variable `r variable_names[1]`. Colors correspond with values of the variable according to figure legend.
+
+```{r Figure1, fig.cap="Representation of species occurrence data in geographic space. Occurrence data is represented in black. Grey lines represent country borders."}
+par(mar = c(2, 2, 1, 1))
+plot(variable1, col = viridis(255))
+map(add = TRUE, col = "gray50")
+points(data[, 2:3])
+```
+
+### Data in environmental space
+
+The plot below shows the arrangement of the occurrence data in environmental space considering `r paste(ifelse(n_var > 2, "3", "2"), "dimensions")`. 
+
+```{r Figure2, fig.cap="Representation of species occurrence data in environmental space. Grey points respresent environmental conditios in the calibration area; blue points respresent occurrence data."}
+if (n_var > 2) {
+  plot3d(data[, 4:6], col = "blue3", size = 5)
+  plot3d(r_values[, 1:3], col = "gray65", add = TRUE)
+  rglwidget()
+  
+} else {
+  par(mar = c(2, 2, 1, 1))
+  plot(r_values, col = "gray65")
+  points(data[, 4:5], pch = 16, col = "blue3") 
+}
+```
+
+<hr>
+
+# Numeric results
+
+Numeric results of the ellipsoid envelope model for *`r as.character(data[1, 1])`* are presented below. 
+
+## Ellipsoid characteristics
+
+The table below describes the characteristics of the ellipsoidal ecological niche model. The complete report of ellipsoids' characteristics (e.g., centroid, covariance matrix, semi-axes length, etc.) can be found in the txt files referred in the table.  
+
+```{r Table1}
+kable(ell_meta, row.names = TRUE, caption = paste0("Characteristics of the ellipsoid envelope model for ", as.character(data[1, 1]), "."))
+```
+
+## Prevalence
+
+Prevalence in environmental and geographic space are summarized below. Prevalence is defined as the proportion of space identified to be suitable for the species. The difference between the two types of prevalence is that in geographic space proportions are calculated using all pixes from the raster; whereas, in environmental space, only pixels that have distinct combinations of all variable's values are considered (see Hutchinson’s duality in Colwell and Rangel 2009). 
+
+```{r Table2}
+kable(prevalences, row.names = TRUE, caption = paste0("Prevalence of the ellipsoid envelope model for ", as.character(data[1, 1]), "."))
+```
+
+<hr>
+
+# Predictions in environmental space
+
+Given the data and the characteristics that define the species ellipsoidal niche (see [Data used for modeling] and [Ellipsoid characteristics]) the results in environmental space are presented bellow. 
+
+## Calibration area
+
+The calibration area is represented by the variables given to fit the ellipsoid using the `ellipsoid_model` function. This area is recommended to be a region that has been accessible to the species for a relevant period of time (see Barve et al. 2011). Although most methods used in the **`ellipsenm`**  package are not sensible to a background (environmental conditions in the calibration area), having a well defined accessible area helps with interpretations. Bellow, a `r paste(ifelse(n_var > 2, "3", "2"), "dimensional")` representation of the ellipsoidal niche model and the suitability values is shown in environmental space for the calibration area.
+
+```{r Figure3, fig.cap="Representation of suitability values in environmental space. Occurrence data is represented in blue. Cold colors represent low suitabilities and warm colors high suitabilities."}
+col1 <- color_palette(nrow(r_values))
+
+if (n_var > 2) {
+  el3d <- ellipse3d(mean_pred@covariance_matrix[1:3, 1:3],
+                    centre = mean_pred@centroid[1:3], 
+                    level = mean_pred@level / 100)
+  
+  ob <- new("ellipsoid", method = mean_pred@method, 
+            centroid = mean_pred@centroid[1:3], 
+            covariance_matrix = mean_pred@covariance_matrix[1:3, 1:3],
+            level = mean_pred@level)
+  suit <- predict(ob, r_values[, 1:3], "suitability", TRUE)
+  
+  vals <- cbind(r_values[, 1:3], suit@suitability)
+  vals <- vals[order(vals[, 4], decreasing = F), ]
+  vals1 <- vals[vals[, 4] > 0, -4]
+  vals0 <- vals[vals[, 4] == 0, -4]
+  
+  plot3d(data[, 4:6], col = "blue3", size = 5)
+  plot3d(vals1, col = col1[vals[, 4] > 0], add = TRUE)
+  plot3d(vals0, col = col1[1], add = TRUE)
+  wire3d(el3d, col = "darkgreen", alpha = 0.5)
+  rglwidget()
+  
+} else {
+  el1 <- ellipse(x = mean_pred@covariance_matrix[1:2, 1:2], 
+                 centre = mean_pred@centroid[1:2], 
+                 level = mean_pred@level / 100)
+  xlim <- range(range(el1[, 1]), range(r_values[, 1]))
+  ylim <- range(range(el1[, 2]), range(r_values[, 2])) 
+  
+  ob <- new("ellipsoid", method = mean_pred@method, 
+            centroid = mean_pred@centroid[1:2], 
+            covariance_matrix = mean_pred@covariance_matrix[1:2, 1:2],
+            level = mean_pred@level)
+  suit <- predict(ob, r_values[, 1:2], "suitability", TRUE)
+  
+  vals <- cbind(r_values[, 1:2], suit@suitability)
+  vals <- vals[order(vals[, 3], decreasing = F), ]
+  vals1 <- vals[vals[, 3] > 0, -3]
+  vals0 <- vals[vals[, 3] == 0, -3]
+  
+  par(mar = c(4, 4, 1, 1))
+  plot(vals0, col = col1[1], xlim = xlim, ylim = ylim, 
+       xlab = variable_names[1], ylab = variable_names[2])
+  points(vals1, col = col1[vals[, 3] > 0])
+  points(data[, 4:5], pch = 19, col = "blue3") 
+  lines(el1, col = "darkgreen", lwd = 1.5)
+}
+```
+
+<hr>
+
+# Predictions in geographic space
+
+Given the data and the characteristics that define the species ellipsoidal niche (see [Data used for modeling] and [Ellipsoid characteristics]) the results in geographic space are presented bellow. Values of suitability can range from 0 to 1; when the maximum is not 1, it means that there is not environmental conditions equal to the ones at the centroid of the ellipsoid. Another reason why the range of suitability can change is that a different function of suitability was used in the `ellipsoid_model` function. Values of zero (coldest areas) represent places with environmental values outside the ellipsoid, values other than zero represent levels of suitability. 
+
+## Calibration area
+
+The geographic prediction in the calibration area is presented below. Colors correspond with values of suitability according to figure legend.
+
+```{r Figure4, fig.cap="Representation of suitability values in geographic space. Cold colors represent low suitabilities and warm colors high suitabilities. Grey lines represent country borders."}
+par(mar = c(2, 2, 1, 1))
+plot(layer, col = color_palette(255))
+map(add = TRUE, col = "gray50")
+```
+
+<hr>
+
+This report was produced using the <a href="https://github.com/marlonecobos/ellipsenm" target="_blank">**`ellipsenm`**</a> R package; to cite R and this package use the following code:
+
+```{r References, eval=FALSE, echo=TRUE}
+# R reference:  
+citation()
+
+# ellipsenm reference: `
+citation("ellipsenm")
+```
+
+The code for producing this report (if needed) can be found in the file `enm_suitability_report.Rmd`; the data used is in `enm_report_data.RData`.
+
+<hr>
+
+# References
+
+* Barve, N., Barve, V., Jiménez-Valverde, A., Lira-Noriega, A., Maher, S.P., Peterson, A.T., Soberón, J., Villalobos, F., 2011. The crucial role of the accessible area in ecological niche modeling and species distribution modeling. Ecol. Modell. 222, 1810–1819.
+* Brown, J.H., 1984. On the relationship between abundance and distribution of a species. Am. Nat. 124, 255–279.
+* Colwell, R.K., Rangel, T.F., 2009. Hutchinson’s duality: The once and future niche. PNAS 106, 19651–19658.
+* Jiménez, L., Soberón, J., Christen, J.A., Soto, D., 2019. On the problem of modeling a fundamental niche from occurrence data. Ecol. Modell. 397, 74–83.
+* Osorio‐Olvera, L., Soberón, J., Falconi, M., 2019. On population abundance and niche structure. Ecography 42. https://doi.org/10.1111/ecog.04442.
+* Peterson, A.T., Cobos, M.E., Jiménez‐García, D., 2018. Major challenges for correlational ecological niche model projections to future climate conditions. Ann. N. Y. Acad. Sci. 1429, 66–77.
+* Peterson, A.T., Soberón, J., Pearson, R.G., Anderson, R.P., Martínez-Meyer, E., Nakamura, M., Araújo, M.B., 2011. Ecological Niches and Geographic Distributions. Princeton University Press, Princeton.

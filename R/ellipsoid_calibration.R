@@ -141,6 +141,8 @@ ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
 
   # -----------
   # calibration process
+  dir.create(output_directory)
+
   cat("\nRunning model calibration:\n")
   settings <- length(methods) * length(variables[[2]])
   if (parallel == FALSE) {
@@ -186,6 +188,7 @@ ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
       do.call(rbind, resul)
     })
   } else {
+    cat("\nParallel option is still in development, sequential process will be used.\n")
     calibration <- sapply(1:length(variables[[2]]), function(x) {
       varss <- variables[[1]][[variables[[2]][[x]]]]
       var_vals <- na.omit(raster::values(varss))
@@ -229,16 +232,26 @@ ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
     })
   }
 
+  write.csv(calibration, paste0(output_directory, "/calibration_results.csv"),
+            row.names = FALSE)
+
   # -----------
   # parameter selection
   cat("\nSelecting best parameter settings:\n")
   selected <- select_best(calibration, selection_criteria, level, error)
 
+  write.csv(selected, paste0(output_directory, "/selected_parameterizations.csv"),
+            row.names = FALSE)
+
   # -----------
   # producing report
-  cat("\nAnalyses finished. Producing HTML report...\n")
-  report_format(name = paste0(output_directory, "/report_format"))
-  report(report_type = "calibration", output_directory)
+  #cat("\nAnalyses finished. Producing HTML report...\n")
+  #save(data, variable_names, variable1, n_var, r_values, ell_meta, mean_pred,
+  #     layer, prevalences, replicates, replicate_type, bootstrap_percentage,
+  #     color_palette, file = paste0(output_directory, "/enm_report_data.RData"))
+
+  #report_format(name = paste0(output_directory, "/report_format"))
+  #report(report_type = "calibration", output_directory)
 
   # -----------
   # returning results
