@@ -187,8 +187,10 @@ overlap_object <- function(data, method = "covmat", level = 95,
   if (missing(data)) {
     stop("Argument data is needed for creating data_overlap object.")
   }
-  if (missing(raster_layers)) {
-    stop("Argument raster_layers is needed for creating data_overlap object.")
+  if (!is.null(raster_layers)) {
+    if (class(raster_layers)[1] != "RasterStack") {
+      stop("Argument raster_layers must be of class RasterStack.")
+    }
   }
   object <- data_overlap(method = method,
                          level = level,
@@ -198,6 +200,29 @@ overlap_object <- function(data, method = "covmat", level = 95,
   }
   return(object)
 }
+
+#' Helper funtion to get attributes from ellipsoid lists
+#' @param ellipsoids list of ellipsoid* objects.
+#' @param attribute (character) name of the attribute to be obtained from elements
+#' in \code{ellipsoids}. Options are: method, centroid, covariance_matrix, level,
+#' niche_volume, semi_axes_length, and axes_coordinates. Default = "method".
+
+get_attribute <- function(ellipsoids, attribute = "method"){
+  if (missing(ellipsoids)) {
+    stop("Argument ellipsoids is needed, see function's help.")
+  }
+  if (!attribute %in% c("method", "centroid", "covariance_matrix", "level",
+                        "niche_volume", "semi_axes_length", "axes_coordinates")) {
+    stop("Invalid attribute, see function's help.")
+  }
+  attr1 <- lapply(ellipsoids, function(x) {
+    attr1 <- slot(x, attribute)
+    if(attribute == "axes_coordinates") {attr1 <- do.call(rbind, attr1)}
+    return(attr1)
+  })
+  return(attr1)
+}
+
 
 #' Helper funtion to perform Montecarlo simulation
 #'
