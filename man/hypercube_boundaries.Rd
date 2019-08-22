@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{hypercube_boundaries}
 \alias{hypercube_boundaries}
-\title{Helper funtion to perform Montecarlo simulations}
+\title{Helper funtion to get data for Montecarlo simulations}
 \usage{
 hypercube_boundaries(ellipsoids, n_points = 1e+06)
 }
@@ -12,5 +12,5 @@ hypercube_boundaries(ellipsoids, n_points = 1e+06)
 \item{n_points}{(numeric) number of random points to be generated.}
 }
 \description{
-Helper funtion to perform Montecarlo simulations
+Helper funtion to get data for Montecarlo simulations
 }

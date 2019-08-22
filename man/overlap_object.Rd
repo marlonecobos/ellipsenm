@@ -4,12 +4,13 @@
 \alias{overlap_object}
 \title{Helper funtion to create data_overlap objects}
 \usage{
-overlap_object(data, method = "covmat", level = 95,
-  raster_layers = NULL)
+overlap_object(data, method = "covmat", level = 95, variables = NULL)
 }
 \arguments{
-\item{data}{data.frame of species' occurrence records. Columns must be
-species, longitude, and latitude.}
+\item{data}{data.frame of species' occurrence records. Columns must include
+species, longitude, and latitude.  Optionally, if \code{variables} is a matrix
+or data.frame, \code{data} must include more columns containing the values of
+at least two variables to be used for fitting ellipsoid* models.}
 
 \item{method}{(character) method to construct the ellipsoid that characterizes
 the species ecological niche. Available methods are: "covmat", "mve1", and
@@ -18,8 +19,8 @@ the species ecological niche. Available methods are: "covmat", "mve1", and
 \item{level}{(numeric) the confidence level of a pairwise confidence region
 for the ellipsoid, expresed as percentage. Default = 95.}
 
-\item{raster_layers}{(optional) RasterStack of at least two variables to
-represent a set of conditions relevant for overlap analyses.}
+\item{variables}{(optional) RasterStack, matrix, or data.frame of at least two
+variables to represent a set of conditions relevant for overlap analyses.}
 }
 \description{
 Helper funtion to create data_overlap objects

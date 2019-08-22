@@ -172,31 +172,33 @@ select_best <- function(calibration_table, selection_criteria = "S_OR_P",
 }
 
 #' Helper funtion to create data_overlap objects
-#' @param data data.frame of species' occurrence records. Columns must be
-#' species, longitude, and latitude.
+#' @param data data.frame of species' occurrence records. Columns must include
+#' species, longitude, and latitude.  Optionally, if \code{variables} is a matrix
+#' or data.frame, \code{data} must include more columns containing the values of
+#' at least two variables to be used for fitting ellipsoid* models.
 #' @param method (character) method to construct the ellipsoid that characterizes
 #' the species ecological niche. Available methods are: "covmat", "mve1", and
 #' "mve2". See details. Default = "covmat".
 #' @param level (numeric) the confidence level of a pairwise confidence region
 #' for the ellipsoid, expresed as percentage. Default = 95.
-#' @param raster_layers (optional) RasterStack of at least two variables to
-#' represent a set of conditions relevant for overlap analyses.
+#' @param variables (optional) RasterStack, matrix, or data.frame of at least two
+#' variables to represent a set of conditions relevant for overlap analyses.
 
 overlap_object <- function(data, method = "covmat", level = 95,
-                           raster_layers = NULL) {
+                           variables = NULL) {
   if (missing(data)) {
     stop("Argument data is needed for creating data_overlap object.")
   }
-  if (!is.null(raster_layers)) {
-    if (class(raster_layers)[1] != "RasterStack") {
-      stop("Argument raster_layers must be of class RasterStack.")
+  if (!is.null(variables)) {
+    if (!class(variables)[1] %in% c("RasterStack", "matrix", "data.frame")) {
+      stop("Argument variables not valid, see function's help.")
     }
   }
-  object <- data_overlap(method = method,
-                         level = level,
-                         data = data)
-  if (!is.null(raster_layers)) {
-    slot(object, "raster_layers", check = FALSE) <- raster_layers
+  object <- data_overlap(data = data,
+                         method = method,
+                         level = level)
+  if (!is.null(variables)) {
+    slot(object, "variables", check = FALSE) <- variables
   }
   return(object)
 }
@@ -224,7 +226,7 @@ get_attribute <- function(ellipsoids, attribute = "method"){
 }
 
 
-#' Helper funtion to perform Montecarlo simulations
+#' Helper funtion to get data for Montecarlo simulations
 #' @param ellipsoids list of ellipsoid objects.
 #' @param n_points (numeric) number of random points to be generated.
 
@@ -236,25 +238,8 @@ hypercube_boundaries <- function(ellipsoids, n_points = 1000000) {
   ellipsoid_axis <- do.call(rbind, axis_list)
   min_env <- apply(ellipsoid_axis, 2, min)
   max_env <- apply(ellipsoid_axis, 2, max)
-  data_rand <- matrix(nrow = n_points, ncol = length(max_env))
-  for (i in 1:length(min_env)) {
-    rand_var <- runif(n_points, min = min_env[i], max = max_env[i])
-    data_rand[, i] <- rand_var
-  }
-  return(data_rand)
-}
-
-
-# Helper function to detect what is in and out- not needed, see predict
-in_ellipsoid <- function(ellipsoids, level, variables){
-  centroids <- get_attribute(ellipsoids, "centroid")
-  cov_mat <- get_attribute(ellipsoids, "covariance")
-  in_ellipsoidh1 <- sapply(1:length(ellipsoids), function(x) {
-    mh_dist <- mahalanobis(variables, center = centroids[[x]], cov = cov_mat[[x]])
-    in_ellipsoid1 <- mh_dist <= qchisq(level, length(centroids[[x]]))
-    in_ellipsoid1 <- in_ellipsoid1 * 1
-    in_ellipsoid1_mh <- data.frame(in_ellipsoid1, mh_dist )
-    return(in_ellipsoid1_mh)
+  data_rand <- sapply(1:length(min_env), function (i) {
+    runif(n_points, min = min_env[i], max = max_env[i])
   })
-  return(in_ellipsoidh1)
+  return(data_rand)
 }
