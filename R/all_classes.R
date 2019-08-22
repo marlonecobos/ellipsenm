@@ -50,7 +50,7 @@ data_overlap <- setClass("data_overlap",
                          slots = c(data = "data.frame",
                                    method = "character",
                                    level = "numeric",
-                                   raster_layers = "S4"))
+                                   variables = "S4"))
 
 overlap_ellipsoid <- setClass("overlap_ellipsoid",
                               slots = c(ellipsoids = "list",
