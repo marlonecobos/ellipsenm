@@ -23,6 +23,10 @@ for the ellipsoid, expresed as percentage. Default = 95.}
 potential error (E) that the data could have due to any source of uncertainty.
 Default = 5.}
 }
+\value{
+data.frame with the selected parameter settings according to the argument
+\code{selection_criteria}.
+}
 \description{
 Helper funtion to select best parameter settings
 }
