@@ -1,6 +1,9 @@
 #' Overlap of ellipsoid-based ecological niche models
 #'
-#' @description
+#' @description ellipsoid_overlap performs analyses to measure the degree of
+#' overlap between two or more ellipsoid-based ecological niches as in pairwise
+#' comparisons. Measures can be done considering the entire ellipsoid volume or
+#' sets of environmental conditions (background).
 #'
 #' @param ... data_overlap objects containing data for individual niches to be
 #' compared in overlap analyses. At least two data_overlap objects are needed
@@ -8,7 +11,8 @@
 #' \code{\link{overlap_object}}.
 #' @param overlap_type (character) type of overlap to be measured. Options are:
 #' "all", "full", and "back_union". Default = "all". See details.
-#' @param n_points
+#' @param n_points (character) number of random points to be generated for
+#' performing Monte-Carlo simulations (full overlap). Default = 1000000.
 #'
 #' @return
 #' A overlap_ellipsoid object containing all results from overlap analyses as
@@ -79,14 +83,15 @@ ellipsoid_overlap <- function(..., overlap_type = "all",
   variables <- lapply(plits, function(x) {
     if (back == TRUE) {slot(x, "variables")} else {NULL}
   })
+  cls <- sapply(variables, function (x) {class(x)[1]})
+  if (back == TRUE & all(cls != cls[1])) {
+    stop("Variables from all data_overlap objects must be of the same class.")
+  }
 
   ## ellipsoids
   ellipsoids <- lapply(1:length(plits), function(x) {
     ell <- ellipsoid_fit(data[[x]], longitude[x], latitude[x], method[x],
                          level[x], variables[[x]])
-    if (back == TRUE) {
-      ell <- predict(ell, variables, "both", return_numeric = TRUE)
-    }
     return(ell)
   })
 
@@ -100,7 +105,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all",
 
   # -----------
   # Full overlap, Montocarlo simulation
-  if (!overlap_type[1] %in% c("all", "full")) {
+  if (overlap_type[1] %in% c("all", "full")) {
     mah_suit <- sapply(1:length(ellipsoids), function(x) {
       mh_st <- predict(ellipsoids[[x]], data_rand, "both")
       mh_st <- data.frame(slot(mh_st, "suitability"), slot(mh_st, "mahalanobis"))
@@ -132,56 +137,44 @@ ellipsoid_overlap <- function(..., overlap_type = "all",
                                  full_overlap = over_metrics)
   }
 
-
   # -----------
   # Background union overlap
-  if(back == TRUE & !overlap_type[1] %in% c("all", "back_union")){
-    cls <- sapply(variables, function (x) {class(x)[1]})
-    a
+  if(back == TRUE & overlap_type[1] %in% c("all", "back_union")) {
+    if (cls[1] == "RasterStack") {
+      bg_vars <- lapply(variables, function(x) {na.omit(raster::values(x))})
+      bg_vars <- unique(do.call(rbind, bg_vars))
+    } else {
+      bg_vars <- unique(do.call(rbind, variables))
+    }
 
-    bg_vars <- na.omit(getValues(bg_vars))
-    in_EllipsoidMh <- inEllipsoidMh(emd = ellipsoid_metadata,
-                                    env_data = bg_vars,level)
-
-    in_Ellipsoid <- in_EllipsoidMh[1,]
-    names(in_Ellipsoid) <- paste0("Niche_",1:length(envdata_list))
-    in_Ellipsoid <-  as.data.frame(in_Ellipsoid)
-    in_Ellipsoid <- as.matrix(in_Ellipsoid)
-    maha_distM <- in_EllipsoidMh[2,]
-    names(maha_distM) <- paste0("Niche_",1:length(envdata_list),"_Mh")
-    maha_distM <-  as.data.frame(maha_distM)
-    maha_distM <- as.matrix(maha_distM)
-
-    niche_metricBG <- overlap_metrics(comparison_matrix, bg_vars,
-                                      maha_distM, in_Ellipsoid)
-
-    nicheover_metricBG <- lapply(1:length(niche_metricBG), function(x){
-      niche_metricBG[[x]][[1]]
+    mah_suit <- sapply(1:length(ellipsoids), function(x) {
+      mh_st <- predict(ellipsoids[[x]], bg_vars, "both")
+      mh_st <- data.frame(slot(mh_st, "suitability"), slot(mh_st, "mahalanobis"))
+      return(mh_st)
     })
 
-    nicheover_cordinatesBG <- lapply(1:length(niche_metricBG), function(x){
-      niche_metricBG[[x]][[2]]
+    suits <- mah_suit[1,]
+    names(suits) <- paste0("Niche_", 1:length(ellipsoids), "_S")
+    suits <-  do.call(cbind, suits)
+
+    mahas <- mah_suit[2,]
+    names(mahas) <- paste0("Niche_", 1:length(ellipsoids),"_M")
+    mahas <-  do.call(cbind, mahas)
+
+    metrics <- overlap_metrics(comparison_matrix, bg_vars, mahas, suits)
+
+    over_metrics <- lapply(1:length(metrics), function(x) {metrics[[x]][[1]]})
+    over_metrics <- do.call(rbind.data.frame, over_metrics)
+    rownames(over_metrics) <- sapply(1:ncol(comparison_matrix), function(x) {
+      paste0("Niche_", paste0(comparison_matrix[,x], collapse = "_vs_"))
     })
 
+    over_cordinates <- lapply(1:length(metrics), function(x) {metrics[[x]][[2]]})
+    names(over_cordinates) <- rownames(over_metrics)
 
-    nicheover_metricBG <- do.call(rbind.data.frame,nicheover_metricBG)
-
-    rownames(nicheover_metricBG) <- sapply(1:dim(comparison_matrix)[2],function(x)
-      paste0("Niche_",paste0(comparison_matrix[,x],collapse="_vs_")))
-
-    names(nicheover_cordinatesBG) <- rownames(nicheover_metricBG)
-
-    overlap_results <- list(nicheover_metrics, nicheover_metricBG)
-    names(overlap_results) <- c("Full_Overlap","Background_Context_Overlap")
-    nicheover_cordinatesAll <- list(nicheover_cordinates,nicheover_cordinatesBG)
-    names(nicheover_cordinatesAll) <- c("Full_Overlap","Background_Context_Overlap")
-    results <-  list(overlap_results=overlap_results,
-                     overlap_coordinates= nicheover_cordinatesAll,
-                     ellipsoid_metadata=ellipsoid_metadata)
-
+    slot(results, "union_background") <- over_cordinates
+    slot(results, "union_overlap") <- over_metrics
   }
 
-
   return(results)
-
 }

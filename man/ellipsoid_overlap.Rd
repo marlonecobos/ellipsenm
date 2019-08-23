@@ -15,14 +15,18 @@ to perform analyses. These objects can be created with the function
 \item{overlap_type}{(character) type of overlap to be measured. Options are:
 "all", "full", and "back_union". Default = "all". See details.}
 
-\item{n_points}{}
+\item{n_points}{(character) number of random points to be generated for
+performing Monte-Carlo simulations (full overlap). Default = 1000000.}
 }
 \value{
 A overlap_ellipsoid object containing all results from overlap analyses as
 well as other information needed for plotting.
 }
 \description{
-
+ellipsoid_overlap performs analyses to measure the degree of
+overlap between two or more ellipsoid-based ecological niches as in pairwise
+comparisons. Measures can be done considering the entire ellipsoid volume or
+sets of environmental conditions (background).
 }
 \details{
 Types of overlap are as follows:
