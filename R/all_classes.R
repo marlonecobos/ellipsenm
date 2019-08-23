@@ -48,6 +48,7 @@ calibration_ellipsoid <- setClass("calibration_ellipsoid",
 
 data_overlap <- setClass("data_overlap",
                          slots = c(data = "data.frame",
+                                   main_columns = "character",
                                    method = "character",
                                    level = "numeric",
                                    variables = "S4"))
@@ -55,5 +56,7 @@ data_overlap <- setClass("data_overlap",
 overlap_ellipsoid <- setClass("overlap_ellipsoid",
                               slots = c(ellipsoids = "list",
                                         spp_data = "list",
-                                        background = "list",
-                                        overlap = "data.frame"))
+                                        full_background = "list",
+                                        full_overlap = "data.frame",
+                                        union_background = "list",
+                                        union_overlap = "data.frame"))
