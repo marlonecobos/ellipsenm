@@ -11,6 +11,10 @@ hypercube_boundaries(ellipsoids, n_points = 1e+06)
 
 \item{n_points}{(numeric) number of random points to be generated.}
 }
+\value{
+A total of \code{n_points} created randomly considering the limits of the
+ellipsoids considered.
+}
 \description{
 Helper funtion to get data for Montecarlo simulations
 }

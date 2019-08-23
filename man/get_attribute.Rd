@@ -13,6 +13,9 @@ get_attribute(ellipsoids, attribute = "method")
 in \code{ellipsoids}. Options are: method, centroid, covariance_matrix, level,
 niche_volume, semi_axes_length, and axes_coordinates. Default = "method".}
 }
+\value{
+The attribute selected.
+}
 \description{
 Helper funtion to get attributes from ellipsoid lists
 }

@@ -4,7 +4,8 @@
 \alias{overlap_object}
 \title{Helper funtion to create data_overlap objects}
 \usage{
-overlap_object(data, method = "covmat", level = 95, variables = NULL)
+overlap_object(data, species, longitude, latitude, method = "covmat",
+  level = 95, variables = NULL)
 }
 \arguments{
 \item{data}{data.frame of species' occurrence records. Columns must include
@@ -21,6 +22,9 @@ for the ellipsoid, expresed as percentage. Default = 95.}
 
 \item{variables}{(optional) RasterStack, matrix, or data.frame of at least two
 variables to represent a set of conditions relevant for overlap analyses.}
+}
+\value{
+A data_overlap object for posterior use in overlap analyses.
 }
 \description{
 Helper funtion to create data_overlap objects
