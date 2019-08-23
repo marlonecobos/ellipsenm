@@ -1,3 +1,38 @@
+#' Overlap of ellipsoid-based ecological niche models
+#'
+#' @description
+#'
+#' @param ... data_overlap objects containing data for individual niches to be
+#' compared in overlap analyses. At least two data_overlap objects are needed
+#' to perform analyses. These objects can be created with the function
+#' \code{\link{overlap_object}}.
+#' @param overlap_type (character) type of overlap to be measured. Options are:
+#' "all", "full", and "back_union". Default = "all". See details.
+#' @param n_points
+#'
+#' @return
+#' A overlap_ellipsoid object containing all results from overlap analyses as
+#' well as other information needed for plotting.
+#'
+#' @details
+#' Types of overlap are as follows:
+#'
+#' all = performs all types of overlap analyses allowed.
+#'
+#' full = measures overlap of the complete volume of the ellipsoidal niches.
+#'
+#' back_union = meausures overlap of ellipsoidal niches considering only the
+#' union of the environmental conditions relevant for the two species (backgrounds).
+#'
+#' @export
+#'
+#' @examples
+#' # data
+#'
+#' # full overlap analysis
+#'
+#' # overlap measured in the union of the two species background
+
 ellipsoid_overlap <- function(..., overlap_type = "all",
                               n_points = 1000000) {
   # -----------
@@ -5,12 +40,12 @@ ellipsoid_overlap <- function(..., overlap_type = "all",
   if (missing(...)) {
     stop("Argument ... is necessary to perform the analysis")
   } else {
-    ells <- list(...)
-    if (length(ells) < 2) {
+    plits <- list(...)
+    if (length(plits) < 2) {
       stop("ellipsoid* objects to be compare must be two or more.")
     }
-    cls <- sapply(ells, function (x) {class(x)[1]})
-    if (any(!cls %in% c("ellipsoid", "ellipsoid_model_sim", "ellipsoid_model_rep"))) {
+    cls <- sapply(plits, function (x) {class(x)[1]})
+    if (any(cls != "data_overlap")) {
       stop("All objects to be compared must be of class ellipsoid*.")
     }
   }
@@ -20,34 +55,48 @@ ellipsoid_overlap <- function(..., overlap_type = "all",
 
   # -----------
   # preparing data
+  ## background availability
+  back <- sapply(plits, function(x) {
+    if (is.null(slot(x, "variables"))) {FALSE} else {TRUE}
+  })
+  back <- all(back == TRUE)
+
+  if (back == FALSE & overlap_type[1] %in% c("all", "back_union")) {
+    warning("overlap_type using background is not possible, only full overlap will be performed.")
+    overlap_type <- "full"
+  }
+
+  ## arguments
+  data <- lapply(plits, function(x) {slot(x, "data")})
+  species <- sapply(plits, function(x) {slot(x, "main_columns")[1]})
+  longitude <- sapply(plits, function(x) {slot(x, "main_columns")[2]})
+  latitude <- sapply(plits, function(x) {slot(x, "main_columns")[3]})
+  data <- lapply(1:length(data), function(x) {
+    data[[x]][, colnames(data[[x]]) != species[x]]
+  })
+  method <- sapply(plits, function(x) {slot(x, "method")})
+  level <- sapply(plits, function(x) {slot(x, "level")})
+  variables <- lapply(plits, function(x) {
+    if (back == TRUE) {slot(x, "variables")} else {NULL}
+  })
+
   ## ellipsoids
-  ellipsoids <- lapply(list(...), function(x) {
-    if (class(x)[1] %in% c("ellipsoid", "ellipsoid_model_sim")) {
-      return(x)
-    } else {
-      ell <- slot(x, "ellipsoids")[["mean_ellipsoid"]]
-      ell <- new("ellipsoid_model_sim",
-                 method =  slot(ell, "method"),
-                 level = slot(ell, "level"),
-                 centroid = slot(ell, "centroid"),
-                 covariance_matrix = slot(ell, "covariance_matrix"),
-                 niche_volume = slot(ell, "niche_volume"),
-                 semi_axes_length = slot(ell, "semi_axes_length"),
-                 axes_coordinates = slot(ell, "axes_coordinates"))
-      slot(ell, "suitability", check = FALSE) <- slot(x, "suitability")[, "mean_ellipsoid"]
-      slot(ell, "mahalanobis", check = FALSE) <- slot(x, "mahalanobis")[, "mean_ellipsoid"]
-      return(ell)
+  ellipsoids <- lapply(1:length(plits), function(x) {
+    ell <- ellipsoid_fit(data[[x]], longitude[x], latitude[x], method[x],
+                         level[x], variables[[x]])
+    if (back == TRUE) {
+      ell <- predict(ell, variables, "both", return_numeric = TRUE)
     }
+    return(ell)
   })
 
   ## data for niche comparisons
   n_niches <- length(ellipsoids)
   comparison_matrix <- combn(n_niches, 2)
 
-  if (!overlap_type[1] %in% c("all", "full")) {
+  if (overlap_type[1] %in% c("all", "full")) {
     data_rand <- hypercube_boundaries(ellipsoids, n_points = n_points)
   }
-
 
   # -----------
   # Full overlap, Montocarlo simulation
@@ -66,8 +115,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all",
     names(mahas) <- paste0("Niche_", 1:length(ellipsoids),"_M")
     mahas <-  do.call(cbind, mahas)
 
-    metrics <- overlap_metrics(comparison_matrix, env_data = data_rand,
-                               maha_distM, suits)
+    metrics <- overlap_metrics(comparison_matrix, data_rand, mahas, suits)
 
     over_metrics <- lapply(1:length(metrics), function(x) {metrics[[x]][[1]]})
     over_metrics <- do.call(rbind.data.frame, over_metrics)
@@ -78,20 +126,19 @@ ellipsoid_overlap <- function(..., overlap_type = "all",
     over_cordinates <- lapply(1:length(metrics), function(x) {metrics[[x]][[2]]})
     names(over_cordinates) <- rownames(over_metrics)
 
-    results <-  list(overlap_results=nicheover_metrics,
-                     overlap_coordinates= nicheover_cordinates,
-                     ellipsoid_metadata=ellipsoid_metadata)
-
     results <- overlap_ellipsoid(ellipsoids = ellipsoids,
-                                 spp_data = "list",
-                                 background = "list",
-                                 overlap = "data.frame")
+                                 spp_data = data,
+                                 full_background = over_cordinates,
+                                 full_overlap = over_metrics)
   }
 
 
   # -----------
   # Background union overlap
-  if(!is.null(bg_vars) && class(bg_vars) == "RasterStack"){
+  if(back == TRUE & !overlap_type[1] %in% c("all", "back_union")){
+    cls <- sapply(variables, function (x) {class(x)[1]})
+    a
+
     bg_vars <- na.omit(getValues(bg_vars))
     in_EllipsoidMh <- inEllipsoidMh(emd = ellipsoid_metadata,
                                     env_data = bg_vars,level)

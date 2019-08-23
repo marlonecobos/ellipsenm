@@ -146,6 +146,10 @@ write_ellmeta <- function(ellipsoid, name = "ellipsoid_metadata") {
 #' @param error (numeric) value from 0 to 100 to represent the percentage of
 #' potential error (E) that the data could have due to any source of uncertainty.
 #' Default = 5.
+#' @export
+#' @return
+#' data.frame with the selected parameter settings according to the argument
+#' \code{selection_criteria}.
 
 select_best <- function(calibration_table, selection_criteria = "S_OR_P",
                         level = 95, error = 5) {
@@ -183,9 +187,12 @@ select_best <- function(calibration_table, selection_criteria = "S_OR_P",
 #' for the ellipsoid, expresed as percentage. Default = 95.
 #' @param variables (optional) RasterStack, matrix, or data.frame of at least two
 #' variables to represent a set of conditions relevant for overlap analyses.
+#' @export
+#' @return
+#' A data_overlap object for posterior use in overlap analyses.
 
-overlap_object <- function(data, method = "covmat", level = 95,
-                           variables = NULL) {
+overlap_object <- function(data, species, longitude, latitude, method = "covmat",
+                           level = 95, variables = NULL) {
   if (missing(data)) {
     stop("Argument data is needed for creating data_overlap object.")
   }
@@ -193,13 +200,16 @@ overlap_object <- function(data, method = "covmat", level = 95,
     if (!class(variables)[1] %in% c("RasterStack", "matrix", "data.frame")) {
       stop("Argument variables not valid, see function's help.")
     }
+  } else {
+    if (ncol(data) <= 3) {
+      stop("If variables are not defined, data must include other columns representing environmental data.")
+    }
   }
   object <- data_overlap(data = data,
+                         main_columns = c(species, longitude, latitude),
                          method = method,
                          level = level)
-  if (!is.null(variables)) {
-    slot(object, "variables", check = FALSE) <- variables
-  }
+  slot(object, "variables", check = FALSE) <- variables
   return(object)
 }
 
@@ -208,6 +218,9 @@ overlap_object <- function(data, method = "covmat", level = 95,
 #' @param attribute (character) name of the attribute to be obtained from elements
 #' in \code{ellipsoids}. Options are: method, centroid, covariance_matrix, level,
 #' niche_volume, semi_axes_length, and axes_coordinates. Default = "method".
+#' @export
+#' @return
+#' The attribute selected.
 
 get_attribute <- function(ellipsoids, attribute = "method"){
   if (missing(ellipsoids)) {
@@ -229,12 +242,16 @@ get_attribute <- function(ellipsoids, attribute = "method"){
 #' Helper funtion to get data for Montecarlo simulations
 #' @param ellipsoids list of ellipsoid objects.
 #' @param n_points (numeric) number of random points to be generated.
+#' @export
+#' @return
+#' A total of \code{n_points} created randomly considering the limits of the
+#' ellipsoids considered.
 
 hypercube_boundaries <- function(ellipsoids, n_points = 1000000) {
   if (missing(ellipsoids)) {
     stop("Argument ellipsoids is needed, see function's help.")
   }
-  axis_list <- get_attribute(ellipsoids, attribute = "axis_coordinates")
+  axis_list <- get_attribute(ellipsoids, attribute = "axes_coordinates")
   ellipsoid_axis <- do.call(rbind, axis_list)
   min_env <- apply(ellipsoid_axis, 2, min)
   max_env <- apply(ellipsoid_axis, 2, max)
@@ -242,4 +259,64 @@ hypercube_boundaries <- function(ellipsoids, n_points = 1000000) {
     runif(n_points, min = min_env[i], max = max_env[i])
   })
   return(data_rand)
+}
+
+
+#' Helper function to compute overlap metrics
+#' @param comparison_matrix matrix resulted from using the \code{\link[utils]{combn}}
+#' function to obtain the pairwise overlap of all niches to be compared.
+#' @param background matrix of environmental variables to be used as background.
+#' @param mahalanobis matrix of mahalanobis distances calculated for all niches
+#' to be compared.
+#' @param suitability matrix of suitability values calculated for all niches to
+#' be compared.
+#' @export
+#' @return
+#' A list of two data.frames containing metrics of overlap and other data useful
+#' for plotting results.
+
+overlap_metrics <- function(comparison_matrix, background, mahalanobis,
+                            suitability) {
+  if (missing(comparison_matrix)) {
+    stop("Argument comparison_matrix is necessary to perform the analysis")
+  }
+  if (missing(background)) {
+    stop("Argument background is necessary to perform the analysis")
+  }
+  if (missing(mahalanobis)) {
+    stop("Argument mahalanobis is necessary to perform the analysis")
+  }
+  if (missing(suitability)) {
+    stop("Argument suitability is necessary to perform the analysis")
+  }
+  get_metrics <- lapply(1:ncol(comparison_matrix), function(x) {
+    compare <- suitability[, comparison_matrix[, x]]
+    compare <- compare > 0
+    zeros1 <- which(rowSums(compare) %in% 0)
+    compare <- cbind(1:nrow(compare), compare)
+    compare <- compare[-zeros1, ]
+    union_npoints <- nrow(compare)
+    union_prop <- colSums(compare[, -1]) / union_npoints
+    union_sum <- rowSums(compare[, -1])
+    intersect_id <- which(union_sum == 2)
+    np_intesection_global <- length(intersect_id)
+    intersection <- np_intesection_global / union_npoints
+    prop_size_niche_1_vs_2 <- union_prop[1] / union_prop[2]
+    prop_size_niche_2_vs_1 <- union_prop[2] / union_prop[1]
+
+    overlap <- data.frame(total_points = union_npoints,
+                          overlaped_points = np_intesection_global,
+                          overlap = intersection,
+                          prop_size_niche_1_vs_2 = prop_size_niche_1_vs_2,
+                          prop_size_niche_2_vs_1 = prop_size_niche_2_vs_1)
+
+    background_in <- data.frame(background[compare[intersect_id, 1], ],
+                                mahalanobis[compare[intersect_id, 1],
+                                            comparison_matrix[, x]],
+                                suitability[compare[intersect_id, 1],
+                                            comparison_matrix[, x]])
+
+    return(list(overlap = overlap, background = background_in))
+  })
+  return(get_metrics)
 }
