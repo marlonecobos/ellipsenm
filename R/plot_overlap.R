@@ -1,58 +1,154 @@
-plot_ellipsoids3d <- function(object, level = 0.95, spp_data = FALSE,
-                              col = c("black", "red", "darkgreen"),
-                              background_points = NULL, proportion = 0.3,
-                              background_col = NULL) {
+#' Plot results of niche overlap analyses
+#'
+#' @description plot_overlap
+#'
+#' @param object overlap_ellipsoid object resulted from using the function
+#' \code{\link{ellipsoid_overlap}}.
+#' @param niches (numeric) pair of integer numbers denoting the niches to be
+#' plotted. Default = c(1, 2).
+#' @param data (logical) whether or not to plot points of species data. Default
+#' = TRUE.
+#' @param col colors to be used to plot data and ellipsoids of niches to be
+#' compared. Default = c("blue", "red").
+#' @param background (logical) whether or not to plot background points. Default
+#' = TRUE.
+#' @param background_type (character) type of background to be plotted. Options
+#' are: "full", "back_union". See \code{\link{ellipsoid_overlap}}.
+#' @param proportion (numeric) proportion of background to be plotted. Default = 0.3.
+#' @param background_col color ramp to be used for coloring background points.
+#' Default = viridis::viridis.
+#' @param legend (logical) whether or not to add a simple legend. Default = TRUE.
+#'
+#' @return A plot of the niches to be compared in environmental space.
+#'
+#' @export
+#'
+#' @examples
+#' # data
+#'
+#' #simple plot
+
+plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
+                         col = c("blue", "red"), background = FALSE,
+                         background_type, proportion = 0.3,
+                         background_col = viridis::viridis, legend = TRUE) {
 
   # -----------
   # detecting potential errors
   if (missing(object)) {
     stop("Argument object is necessary to perform the analysis.")
   }
+  if (length(col) < length(object@ellipsoids)) {
+    message("Number of niches to plot exceeds number of colors, using automatic selection.")
+    col <- rainbow(length(object))
+  }
+  if (background == TRUE & missing(background_type)) {
+    stop("Argument background_type needs to be defined if background = TRUE.")
+  }
+
+  # -----------
+  # preparing data
+  var_names <- object@variable_names
+  iter <- niches[1]:niches[2]
+  backs <- paste0("Niche_", niches[1], "_vs_", niches[2])
 
   # -----------
   # plotting
-  if (!is.null(spp_data)) {
-    points <- lapply(1:length(spp_data), function(x) {
-      if (x == 1) {
-        plot3d(spp_data[[x]], col = col[x], size = 6)
-      } else {
-        plot3d(spp_data[[x]], col = col[x], size = 6, add = TRUE)
+  if(length(var_names) > 2) {
+    if (data == TRUE) {
+      points <- lapply(iter, function(x) {
+        sp_data <- object@data[[x]][, var_names]
+        if (x == niches[1]) {
+          rgl::plot3d(sp_data[, 1:3], col = col[x], size = 6)
+        } else {
+          rgl::plot3d(sp_data[, 1:3], col = col[x], size = 6, add = TRUE)
+        }
+      })
+    }
+
+    if (background == TRUE) {
+      if (background_type == "full") {
+        mh_sort <- object@full_background[[backs]]
       }
+      if (background_type == "back_union") {
+        mh_sort <- object@union_background[[backs]]
+      }
+
+      mh_sort <- mh_sort[order(mh_sort[, "Niche_1_S"]), ]
+      mh_sort <- mh_sort[sample(ceiling(nrow(mh_sort) * proportion)), ]
+      mh_sort <- mh_sort[order(mh_sort[, "Niche_1_S"]), 1:3]
+
+      if (data == TRUE) {
+        rgl::plot3d(mh_sort, col = background_col(nrow(mh_sort)), add = TRUE)
+      } else {
+        rgl::plot3d(mh_sort, col = background_col(nrow(mh_sort)))
+      }
+    }
+
+    ellipsoides <- lapply(iter, function(x) {
+      centroid <- object@ellipsoids[[x]]@centroid[1:3]
+      cov_mat <- object@ellipsoids[[x]]@covariance_matrix[1:3, 1:3]
+      level <- object@ellipsoids[[x]]@level / 100
+      ell <- rgl::ellipse3d(cov_mat, centre = centroid, level = level)
+      rgl::wire3d(ell, col = col[x], alpha = 0.5)
     })
-  }
 
-  ellipsoides <- lapply(1:length(object), function(x) {
-    meta_data <- object[[x]]
-    ell <- ellipse3d(meta_data$covariance[, 1:3],
-                     centre = meta_data$centroid[1:3], level = level)
-    wire3d(ell, col = col[x], alpha = 0.1)
-  })
+    if (legend == TRUE) {
+      rgl::legend3d("topright", legend = paste("Niche", niches[1:2]),
+                    lty = 1, col = col, inset = 0.02, bty = "n")
+    }
+  } else {
+    el1 <- lapply(iter, function(x) {
+      centroid <- object@ellipsoids[[x]]@centroid[1:2]
+      cov_mat <- object@ellipsoids[[x]]@covariance_matrix[1:2, 1:2]
+      level <- object@ellipsoids[[x]]@level / 100
+      ellipse::ellipse(x = cov_mat, centre = centroid, level = level)
+    })
 
-  if(!is.null(background_points)) {
-    mh_sort <- background_points[order(background_points[, 4],decreasing = F), ]
-    mh_sort <- mh_sort[sample(ceiling(nrow(mh_sort) * proportion)), ]
-    mh_sort <- mh_sort[order(mh_sort[, 4], decreasing = F), ]
+    xlim <- range(unlist(lapply(el1, function(x) {x[, 1]})))
+    ylim <- range(unlist(lapply(el1, function(x) {x[, 2]})))
 
-    if(is.null(background_col)){
-      rainB1 <- rev(c("#002dff","#00ff5d", "#fff000","#ffd200", "#ff0000"))
-      colfunc <- colorRampPalette(rainB1)
-      print(rainB1)
-      col1 <- rev(colfunc(nrow(mh_sort)))
-    } else {
-      col1 <- background_col
+    par(mar = c(4, 4, 1, 1))
+    if (background == TRUE) {
+      if (background_type == "full") {
+        mh_sort <- object@full_background[[backs]]
+      }
+      if (background_type == "back_union") {
+        mh_sort <- object@union_background[[backs]]
+      }
+
+      mh_sort <- mh_sort[order(mh_sort[, "Niche_1_S"]), ]
+      mh_sort <- mh_sort[sample(ceiling(nrow(mh_sort) * proportion)), ]
+      mh_sort <- mh_sort[order(mh_sort[, "Niche_1_S"]), 1:2]
+
+      plot(mh_sort, col = background_col(nrow(mh_sort)), xlim = xlim, ylim = ylim,
+           xlab = var_names[1], ylab = var_names[2])
     }
 
-    if (!is.null(spp_data)) {
-      plot3d(mh_sort, col = col1, add = TRUE)
-    } else {
-      plot3d(mh_sort, col = col1)
+    if (data == TRUE) {
+      points <- lapply(iter, function(x) {
+        sp_data <- object@data[[x]][, var_names]
+        if (x == niches[1]) {
+          if (background == TRUE) {
+            points(sp_data[, 1:2], pch = 19, col = col[x])
+          } else {
+            plot(sp_data[, 1:2], pch = 19, col = col[x], xlim = xlim, ylim = ylim,
+                 xlab = var_names[1], ylab = var_names[2])
+          }
+        } else {
+          points(sp_data[, 1:2], pch = 19, col = col[x])
+        }
+      })
+    }
+
+    ellipsoides <- lapply(iter, function(x) {
+      lines(el1[[x]], col = col[x], lwd = 1.5)
+    })
+
+    if (legend == TRUE) {
+      legend("topright", legend = paste("Niche", niches[1:2]), lty = 1,
+             col = col, bty = "n", horiz = TRUE)
     }
   }
 
-  ellipsoides <- lapply(1:length(object), function(x) {
-    meta_data <- object[[x]]
-    ell <- ellipse3d(meta_data$covariance[, 1:3],
-                     centre = meta_data$centroid[1:3],level = level)
-    wire3d(ell, col = col[x], alpha = 0.5)
-  })
 }
