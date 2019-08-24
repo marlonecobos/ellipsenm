@@ -8,7 +8,13 @@ Townsend Peterson, Vijay Barve, and Narayani Barve
       - [Status of the project](#status-of-the-project)
   - [Package description](#package-description)
   - [Installing the package](#installing-the-package)
-  - [Using the package](#using-the-package)
+  - [Exploring the ellipsenm package](#exploring-the-ellipsenm-package)
+      - [Setting a directory](#setting-a-directory)
+      - [Ecological niches in
+        ellipsenm](#ecological-niches-in-ellipsenm)
+      - [Functions in ellipsenm](#functions-in-ellipsenm)
+      - [Model calibration in
+        ellipsenm](#model-calibration-in-ellipsenm)
       - [Modeling ecological niches using
         ellipsoids](#modeling-ecological-niches-using-ellipsoids)
 
@@ -70,10 +76,17 @@ perform a series of pre- and post-modeling analyses.
 ## Installing the package
 
 **ellipsenm** is in a GitHub repository and can be installed and/or
-loaded using the following code (make sure to have Internet connection).
+loaded using the code below (make sure to have Internet connection). One
+of the functions to evaluate model performance in this package needs
+compilation. That is why you must install a compilation tools before
+installing the package, **Rtools** for Windows or other tools in other
+Operative Systems. A guide for downloading and installing Rtools can be
+found
+<a href="http://jtleek.com/modules/01_DataScientistToolbox/02_10_rtools/#1" target="_blank">here</a>.
+IMPORTANT note: Add Rtools to the **PATH** during its installation.
 
-Note: Try the following code first. If you have any problem during the
-installation, restart your session, close other R sessions you may have
+Try the code below first… If you have any problem during the
+installation, restart your R session, close other sessions you may have
 open, and try again. If during the installation you are asked to update
 packages, please do it (select the option that says All). If any of the
 packages gives an error, please install it alone using
@@ -93,9 +106,23 @@ library(ellipsenm)
 
 <br>
 
-## Using the package
+## Exploring the ellipsenm package
 
-### Modeling ecological niches using ellipsoids
+### Setting a directory
+
+The main functions of the **ellipsenm** package produce results that
+need to be written in a directory in your computer. Writing the results
+outside the R environment helps to avoid problems related to RAM
+limitations. That is why, setting a working directory is recommended
+before starting. You ca do that using the code below:
+
+``` r
+setwd("Drive:/Your/Directory") # change the characters accordingly
+```
+
+<br>
+
+### Ecological niches in ellipsenm
 
 An ecological niche, from a Grinnellian perspective, is the set of
 environmental conditions that allow a species to maintain populations
@@ -110,8 +137,92 @@ normal transformation of Mahalanobis distances. Therefore, maximum
 values of suitability will be close to the centroid and minimum values
 will be close to the border of the ellipsoid.
 
+<br>
+
+### Functions in ellipsenm
+
+A complete list of the main functions in the **ellipsenm** package can
+be found in the package documentation. Use the following code to see the
+list.
+
+``` r
+help(ellipsenm)
+```
+
+<br>
+
+### Model calibration in ellipsenm
+
+Model calibration is a process in which various candidate models,
+created with distinct (coherent) parameter settings, are tested based on
+metrics that reflect their performance. After that models the best
+models are selected, based on user defined selection criteria, to
+represent the phenomenon of interest. The function
+*ellipsoid\_calibration* will help to create candidate models, evaluate
+them, and select the best according to the selected criteria. The
+performance of models in this process is assessed based on statistical
+significance (partial ROC), predictive power (omission rates), and
+prevalence. Where good models are the ones statistically significant,
+with low omission rates, and with low prevalence.
+
 We encourage the users to check the function’s help before using it.
 This is possible using the code below:
+
+``` r
+help(ellipsoid_calibration)
+```
+
+The code below helps users to perform a small exercise using various
+functions to prepare the data and to perform the model calibration
+pocess.
+
+``` r
+# reading data
+occurrences <- read.csv(system.file("extdata", "occurrences.csv",
+                                    package = "ellipsenm"))
+colnames(occurrences)
+
+# raster layers of environmental data (this ones are masked to the accessible area)
+# users must prepare their layers accordingly if using other data
+vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
+                                 pattern = "bio", full.names = TRUE))
+
+# preparing training and testing data
+data_split <- split_data(occurrences, split_method, longitude, 
+                         latitude, train_proportion = 0.75, save = TRUE, 
+                         name = "occurrences")
+
+# sets of variables (example)
+sets <- list(set_1 = c("bio_1", "bio_7", "bio_15"),
+             set_2 = c("bio_1", "bio_12", "bio_15")) # change as needed
+
+variable_sets <- prepare_sets(vars, sets)
+
+# methods to create ellipsoids
+methods <- c("covmat", "mve1")
+
+# model calibration process
+calib <- ellipsoid_calibration(data_split, species = "species", longitude = "longitude", 
+                      latitude = "latitude", variables = variable_sets,
+                      methods = methods, level = 99, selection_criteria = "S_OR_P",
+                      error = 5, iterations = 500, percentage = 50,
+                      output_directory = "calibration_results")
+
+class(calib)
+# check your directory, folder "calibration_results"
+```
+
+<br>
+
+### Modeling ecological niches using ellipsoids
+
+Once you have decided what are the best parameter settings for your
+models either using a model calibration process or other approach, your
+final models can be produced. This models will help to represent the
+ecological niche of a species in environmental and geographic space. The
+function *ellipsoid\_model* will help to perform all necessary analyses.
+
+Please check the function’s help with the code below:
 
 ``` r
 help(ellipsoid_model)
@@ -213,4 +324,7 @@ class(ell_model2)
 # check your directory, folder "ellipsenm_model2"
 ```
 
-Other examples will be added soon.
+<br>
+
+Detailed examples for other functions of the package can be found in
+their respective documentation.
