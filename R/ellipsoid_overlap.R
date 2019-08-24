@@ -99,6 +99,13 @@ ellipsoid_overlap <- function(..., overlap_type = "all",
   if (back == TRUE & all(cls != cls[1])) {
     stop("Variables from all data_overlap objects must be of the same class.")
   }
+  data <- lapply(1:length(data), function(x) {
+    if (class(variables[[x]])[1] == "RasterStack") {
+      cbind(data[[x]], raster::extract(variables[[x]], data[[x]]))
+    } else {
+      data[[x]]
+    }
+  })
 
   ## ellipsoids
   cat("\nFitting ellipsoids\n")
