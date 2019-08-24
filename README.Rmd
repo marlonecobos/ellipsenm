@@ -7,8 +7,10 @@ output:
     toc_depth: 4
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```{r knitr_init, echo=FALSE, cache=FALSE, message=FALSE}
+packages <- c("ellipsenm", "knitr", "raster", "rgl")
+suppressWarnings(s <- sapply(packages, function(x) {library(x, character.only = T)}))
+opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>", webgl = hook_webgl)
 ```
 
 <br>
@@ -100,7 +102,7 @@ We encourage the users to check the function's help before using it. This is pos
 help(ellipsoid_calibration)
 ```
 
-The code below helps users to perform a small exercise using various functions to prepare the data and to perform the model calibration pocess.
+The code below helps users to perform a small exercise using various functions to prepare the data and to perform the model calibration process.
 
 ```{r, eval=FALSE, include=TRUE, message=FALSE, warning=FALSE}
 # reading data
@@ -237,6 +239,67 @@ ell_model2 <- ellipsoid_model(data = occurrences, species = "species",
 
 class(ell_model2)
 # check your directory, folder "ellipsenm_model2"
+```
+
+<br>
+
+### Niche overlap using ellipsenm
+
+Niche overlap analyses that can be performed in **ellipsenm** allow to compare the degree of overlap between ecological niches in environmental space. The function *ellipsoid_overlap* helps is performing needed analyses. To plot results use the function *plot_overlap*.
+
+Please check the function's help with the code below:
+
+```{r, eval=FALSE, include=TRUE, message=FALSE, warning=FALSE}
+help(ellipsoid_overlap)
+```
+
+The code below helps to prepare data and perform an example of overlap analysis.
+
+```{r, eval=FALSE, include=TRUE, message=FALSE, warning=FALSE, results=FALSE}
+# reading data
+occurrences <- read.csv(system.file("extdata", "occurrences.csv",
+                                    package = "ellipsenm"))
+
+# raster layers of environmental data
+vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
+                                 pattern = "bio", full.names = TRUE))
+
+# preparing data
+vext <- raster::extent(vars)
+ext1 <- raster::extent(vext[1], (mean(vext[1:2]) + 0.2), vext[3:4])
+ext2 <- raster::extent((mean(vext[1:2]) + 0.2), vext[2], vext[3:4])
+
+# croping variables and splitting occurrences
+vars1 <- raster::stack(raster::crop(vars, ext1))
+vars2 <- raster::stack(raster::crop(vars, ext2))
+
+occurrences1 <- occurrences[occurrences$longitude < (mean(vext[1:2]) + 0.2),]
+occurrences2 <- occurrences[!occurrences$longitude %in% occurrences1$longitude,]
+
+# preparing overlap objects to perform analyses
+niche1 <- overlap_object(occurrences1, species =  "species", longitude = "longitude", 
+                         latitude = "latitude", method = "covmat", level = 95, 
+                         variables = vars1)
+
+niche2 <- overlap_object(occurrences2, species =  "species", longitude = "longitude", 
+                         latitude = "latitude", method = "covmat", level = 95, 
+                         variables = vars2)
+
+# niche overlap analysis
+overlap <- ellipsoid_overlap(niche1, niche2)
+```
+
+Use the following lines of code for plotting results using distinct options.
+
+```{r, eval=FALSE, include=TRUE, message=FALSE, warning=FALSE}
+# plotting only ellipsoids
+plot_overlap(overlap)
+
+# plotting ellispodis and background for full overlap
+plot_overlap(overlap, background = TRUE, proportion = 0.6, background_type = "full")
+
+# plotting ellispodis and background for overlap based on accessible environments
+plot_overlap(overlap, background = TRUE,  proportion = 1, background_type = "back_union")
 ```
 
 <br>
