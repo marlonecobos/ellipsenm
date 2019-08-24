@@ -60,13 +60,14 @@ ellipsoid_overlap <- function(..., overlap_type = "all",
   # -----------
   # preparing data
   ## background availability
+  cat("\nPreparing data...\n")
   back <- sapply(plits, function(x) {
     if (is.null(slot(x, "variables"))) {FALSE} else {TRUE}
   })
   back <- all(back == TRUE)
 
   if (back == FALSE & overlap_type[1] %in% c("all", "back_union")) {
-    warning("overlap_type using background is not possible, only full overlap will be performed.")
+    message("overlap_type using background is not possible, only full overlap will be performed.")
     overlap_type <- "full"
   }
 
@@ -83,16 +84,27 @@ ellipsoid_overlap <- function(..., overlap_type = "all",
   variables <- lapply(plits, function(x) {
     if (back == TRUE) {slot(x, "variables")} else {NULL}
   })
+  variable_names <- sapply(1:length(plits), function(x) {
+    if (back == TRUE) {
+      vars <- slot(plits[[x]], "variables")
+      cl <- class(vars)[1]
+      if (cl == "RasterStack") {v <- names(vars)} else {v <- colnames(vars)}
+    } else {
+      v <- colnames(data[[x]])
+      v <- v[!v %in% c(longitude[x], latitude[x])]
+    }
+    return(v)
+  })[, 1]
   cls <- sapply(variables, function (x) {class(x)[1]})
   if (back == TRUE & all(cls != cls[1])) {
     stop("Variables from all data_overlap objects must be of the same class.")
   }
 
   ## ellipsoids
+  cat("\nFitting ellipsoids\n")
   ellipsoids <- lapply(1:length(plits), function(x) {
-    ell <- ellipsoid_fit(data[[x]], longitude[x], latitude[x], method[x],
-                         level[x], variables[[x]])
-    return(ell)
+    ellipsoid_fit(data[[x]], longitude[x], latitude[x], method[x], level[x],
+                  variables[[x]])
   })
 
   ## data for niche comparisons
@@ -101,11 +113,13 @@ ellipsoid_overlap <- function(..., overlap_type = "all",
 
   if (overlap_type[1] %in% c("all", "full")) {
     data_rand <- hypercube_boundaries(ellipsoids, n_points = n_points)
+    colnames(data_rand) <- variable_names
   }
 
   # -----------
   # Full overlap, Montocarlo simulation
   if (overlap_type[1] %in% c("all", "full")) {
+    cat("\nPerforming full overlap analyses, please wait...\n")
     mah_suit <- sapply(1:length(ellipsoids), function(x) {
       mh_st <- predict(ellipsoids[[x]], data_rand, "both")
       mh_st <- data.frame(slot(mh_st, "suitability"), slot(mh_st, "mahalanobis"))
@@ -132,20 +146,27 @@ ellipsoid_overlap <- function(..., overlap_type = "all",
     names(over_cordinates) <- rownames(over_metrics)
 
     results <- overlap_ellipsoid(ellipsoids = ellipsoids,
-                                 spp_data = data,
+                                 data = data,
                                  full_background = over_cordinates,
-                                 full_overlap = over_metrics)
+                                 full_overlap = over_metrics,
+                                 variable_names = variable_names)
+  } else {
+    results <- overlap_ellipsoid(ellipsoids = ellipsoids,
+                                 data = data,
+                                 variable_names = variable_names)
   }
 
   # -----------
   # Background union overlap
   if(back == TRUE & overlap_type[1] %in% c("all", "back_union")) {
+    cat("\nPerforming union background overlap analyses, please wait...\n")
     if (cls[1] == "RasterStack") {
       bg_vars <- lapply(variables, function(x) {na.omit(raster::values(x))})
       bg_vars <- unique(do.call(rbind, bg_vars))
     } else {
       bg_vars <- unique(do.call(rbind, variables))
     }
+    colnames(bg_vars) <- variable_names
 
     mah_suit <- sapply(1:length(ellipsoids), function(x) {
       mh_st <- predict(ellipsoids[[x]], bg_vars, "both")
@@ -175,6 +196,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all",
     slot(results, "union_background") <- over_cordinates
     slot(results, "union_overlap") <- over_metrics
   }
+  cat("\nProcess finished\n")
 
   return(results)
 }
