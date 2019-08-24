@@ -20,7 +20,7 @@ are useful to perform a series of pre- and post-modeling analyses.
 \code{\link{ellipsoid_fit}}, \code{\link{predict}},
 \code{\link{ellipsoid_calibration}}, \code{\link{partial_roc}},
 \code{\link{prepare_sets}}, \code{\link{report}},
-\code{\link{ellipsoid_model}}, \code{\link{object_overlap}},
+\code{\link{ellipsoid_model}}, \code{\link{overlap_object}},
 \code{\link{ellipsoid_overlap}}, \code{\link{plot_overlap}}
 
 Other functions (important helpers)
