@@ -49,10 +49,14 @@ analyses related to ecological niches of species.
 
 ### Status of the project
 
-At the moment we have completed the first of three phases. We have made
-few modifications to the list of original products that have helped us
-to improve the package functionality. Next steps are to complete
-scheduled activities to obtain all products.
+At the moment we have completed the three phases of the project. We have
+made few modifications to the list of original products that have helped
+us to improve the package functionality. The package is fully functional
+but improvements can be done and in the future, they will be included.
+Future improvements will include: options to allow reproducibility,
+production of HTML reports of other main analyses, and generic methods
+for summarizing and plotting resultant objects. Future plans also
+include submitting the package to CRAN.
 
 All commits made can be seen at the
 <a href="https://github.com/marlonecobos/ellipsenm/commits/master" target="_blank">complete
@@ -393,5 +397,5 @@ plot_overlap(overlap, background = TRUE,  proportion = 1, background_type = "bac
 
 <br>
 
-Detailed examples for other functions of the package can be found in
-their respective documentation.
+**Detailed examples for other functions of the package can be found in
+their respective documentation.**
