@@ -154,7 +154,7 @@ partial_roc <- function(prediction, test_data, longitude, latitude, error = 5,
     naID <- !is.na(partial_AUC$auc_ratio)
     nona_valproc <- partial_AUC$auc_ratio[naID]
     mauc <- mean(nona_valproc)
-    proc <- (sum(nona_valproc <= 1) + sum(nona_valproc)) / length(nona_valproc)
+    proc <- sum(nona_valproc <= 1) / length(nona_valproc)
     valid_iter <- length(nona_valproc)
 
     p_roc <- c(mauc, proc, valid_iter)
