@@ -157,7 +157,7 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   sp <- as.character(data[1, species])
 
   if (!missing(raster_layers)) {
-    data <- cbind(data, raster::extract(raster_layers, data[, c(longitude, latitude)]))
+    data <- na.omit(cbind(data, raster::extract(raster_layers, data[, c(longitude, latitude)])))
     raster_base <- raster_layers[[1]]
     nona <- !is.na(raster::values(raster_base))
     variable1 <- raster_layers[[1]]
@@ -170,7 +170,7 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
     r_values <- r_values[samp, ]
     variables <- raster_layers
   } else {
-    data <- cbind(data[, c(species, longitude, latitude)], variables)
+    data <- na.omit(cbind(data[, c(species, longitude, latitude)], variables))
     variable_names <- colnames(variables)
   }
 
