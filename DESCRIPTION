@@ -19,7 +19,7 @@ Description: ellipsenm is an R package that implements multiple tools to help in
 Imports:
     concaveman (>= 1.0),
     cowplot (>= 1.0),
-    curl (> = 4.0),
+    curl (>= 4.0),
     data.table (>= 1.12),
     dplyr (>= 0.8),
     ellipse (>= 0.4),
