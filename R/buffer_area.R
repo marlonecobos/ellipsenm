@@ -97,7 +97,7 @@ buffer_area <- function(data, longitude, latitude, buffer_distance = 100,
 
   buff_area <- suppressWarnings(rgeos::gBuffer(occ_sp, width = buffer_distance))
 
-  buff_area <- raster::disaggregate(buff_area)
+  #buff_area <- raster::disaggregate(buff_area)
 
   # -----------
   # getting only area of interest

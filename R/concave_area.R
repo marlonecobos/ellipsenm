@@ -171,7 +171,7 @@ concave_area <- function(data, longitude, latitude, length_threshold = 5,
     hulls_buffer <- do.call(sp::rbind.SpatialPolygons,
                             c(hulls_buffer, list(makeUniqueIDs = TRUE)))
 
-    hulls_buffer <- raster::disaggregate(hulls_buffer)
+    #hulls_buffer <- raster::disaggregate(hulls_buffer)
   } else {
     hulls_buffer <- hulls_buffer[[1]]
   }
