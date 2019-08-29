@@ -209,11 +209,11 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   return_name <- "mean_ellipsoid"
 
   if (replicates > 1) {
-    predictions <- predict(ellipsoids, variables, prediction, return_numeric,
+    predictions <- predict(ellipsoids, variables, prediction, TRUE, return_numeric,
                            tolerance, namer, format, overwrite, force_return,
                            return_name)
   } else {
-    predictions <- predict(ellipsoids, variables, prediction, return_numeric,
+    predictions <- predict(ellipsoids, variables, prediction, TRUE, return_numeric,
                            tolerance, namer, format, overwrite, force_return)
   }
 
