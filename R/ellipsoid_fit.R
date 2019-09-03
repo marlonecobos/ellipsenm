@@ -91,7 +91,7 @@ ellipsoid_fit <- function (data, longitude, latitude, method = "covmat",
   # -----------
   # preparing data
   if (!is.null(raster_layers)) {
-    data <- raster::extract(raster_layers, data[, c(longitude, latitude)])
+    data <- na.omit(raster::extract(raster_layers, data[, c(longitude, latitude)]))
   } else {
     data <- data[, -which(colnames(data) %in% c(longitude, latitude))]
   }
