@@ -6,8 +6,8 @@
 \usage{
 plot_overlap(object, niches = c(1, 2), data = TRUE, col = c("blue",
   "red"), background = FALSE, background_type, proportion = 0.3,
-  background_col = viridis::viridis, xlab = "", ylab = "",
-  zlab = "", legend = TRUE)
+  background_col = viridis::viridis, change_labels = FALSE,
+  xlab = "", ylab = "", zlab = "", legend = TRUE)
 }
 \arguments{
 \item{object}{overlap_ellipsoid object resulted from using the function
@@ -32,6 +32,9 @@ are: "full", "back_union". See \code{\link{ellipsoid_overlap}}.}
 
 \item{background_col}{color ramp to be used for coloring background points.
 Default = viridis::viridis.}
+
+\item{change_labels}{(logical) whether or not to change axes label.
+Default = FALSE.}
 
 \item{xlab}{(character) lable of x axis. Default = "".}
 

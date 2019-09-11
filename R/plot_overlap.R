@@ -17,6 +17,8 @@
 #' @param proportion (numeric) proportion of background to be plotted. Default = 0.3.
 #' @param background_col color ramp to be used for coloring background points.
 #' Default = viridis::viridis.
+#' @param change_labels (logical) whether or not to change axes label.
+#' Default = FALSE.
 #' @param xlab (character) lable of x axis. Default = "".
 #' @param ylab (character) lable of y axis. Default = "".
 #' @param zlab (character) lable of z axis. Default = "".
@@ -34,8 +36,8 @@
 plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
                          col = c("blue", "red"), background = FALSE,
                          background_type, proportion = 0.3,
-                         background_col = viridis::viridis, xlab = "", ylab = "",
-                         zlab = "", legend = TRUE) {
+                         background_col = viridis::viridis, change_labels = FALSE,
+                         xlab = "", ylab = "", zlab = "", legend = TRUE) {
 
   # -----------
   # detecting potential errors
@@ -63,8 +65,12 @@ plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
       points <- lapply(iter, function(x) {
         sp_data <- object@data[[x]][, var_names]
         if (x == niches[1]) {
-          rgl::plot3d(sp_data[, 1:3], col = col[x], size = 6, xlab = xlab,
-                      ylab = ylab, zlab = zlab)
+          if (change_labels == TRUE) {
+            rgl::plot3d(sp_data[, 1:3], col = col[x], size = 6, xlab = xlab,
+                        ylab = ylab, zlab = zlab)
+          } else {
+            rgl::plot3d(sp_data[, 1:3], col = col[x], size = 6)
+          }
         } else {
           rgl::plot3d(sp_data[, 1:3], col = col[x], size = 6, add = TRUE)
         }
@@ -86,8 +92,12 @@ plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
       if (data == TRUE) {
         rgl::plot3d(mh_sort, col = background_col(nrow(mh_sort)), add = TRUE)
       } else {
-        rgl::plot3d(mh_sort, col = background_col(nrow(mh_sort)), xlab = xlab,
-                    ylab = ylab, zlab = zlab)
+        if (change_labels == TRUE) {
+          rgl::plot3d(mh_sort, col = background_col(nrow(mh_sort)), xlab = xlab,
+                      ylab = ylab, zlab = zlab)
+        } else {
+          rgl::plot3d(mh_sort, col = background_col(nrow(mh_sort)))
+        }
       }
     }
 
@@ -96,8 +106,13 @@ plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
       cov_mat <- object@ellipsoids[[x]]@covariance_matrix[1:3, 1:3]
       level <- object@ellipsoids[[x]]@level / 100
       ell <- rgl::ellipse3d(cov_mat, centre = centroid, level = level)
-      rgl::wire3d(ell, col = col[x], alpha = 0.5, xlab = xlab, ylab = ylab,
-                  zlab = zlab)
+      if (change_labels == TRUE) {
+        rgl::wire3d(ell, col = col[x], alpha = 0.5, xlab = xlab, ylab = ylab,
+                    zlab = zlab)
+      } else {
+        rgl::wire3d(ell, col = col[x], alpha = 0.5)
+      }
+
     })
 
     if (legend == TRUE) {
@@ -128,8 +143,13 @@ plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
       mh_sort <- mh_sort[sample(ceiling(nrow(mh_sort) * proportion)), ]
       mh_sort <- mh_sort[order(mh_sort[, "Niche_1_S"]), 1:2]
 
-      plot(mh_sort, col = background_col(nrow(mh_sort)), xlim = xlim, ylim = ylim,
-           xlab = var_names[1], ylab = var_names[2])
+      if (change_labels == TRUE) {
+        plot(mh_sort, col = background_col(nrow(mh_sort)), xlim = xlim, ylim = ylim,
+             xlab = xlab, ylab = ylab)
+      } else {
+        plot(mh_sort, col = background_col(nrow(mh_sort)), xlim = xlim, ylim = ylim,
+             xlab = var_names[1], ylab = var_names[2])
+      }
     }
 
     if (data == TRUE) {
@@ -139,8 +159,13 @@ plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
           if (background == TRUE) {
             points(sp_data[, 1:2], pch = 19, col = col[x])
           } else {
-            plot(sp_data[, 1:2], pch = 19, col = col[x], xlim = xlim, ylim = ylim,
-                 xlab = var_names[1], ylab = var_names[2])
+            if (change_labels == TRUE) {
+              plot(sp_data[, 1:2], pch = 19, col = col[x], xlim = xlim, ylim = ylim,
+                   xlab = xlab, ylab = ylab)
+            } else {
+              plot(sp_data[, 1:2], pch = 19, col = col[x], xlim = xlim, ylim = ylim,
+                   xlab = var_names[1], ylab = var_names[2])
+            }
           }
         } else {
           points(sp_data[, 1:2], pch = 19, col = col[x])
