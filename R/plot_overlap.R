@@ -17,6 +17,9 @@
 #' @param proportion (numeric) proportion of background to be plotted. Default = 0.3.
 #' @param background_col color ramp to be used for coloring background points.
 #' Default = viridis::viridis.
+#' @param xlab (character) lable of x axis. Default = "".
+#' @param ylab (character) lable of y axis. Default = "".
+#' @param zlab (character) lable of z axis. Default = "".
 #' @param legend (logical) whether or not to add a simple legend. Default = TRUE.
 #'
 #' @return A plot of the niches to be compared in environmental space.
@@ -31,7 +34,8 @@
 plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
                          col = c("blue", "red"), background = FALSE,
                          background_type, proportion = 0.3,
-                         background_col = viridis::viridis, legend = TRUE) {
+                         background_col = viridis::viridis, xlab = "", ylab = "",
+                         zlab = "", legend = TRUE) {
 
   # -----------
   # detecting potential errors
@@ -59,7 +63,8 @@ plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
       points <- lapply(iter, function(x) {
         sp_data <- object@data[[x]][, var_names]
         if (x == niches[1]) {
-          rgl::plot3d(sp_data[, 1:3], col = col[x], size = 6)
+          rgl::plot3d(sp_data[, 1:3], col = col[x], size = 6, xlab = xlab,
+                      ylab = ylab, zlab = zlab)
         } else {
           rgl::plot3d(sp_data[, 1:3], col = col[x], size = 6, add = TRUE)
         }
@@ -81,7 +86,8 @@ plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
       if (data == TRUE) {
         rgl::plot3d(mh_sort, col = background_col(nrow(mh_sort)), add = TRUE)
       } else {
-        rgl::plot3d(mh_sort, col = background_col(nrow(mh_sort)))
+        rgl::plot3d(mh_sort, col = background_col(nrow(mh_sort)), xlab = xlab,
+                    ylab = ylab, zlab = zlab)
       }
     }
 
@@ -90,7 +96,8 @@ plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
       cov_mat <- object@ellipsoids[[x]]@covariance_matrix[1:3, 1:3]
       level <- object@ellipsoids[[x]]@level / 100
       ell <- rgl::ellipse3d(cov_mat, centre = centroid, level = level)
-      rgl::wire3d(ell, col = col[x], alpha = 0.5)
+      rgl::wire3d(ell, col = col[x], alpha = 0.5, xlab = xlab, ylab = ylab,
+                  zlab = zlab)
     })
 
     if (legend == TRUE) {

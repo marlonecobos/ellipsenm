@@ -6,7 +6,8 @@
 \usage{
 plot_overlap(object, niches = c(1, 2), data = TRUE, col = c("blue",
   "red"), background = FALSE, background_type, proportion = 0.3,
-  background_col = viridis::viridis, legend = TRUE)
+  background_col = viridis::viridis, xlab = "", ylab = "",
+  zlab = "", legend = TRUE)
 }
 \arguments{
 \item{object}{overlap_ellipsoid object resulted from using the function
@@ -31,6 +32,12 @@ are: "full", "back_union". See \code{\link{ellipsoid_overlap}}.}
 
 \item{background_col}{color ramp to be used for coloring background points.
 Default = viridis::viridis.}
+
+\item{xlab}{(character) lable of x axis. Default = "".}
+
+\item{ylab}{(character) lable of y axis. Default = "".}
+
+\item{zlab}{(character) lable of z axis. Default = "".}
 
 \item{legend}{(logical) whether or not to add a simple legend. Default = TRUE.}
 }
