@@ -172,7 +172,7 @@ interpretation_espace <- function(sp_name = "species") {
       "      basic assumptions related to niche centroid and niche limits may not be affected.\n")
   cat("    3) If occurrence data is located marginally and areas of highest density of records\n",
       "      are close to the center of the clould of points, the three methods may also be\n",
-      "      explored during calibration.")
+      "      explored during calibration.\n")
   cat("    4) If occurrence data is located marginally and areas of highest density of records\n",
       "      are close to the border of the available contiions, the limits of the species niche\n",
       "      are unknown towards such margins. In this case explorein the covmat method may be\n",
