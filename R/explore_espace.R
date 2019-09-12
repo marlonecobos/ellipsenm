@@ -119,16 +119,17 @@ explore_espace <- function(data, species, longitude, latitude, raster_layers,
         getwd(), "\n")
   }
 
-  interpretation_espace()
+  interpretation_espace(sp_name)
 }
 
 
 #' Helper function for interpretation of exploratory figures
+#' @param sp_name (character) name od the species of interest. Default = "species".
 #' @export
 #' @return
 #' A text with help for selecting variables and methods based on exploratory plots.
 
-interpretation_espace <- function() {
+interpretation_espace <- function(sp_name = "species") {
   cat("\n---------------------------------------------------------------------------------------\n")
   cat("**************************ellipsenm: model calibration process*************************\n\n")
   cat("Arrangement of occurrence records in environmental space\n")

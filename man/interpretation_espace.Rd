@@ -4,7 +4,10 @@
 \alias{interpretation_espace}
 \title{Helper function for interpretation of exploratory figures}
 \usage{
-interpretation_espace()
+interpretation_espace(sp_name = "species")
+}
+\arguments{
+\item{sp_name}{(character) name od the species of interest. Default = "species".}
 }
 \value{
 A text with help for selecting variables and methods based on exploratory plots.
