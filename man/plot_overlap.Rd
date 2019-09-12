@@ -4,10 +4,11 @@
 \alias{plot_overlap}
 \title{Plot results of niche overlap analyses}
 \usage{
-plot_overlap(object, niches = c(1, 2), data = TRUE, col = c("blue",
-  "red"), background = FALSE, background_type, proportion = 0.3,
-  background_col = viridis::viridis, change_labels = FALSE,
-  xlab = "", ylab = "", zlab = "", legend = TRUE)
+plot_overlap(object, niches = c(1, 2), niche_col = c("blue", "red"),
+  data = TRUE, data_col = c("blue", "red"), background = FALSE,
+  background_type, proportion = 0.3, background_col = viridis::viridis,
+  change_labels = FALSE, xlab = "", ylab = "", zlab = "",
+  legend = TRUE)
 }
 \arguments{
 \item{object}{overlap_ellipsoid object resulted from using the function
@@ -16,10 +17,13 @@ plot_overlap(object, niches = c(1, 2), data = TRUE, col = c("blue",
 \item{niches}{(numeric) pair of integer numbers denoting the niches to be
 plotted. Default = c(1, 2).}
 
+\item{niche_col}{colors to be used to plot ellipsoids of niches to be
+compared. Default = c("blue", "red").}
+
 \item{data}{(logical) whether or not to plot points of species data. Default
 = TRUE.}
 
-\item{col}{colors to be used to plot data and ellipsoids of niches to be
+\item{data_col}{colors to be used to plot data points of niches to be
 compared. Default = c("blue", "red").}
 
 \item{background}{(logical) whether or not to plot background points. Default
@@ -48,10 +52,50 @@ Default = FALSE.}
 A plot of the niches to be compared in environmental space.
 }
 \description{
-plot_overlap
+plot_overlap helps to create two or thre dimentional representations
+of the overlap results obtained with the function \code{\link{ellipsoid_overlap}}.
 }
 \examples{
-# data
+# Preparing example
+# reading data
+occurrences <- read.csv(system.file("extdata", "occurrences.csv",
+                                    package = "ellipsenm"))
 
-#simple plot
+# raster layers of environmental data
+vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
+                                 pattern = "bio", full.names = TRUE))
+
+# preparing data
+vext <- raster::extent(vars)
+ext1 <- raster::extent(vext[1], (mean(vext[1:2]) + 0.2), vext[3:4])
+ext2 <- raster::extent((mean(vext[1:2]) + 0.2), vext[2], vext[3:4])
+
+# croping variables and splitting occurrences
+vars1 <- raster::stack(raster::crop(vars, ext1))
+vars2 <- raster::stack(raster::crop(vars, ext2))
+
+occurrences1 <- occurrences[occurrences$longitude < (mean(vext[1:2]) + 0.2),]
+occurrences2 <- occurrences[!occurrences$longitude \%in\% occurrences1$longitude,]
+
+# preparing overlap objects to perform analyses
+niche1 <- overlap_object(occurrences1, species =  "species", longitude = "longitude",
+                         latitude = "latitude", method = "covmat", level = 95,
+                         variables = vars1)
+
+niche2 <- overlap_object(occurrences2, species =  "species", longitude = "longitude",
+                         latitude = "latitude", method = "covmat", level = 95,
+                         variables = vars2)
+
+# niche overlap analysis
+overlap <- ellipsoid_overlap(niche1, niche2)
+
+# Now the plots
+# plotting only ellipsoids
+plot_overlap(overlap)
+
+# plotting ellispodis and background for full overlap
+plot_overlap(overlap, background = TRUE, proportion = 0.6, background_type = "full")
+
+# plotting ellispodis and background for overlap based on accessible environments
+plot_overlap(overlap, background = TRUE,  proportion = 1, background_type = "back_union")
 }

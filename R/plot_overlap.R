@@ -1,14 +1,17 @@
 #' Plot results of niche overlap analyses
 #'
-#' @description plot_overlap
+#' @description plot_overlap helps to create two or thre dimentional representations
+#' of the overlap results obtained with the function \code{\link{ellipsoid_overlap}}.
 #'
 #' @param object overlap_ellipsoid object resulted from using the function
 #' \code{\link{ellipsoid_overlap}}.
 #' @param niches (numeric) pair of integer numbers denoting the niches to be
 #' plotted. Default = c(1, 2).
+#' @param niche_col colors to be used to plot ellipsoids of niches to be
+#' compared. Default = c("blue", "red").
 #' @param data (logical) whether or not to plot points of species data. Default
 #' = TRUE.
-#' @param col colors to be used to plot data and ellipsoids of niches to be
+#' @param data_col colors to be used to plot data points of niches to be
 #' compared. Default = c("blue", "red").
 #' @param background (logical) whether or not to plot background points. Default
 #' = TRUE.
@@ -29,13 +32,52 @@
 #' @export
 #'
 #' @examples
-#' # data
+#' # Preparing example
+#' # reading data
+#' occurrences <- read.csv(system.file("extdata", "occurrences.csv",
+#'                                     package = "ellipsenm"))
 #'
-#' #simple plot
+#' # raster layers of environmental data
+#' vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
+#'                                  pattern = "bio", full.names = TRUE))
+#'
+#' # preparing data
+#' vext <- raster::extent(vars)
+#' ext1 <- raster::extent(vext[1], (mean(vext[1:2]) + 0.2), vext[3:4])
+#' ext2 <- raster::extent((mean(vext[1:2]) + 0.2), vext[2], vext[3:4])
+#'
+#' # croping variables and splitting occurrences
+#' vars1 <- raster::stack(raster::crop(vars, ext1))
+#' vars2 <- raster::stack(raster::crop(vars, ext2))
+#'
+#' occurrences1 <- occurrences[occurrences$longitude < (mean(vext[1:2]) + 0.2),]
+#' occurrences2 <- occurrences[!occurrences$longitude %in% occurrences1$longitude,]
+#'
+#' # preparing overlap objects to perform analyses
+#' niche1 <- overlap_object(occurrences1, species =  "species", longitude = "longitude",
+#'                          latitude = "latitude", method = "covmat", level = 95,
+#'                          variables = vars1)
+#'
+#' niche2 <- overlap_object(occurrences2, species =  "species", longitude = "longitude",
+#'                          latitude = "latitude", method = "covmat", level = 95,
+#'                          variables = vars2)
+#'
+#' # niche overlap analysis
+#' overlap <- ellipsoid_overlap(niche1, niche2)
+#'
+#' # Now the plots
+#' # plotting only ellipsoids
+#' plot_overlap(overlap)
+#'
+#' # plotting ellispodis and background for full overlap
+#' plot_overlap(overlap, background = TRUE, proportion = 0.6, background_type = "full")
+#'
+#' # plotting ellispodis and background for overlap based on accessible environments
+#' plot_overlap(overlap, background = TRUE,  proportion = 1, background_type = "back_union")
 
-plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
-                         col = c("blue", "red"), background = FALSE,
-                         background_type, proportion = 0.3,
+plot_overlap <- function(object, niches = c(1, 2), niche_col = c("blue", "red"),
+                         data = TRUE, data_col = c("blue", "red"),
+                         background = FALSE, background_type, proportion = 0.3,
                          background_col = viridis::viridis, change_labels = FALSE,
                          xlab = "", ylab = "", zlab = "", legend = TRUE) {
 
@@ -44,9 +86,10 @@ plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
   if (missing(object)) {
     stop("Argument object is necessary to perform the analysis.")
   }
-  if (length(col) < length(object@ellipsoids)) {
+  if (length(niche_col) < length(object@ellipsoids)) {
     message("Number of niches to plot exceeds number of colors, using automatic selection.")
-    col <- rainbow(length(object))
+    data_col <- rainbow(length(object@ellipsoids))
+    niche_col <- rainbow(length(object@ellipsoids))
   }
   if (background == TRUE & missing(background_type)) {
     stop("Argument background_type needs to be defined if background = TRUE.")
@@ -66,13 +109,13 @@ plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
         sp_data <- object@data[[x]][, var_names]
         if (x == niches[1]) {
           if (change_labels == TRUE) {
-            rgl::plot3d(sp_data[, 1:3], col = col[x], size = 6, xlab = xlab,
+            rgl::plot3d(sp_data[, 1:3], col = data_col[x], size = 6, xlab = xlab,
                         ylab = ylab, zlab = zlab)
           } else {
-            rgl::plot3d(sp_data[, 1:3], col = col[x], size = 6)
+            rgl::plot3d(sp_data[, 1:3], col = data_col[x], size = 6)
           }
         } else {
-          rgl::plot3d(sp_data[, 1:3], col = col[x], size = 6, add = TRUE)
+          rgl::plot3d(sp_data[, 1:3], col = data_col[x], size = 6, add = TRUE)
         }
       })
     }
@@ -107,17 +150,17 @@ plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
       level <- object@ellipsoids[[x]]@level / 100
       ell <- rgl::ellipse3d(cov_mat, centre = centroid, level = level)
       if (change_labels == TRUE) {
-        rgl::wire3d(ell, col = col[x], alpha = 0.5, xlab = xlab, ylab = ylab,
+        rgl::wire3d(ell, col = niche_col[x], alpha = 0.5, xlab = xlab, ylab = ylab,
                     zlab = zlab)
       } else {
-        rgl::wire3d(ell, col = col[x], alpha = 0.5)
+        rgl::wire3d(ell, col = niche_col[x], alpha = 0.5)
       }
 
     })
 
     if (legend == TRUE) {
       rgl::legend3d("topright", legend = paste("Niche", niches[1:2]),
-                    lty = 1, col = col, inset = 0.02, bty = "n")
+                    lty = 1, col = niche_col, inset = 0.02, bty = "n")
     }
   } else {
     el1 <- lapply(iter, function(x) {
@@ -157,29 +200,29 @@ plot_overlap <- function(object, niches = c(1, 2), data = TRUE,
         sp_data <- object@data[[x]][, var_names]
         if (x == niches[1]) {
           if (background == TRUE) {
-            points(sp_data[, 1:2], pch = 19, col = col[x])
+            points(sp_data[, 1:2], pch = 19, col = data_col[x])
           } else {
             if (change_labels == TRUE) {
-              plot(sp_data[, 1:2], pch = 19, col = col[x], xlim = xlim, ylim = ylim,
+              plot(sp_data[, 1:2], pch = 19, col = data_col[x], xlim = xlim, ylim = ylim,
                    xlab = xlab, ylab = ylab)
             } else {
-              plot(sp_data[, 1:2], pch = 19, col = col[x], xlim = xlim, ylim = ylim,
+              plot(sp_data[, 1:2], pch = 19, col = data_col[x], xlim = xlim, ylim = ylim,
                    xlab = var_names[1], ylab = var_names[2])
             }
           }
         } else {
-          points(sp_data[, 1:2], pch = 19, col = col[x])
+          points(sp_data[, 1:2], pch = 19, col = data_col[x])
         }
       })
     }
 
     ellipsoides <- lapply(iter, function(x) {
-      lines(el1[[x]], col = col[x], lwd = 1.5)
+      lines(el1[[x]], col = niche_col[x], lwd = 1.5)
     })
 
     if (legend == TRUE) {
       legend("topright", legend = paste("Niche", niches[1:2]), lty = 1,
-             col = col, bty = "n", horiz = TRUE)
+             col = niche_col, bty = "n", horiz = TRUE)
     }
   }
 
