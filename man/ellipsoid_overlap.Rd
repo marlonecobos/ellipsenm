@@ -39,9 +39,35 @@ back_union = meausures overlap of ellipsoidal niches considering only the
 union of the environmental conditions relevant for the two species (backgrounds).
 }
 \examples{
-# data
+# reading data
+occurrences <- read.csv(system.file("extdata", "occurrences.csv",
+                                    package = "ellipsenm"))
 
-# full overlap analysis
+# raster layers of environmental data
+vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
+                                 pattern = "bio", full.names = TRUE))
 
-# overlap measured in the union of the two species background
+# preparing data
+vext <- raster::extent(vars)
+ext1 <- raster::extent(vext[1], (mean(vext[1:2]) + 0.2), vext[3:4])
+ext2 <- raster::extent((mean(vext[1:2]) + 0.2), vext[2], vext[3:4])
+
+# croping variables and splitting occurrences
+vars1 <- raster::stack(raster::crop(vars, ext1))
+vars2 <- raster::stack(raster::crop(vars, ext2))
+
+occurrences1 <- occurrences[occurrences$longitude < (mean(vext[1:2]) + 0.2), ]
+occurrences2 <- occurrences[!occurrences$longitude \%in\% occurrences1$longitude, ]
+
+# preparing overlap objects to perform analyses
+niche1 <- overlap_object(occurrences1, species =  "species", longitude = "longitude",
+                         latitude = "latitude", method = "covmat", level = 95,
+                         variables = vars1)
+
+niche2 <- overlap_object(occurrences2, species =  "species", longitude = "longitude",
+                         latitude = "latitude", method = "covmat", level = 95,
+                         variables = vars2)
+
+# niche overlap analysis
+overlap <- ellipsoid_overlap(niche1, niche2)
 }
