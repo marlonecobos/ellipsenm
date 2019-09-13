@@ -19,10 +19,10 @@
 #' data <- read.csv(system.file("extdata", "occurrences.csv",
 #'                              package = "ellipsenm"))
 #'
-#' var <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
-#'                                 pattern = "bio", full.names = TRUE)[1])
+#' var <- raster::raster(list.files(system.file("extdata", package = "ellipsenm"),
+#'                                  pattern = "bio", full.names = TRUE)[1])
 #'
-#' plot(vars)
+#' raster::plot(var)
 #'
 #' out <- data.frame(as.character(data$species[1]), rbind(c(-103, 23), c(-99, 22.5),
 #'                                                        c(-103.5, 25.6), c(-99, 27.3)))
@@ -33,7 +33,7 @@
 #' points(data[, 2:3])
 #'
 #' data1 <- to_closest(data, longitude = "longitude", latitude = "latitude",
-#'                     raster_layer = vars)
+#'                     raster_layer = var)
 #'
 #' points(data1[, 2:3], col = "red")
 
