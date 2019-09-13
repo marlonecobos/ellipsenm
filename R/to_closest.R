@@ -38,6 +38,23 @@
 #' points(data1[, 2:3], col = "red")
 
 to_closest <- function(data, longitude, latitude, raster_layer) {
+  # -----------
+  # detecting potential errors
+  if (missing(data)) {
+    stop("Argument data is necessary to perform the analysis")
+  }
+  if (missing(longitude)) {
+    stop("Argument longitude is not defined.")
+  }
+  if (missing(latitude)) {
+    stop("Argument latitude is not defined.")
+  }
+  if (missing(raster_layer)) {
+    stop("Argument raster_layer is not defined.")
+  }
+
+  # -----------
+  # preparing data
   xy <- data[, c(longitude, latitude)]
   vals <- raster::extract(raster_layer, xy)
 
@@ -48,6 +65,8 @@ to_closest <- function(data, longitude, latitude, raster_layer) {
 
   dists <- raster::pointDistance(xyout, xyras, lonlat = TRUE)
 
+  # -----------
+  # running process
   cat("\nMoving occurrences to closest pixels:\n")
   for (i in 1:nrow(xyout)) {
     xyin <- xyras[dists[i, ] == min(dists[i, ])[1], ]
