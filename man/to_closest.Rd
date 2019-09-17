@@ -53,7 +53,7 @@ data <- rbind.data.frame(data, out)
 points(data[, 2:3])
 
 data1 <- to_closest(data, longitude = "longitude", latitude = "latitude",
-                    raster_layer = var)
+                    raster_layer = var, limit_distance = 70)
 
 points(data1[, 2:3], col = "red")
 }
