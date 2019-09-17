@@ -10,8 +10,18 @@
 #' @param longitude (character) name of the column with longitude data.
 #' @param latitude (character) name of the column with latitude data.
 #' @param raster_layer RasterLayer to be used as a reference.
+#' @param limit_distance (numeric) maximun distance in km at which an occurrence
+#' could be to be moved. Records farther than this distance wont be moved.
 #'
-#' @return data.frame or matrix with the corrected coordinates.
+#' @return
+#' A data.frame with the corrected coordinates and four additional columns.
+#' The first of the new columns indicates the condition of the coordinates:
+#' Correct, if it was not moved because it was on a pixel with data; Moved, if
+#' it was moved to the nearest pixel; and Not_moved, if it was not moved because
+#' the occurrence was farther than the \code{limit_distance} to the closest pixel.
+#' The second new column indicates the distance to the closest pixel with data.
+#' The other two additional columns will contain the initial longitudes and
+#' latitudes.
 #'
 #' @export
 #'
@@ -37,7 +47,7 @@
 #'
 #' points(data1[, 2:3], col = "red")
 
-to_closest <- function(data, longitude, latitude, raster_layer) {
+to_closest <- function(data, longitude, latitude, raster_layer, limit_distance) {
   # -----------
   # detecting potential errors
   if (missing(data)) {
@@ -52,6 +62,9 @@ to_closest <- function(data, longitude, latitude, raster_layer) {
   if (missing(raster_layer)) {
     stop("Argument raster_layer is not defined.")
   }
+  if (missing(limit_distance)) {
+    stop("Argument limit_distance is not defined.")
+  }
 
   # -----------
   # preparing data
@@ -62,21 +75,38 @@ to_closest <- function(data, longitude, latitude, raster_layer) {
   xyout <- xy[tomove, ]
 
   xyras <- raster::rasterToPoints(raster_layer)[, 1:2]
-
   dists <- raster::pointDistance(xyout, xyras, lonlat = TRUE)
+
+  condition <- rep("Correct", nrow(data))
+  distss <- rep(0, nrow(data))
+
+  limdist <- limit_distance * 1000
 
   # -----------
   # running process
   cat("\nMoving occurrences to closest pixels:\n")
   for (i in 1:nrow(xyout)) {
-    xyin <- xyras[dists[i, ] == min(dists[i, ])[1], ]
-    if (class(xyin)[1] == "matrix") {
-      xyin <- xyin[1, ]
+    mindis <- min(dists[i, ])[1]
+    if (mindis <= limdist) {
+      xyin <- xyras[dists[i, ] == mindis, ]
+      if (class(xyin)[1] == "matrix") {
+        xyin <- xyin[1, ]
+      }
+      data[tomove[i], longitude] <- xyin[1]
+      data[tomove[i], latitude] <- xyin[2]
+      condition[tomove[i]] <- "Moved"
+      distss[tomove[i]] <- mindis / 1000
+      cat("\tOccurrence", i, "of", nrow(xyout), "moved\n")
+    } else {
+      condition[tomove[i]] <- "Not_moved"
+      distss[tomove[i]] <- mindis / 1000
+      cat(paste0("\tOccurrence ", i," of ", nrow(xyout), " was not moved because it is more than\n\t",
+                 limit_distance, " km apart from the closest pixel with environmental values\n"))
     }
-    data[tomove[i], longitude] <- xyin[1]
-    data[tomove[i], latitude] <- xyin[2]
-    cat("\tOccurrence", i, "of", nrow(xyout), "moved\n")
   }
+  data <- data.frame(data, condition = condition, distance_km = distss,
+                     initial_lon = xy[, 1], initial_lat = xy[, 2],
+                     stringsAsFactors = FALSE)
 
   return(data)
 }

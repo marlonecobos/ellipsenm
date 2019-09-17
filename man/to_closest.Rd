@@ -4,7 +4,7 @@
 \alias{to_closest}
 \title{Move occurrences to closest pixel with environmental data}
 \usage{
-to_closest(data, longitude, latitude, raster_layer)
+to_closest(data, longitude, latitude, raster_layer, limit_distance)
 }
 \arguments{
 \item{data}{data.frame or matrix of occurrence records. Columns must include
@@ -15,9 +15,19 @@ longitude and latitude. Other columns are optional and wont be changed.}
 \item{latitude}{(character) name of the column with latitude data.}
 
 \item{raster_layer}{RasterLayer to be used as a reference.}
+
+\item{limit_distance}{(numeric) maximun distance in km at which an occurrence
+could be to be moved. Records farther than this distance wont be moved.}
 }
 \value{
-data.frame or matrix with the corrected coordinates.
+A data.frame with the corrected coordinates and four additional columns.
+The first of the new columns indicates the condition of the coordinates:
+Correct, if it was not moved because it was on a pixel with data; Moved, if
+it was moved to the nearest pixel; and Not_moved, if it was not moved because
+the occurrence was farther than the \code{limit_distance} to the closest pixel.
+The second new column indicates the distance to the closest pixel with data.
+The other two additional columns will contain the initial longitudes and
+latitudes.
 }
 \description{
 to_closest helps in changing the longitude and latitude values
