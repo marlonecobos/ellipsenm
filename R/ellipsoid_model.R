@@ -219,7 +219,7 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
 
   # -----------
   # returning metadata and preparing needed variables for calibration area
-  cat("\nPreparing metadata of ellipsoid models and predictions in calibration area:\n")
+  cat("\nPreparing metadata of ellipsoid models and prevalence in calibration area:\n")
   cat("\tMetadata for ellipsoid models\n")
   ell_meta <- write_ellmeta(predictions,
                             name = paste0(output_directory, "/ellipsoid_metadata"))
@@ -254,7 +254,7 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   if (!is.null(projection_variables)) {
     cat("\nProducing results for projection scenario(s):\n")
     projections <- model_projection(predictions, projection_variables,
-                                    prvariables_format, sp, prediction,
+                                    prvariables_format, sp, prediction, TRUE,
                                     return_numeric, tolerance, format,
                                     overwrite, force_return, return_name,
                                     output_directory)

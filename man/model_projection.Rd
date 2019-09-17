@@ -6,9 +6,9 @@
 \usage{
 model_projection(ellipsoid, projection_variables,
   prvariables_format = NULL, sp_name, prediction = "suitability",
-  return_numeric = TRUE, tolerance = 1e-60, format = "GTiff",
-  overwrite = FALSE, force_return = FALSE, return_name = NULL,
-  output_directory = "ellipsenm_projections")
+  truncate = TRUE, return_numeric = TRUE, tolerance = 1e-60,
+  format = "GTiff", overwrite = FALSE, force_return = FALSE,
+  return_name = NULL, output_directory = "ellipsenm_projections")
 }
 \arguments{
 \item{ellipsoid}{a fitted object of class ellipsoid*.}
@@ -30,6 +30,10 @@ projected. If not defined "species" is used.}
 
 \item{prediction}{(character) type of prediction to be made, options are:
 "suitability", "mahalanobis", and "both". Default = "suitability".}
+
+\item{truncate}{(logical) whether or not to truncate values of suitability
+based on ellipsoid limits. All values outside the ellipsoid will be zero.
+Default = TRUE.}
 
 \item{return_numeric}{(logical) whether or not to return values of mahalanobis
 distance and suitability as part of the results (it depends on the type of

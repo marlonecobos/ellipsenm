@@ -15,6 +15,9 @@
 #' projected. If not defined "species" is used.
 #' @param prediction (character) type of prediction to be made, options are:
 #' "suitability", "mahalanobis", and "both". Default = "suitability".
+#' @param truncate (logical) whether or not to truncate values of suitability
+#' based on ellipsoid limits. All values outside the ellipsoid will be zero.
+#' Default = TRUE.
 #' @param return_numeric (logical) whether or not to return values of mahalanobis
 #' distance and suitability as part of the results (it depends on the type of
 #' \code{prediction} selected). If \code{projection_variables} is a RasterStack,
@@ -46,9 +49,9 @@
 #' @export
 
 model_projection <- function(ellipsoid, projection_variables, prvariables_format = NULL,
-                             sp_name, prediction = "suitability", return_numeric = TRUE,
-                             tolerance = 1e-60, format = "GTiff", overwrite = FALSE,
-                             force_return = FALSE, return_name = NULL,
+                             sp_name, prediction = "suitability", truncate = TRUE,
+                             return_numeric = TRUE, tolerance = 1e-60, format = "GTiff",
+                              overwrite = FALSE, force_return = FALSE, return_name = NULL,
                              output_directory = "ellipsenm_projections") {
   # -----------
   # detecting potential errors
@@ -91,11 +94,11 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
 
         if (cls == "ellipsoid_model_rep") {
           predictions <- predict(ellipsoid, projection_variables, prediction,
-                                 return_numeric, tolerance, namer, format,
+                                 truncate, return_numeric, tolerance, namer, format,
                                  overwrite, force_return, return_name)
         } else {
           predictions <- predict(ellipsoid, projection_variables, prediction,
-                                 return_numeric, tolerance, namer, format,
+                                 truncate, return_numeric, tolerance, namer, format,
                                  overwrite, force_return)
         }
       } else {
@@ -119,12 +122,12 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
 
           if (cls == "ellipsoid_model_rep") {
             predictions[[i]] <- predict(ellipsoid, projection_variables[[i]], prediction,
-                                        return_numeric, tolerance, namer, format, overwrite,
-                                        force_return, return_name)
+                                        truncate, return_numeric, tolerance, namer, format,
+                                        overwrite, force_return, return_name)
           } else {
             predictions[[i]] <- predict(ellipsoid, projection_variables[[i]], prediction,
-                                        return_numeric, tolerance, namer, format, overwrite,
-                                        force_return)
+                                        truncate, return_numeric, tolerance, namer, format,
+                                        overwrite, force_return)
           }
         } else {
           stop("Variable names of projection_variables do not match variable names in ellipsoid.")
@@ -151,12 +154,13 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
           namer <- paste0(output_directory, "/", lnames[i], "_", sp_name, nam_format)
 
           if (cls == "ellipsoid_model_rep") {
-            predictions[[i]] <- predict(ellipsoid, p_layers, prediction, return_numeric,
-                                        tolerance, namer, format, overwrite, force_return,
-                                        return_name)
+            predictions[[i]] <- predict(ellipsoid, p_layers, prediction, truncate,
+                                        return_numeric, tolerance, namer, format,
+                                        overwrite, force_return, return_name)
           } else {
-            predictions[[i]] <- predict(ellipsoid, p_layers, prediction, return_numeric,
-                                        tolerance, namer, format, overwrite, force_return)
+            predictions[[i]] <- predict(ellipsoid, p_layers, prediction, truncate,
+                                        return_numeric, tolerance, namer, format,
+                                        overwrite, force_return)
           }
 
         } else {
