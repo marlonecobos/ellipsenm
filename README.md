@@ -193,9 +193,9 @@ vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
                                  pattern = "bio", full.names = TRUE))
 
 # preparing training and testing data
-data_split <- split_data(occurrences, split_method, longitude, 
-                         latitude, train_proportion = 0.75, save = TRUE, 
-                         name = "occurrences")
+data_split <- split_data(occurrences, method = "random", longitude = "longitude", 
+                         latitude = "latitude", train_proportion = 0.75, 
+                         save = TRUE, name = "occ")
 
 # sets of variables (example)
 sets <- list(set_1 = c("bio_1", "bio_7", "bio_15"),
