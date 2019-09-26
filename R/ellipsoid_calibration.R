@@ -154,17 +154,18 @@ ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
         ## pROC
         xy_train <- data[[2]][, c(longitude, latitude)]
         train_data <- data.frame(xy_train, na.omit(raster::extract(varss, xy_train)))
+        occ_vals <- na.omit(raster::extract(varss, data[[3]][, c(longitude, latitude)]))
 
         ellip <- ellipsoid_fit(train_data, longitude, latitude, methods[y], level)
 
         pred <- predict(ellip, projection_variables = var_vals, truncate = FALSE)
-        proc <- partial_roc(pred, occ_vals, longitude, latitude, error,
-                            iterations, percentage)
+        pred_occ <- predict(ellip, projection_variables = occ_vals)
+
+        proc <- partial_roc(pred@suitability, pred_occ@suitability, longitude,
+                            latitude, error, iterations, percentage)
 
         ## Omission rate
-        occ_vals <- na.omit(raster::extract(varss, data[[3]][, c(longitude, latitude)]))
-        pred_occ <- predict(ellip, projection_variables = occ_vals)
-        om_rate <- sum(pred_occ == 0) / length(pred_occ)
+        om_rate <- sum(pred_occ@suitability == 0) / length(pred_occ@suitability)
 
         ## Prevalence
         xy_all <- data[[1]][, c(longitude, latitude)]
@@ -174,10 +175,15 @@ ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
 
         pred <- predict(ellip, projection_variables = var_vals, truncate = FALSE)
 
-        par <- paste0("Method_", methods[y], "_", names(variables[[2]][[x]]))
-        res <- c(Parameterization = par, proc[[1]], Omission_rate = om_rate,
-                 Prevalence_E_space = pred@prevalence[1],
-                 Prevalence_G_space = pred@prevalence[2])
+        #par <- paste0("Method_", methods[y], "_", names(variables[[2]])[x])
+        par <- data.frame(Method = methods[y],
+                          Variable_set = names(variables[[2]])[x])
+        res <- c(proc[[1]], Omission_rate = om_rate, pred@prevalence[1],
+                 pred@prevalence[2])
+        nams <- names(res)
+        res <- matrix(res, nrow = 1)
+        colnames(res) <- nams
+        res <- cbind.data.frame(par, res)
 
         ## Counting
         num <- ifelse(x == 1, 0, (length(methods) * (x - 1))) + y
@@ -185,7 +191,7 @@ ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
         return(res)
       })
 
-      do.call(rbind, resul)
+      return(resul)
     })
   } else {
     cat("\nParallel option is still in development, sequential process will be used.\n")
@@ -197,17 +203,18 @@ ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
         ## pROC
         xy_train <- data[[2]][, c(longitude, latitude)]
         train_data <- data.frame(xy_train, na.omit(raster::extract(varss, xy_train)))
+        occ_vals <- na.omit(raster::extract(varss, data[[3]][, c(longitude, latitude)]))
 
         ellip <- ellipsoid_fit(train_data, longitude, latitude, methods[y], level)
 
         pred <- predict(ellip, projection_variables = var_vals, truncate = FALSE)
-        proc <- partial_roc(pred, occ_vals, longitude, latitude, error,
-                            iterations, percentage)
+        pred_occ <- predict(ellip, projection_variables = occ_vals)
+
+        proc <- partial_roc(pred@suitability, pred_occ@suitability, longitude,
+                            latitude, error, iterations, percentage)
 
         ## Omission rate
-        occ_vals <- na.omit(raster::extract(varss, data[[3]][, c(longitude, latitude)]))
-        pred_occ <- predict(ellip, projection_variables = occ_vals)
-        om_rate <- sum(pred_occ == 0) / length(pred_occ)
+        om_rate <- sum(pred_occ@suitability == 0) / length(pred_occ@suitability)
 
         ## Prevalence
         xy_all <- data[[1]][, c(longitude, latitude)]
@@ -217,10 +224,15 @@ ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
 
         pred <- predict(ellip, projection_variables = var_vals, truncate = FALSE)
 
-        par <- paste0("Method_", methods[y], "_", names(variables[[2]][[x]]))
-        res <- c(Parameterization = par, proc[[1]], Omission_rate = om_rate,
-                 Prevalence_E_space = pred@prevalence[1],
-                 Prevalence_G_space = pred@prevalence[2])
+        #par <- paste0("Method_", methods[y], "_", names(variables[[2]])[x])
+        par <- data.frame(Method = methods[y],
+                          Variable_set = names(variables[[2]])[x])
+        res <- c(proc[[1]], Omission_rate = om_rate, pred@prevalence[1],
+                 pred@prevalence[2])
+        nams <- names(res)
+        res <- matrix(res, nrow = 1)
+        colnames(res) <- nams
+        res <- cbind.data.frame(par, res)
 
         ## Counting
         num <- ifelse(x == 1, 0, (length(methods) * (x - 1))) + y
@@ -228,10 +240,12 @@ ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
         return(res)
       })
 
-      do.call(rbind, resul)
+      return(resul)
     })
   }
 
+  #calibration <- as.data.frame(do.call(rbind, calibration), stringsAsFactors = FALSE)
+  calibration <- do.call(rbind, calibration)
   write.csv(calibration, paste0(output_directory, "/calibration_results.csv"),
             row.names = FALSE)
 

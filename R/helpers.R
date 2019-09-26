@@ -154,19 +154,19 @@ write_ellmeta <- function(ellipsoid, name = "ellipsoid_metadata") {
 select_best <- function(calibration_table, selection_criteria = "S_OR_P",
                         level = 95, error = 5) {
   if (selection_criteria %in% c("S_OR", "S_OR_P")) {
-    sig <- calibration_table[calibration_table[, 3] <= error / 100, ]
+    sig <- calibration_table[calibration_table[, 4] <= error / 100, ]
     if (nrow(sig) == 0) {
-      sig <- calibration_table[calibration_table[, 3] ==
-                                 min(calibration_table[, 3]), ]
-      warning("None of the parameter settings resulted in significant models.\nThe ones with the lowest partial ROC values were selected.\n")
+      sig <- calibration_table[calibration_table[, 4] ==
+                                 min(calibration_table[, 4]), ]
+      warning("None of the parameter settings resulted in significant models.\n  The ones with the lowest partial ROC values were selected.\n")
     }
-    res <- sig[sig[, 5] <= ((100 - level) / 100), ]
+    res <- sig[sig[, 6] <= ((100 - level) / 100), ]
     if (nrow(res) == 0) {
-      res <- sig[sig[, 5] == min(sig[, 5]), ]
-      warning("None of the models had omission rates lower or equal than expected.\nThe ones with the lowest omission rates were selected.\n")
+      res <- sig[sig[, 6] == min(sig[, 6]), ]
+      warning("None of the models had omission rates lower or equal than expected.\n  The ones with the lowest omission rates were selected.\n")
     }
     if (selection_criteria == "S_OR_P") {
-      res <- res[res[, 7] == min(res[, 7]), ]
+      res <- res[res[, 8] == min(res[, 8]), ]
     }
   } else {
     stop("Argument selection_criteria is not valid, see function's help.")
