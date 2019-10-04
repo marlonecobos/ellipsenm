@@ -84,3 +84,35 @@ higher than 0.5.
 Good models are expected to have low omission rates and low prevalence. This
 implies that the model is predicting correctly in smaller areas.
 }
+\examples{
+# reading data
+occurrences <- read.csv(system.file("extdata", "occurrences.csv",
+                                    package = "ellipsenm"))
+colnames(occurrences)
+
+# raster layers of environmental data (this ones are masked to the accessible area)
+# users must prepare their layers accordingly if using other data
+vars <- raster::stack(list.files(system.file("extdata", package = "ellipsenm"),
+                                 pattern = "bio", full.names = TRUE))
+
+# preparing training and testing data
+data_split <- split_data(occurrences, method = "random", longitude = "longitude",
+                         latitude = "latitude", train_proportion = 0.75)
+
+# sets of variables (example)
+sets <- list(set_1 = c("bio_1", "bio_7", "bio_15"),
+             set_2 = c("bio_1", "bio_12", "bio_15")) # change as needed
+
+variable_sets <- prepare_sets(vars, sets)
+
+# methods to create ellipsoids
+methods <- c("covmat")
+
+# model calibration process (Make sure to define your working directory first)
+calib <- ellipsoid_calibration(data = data_split, species = "species",
+                               longitude = "longitude", latitude = "latitude",
+                               variables = variable_sets, methods = methods,
+                               level = 99, selection_criteria = "S_OR_P",
+                               error = 5, iterations = 500, percentage = 50,
+                               output_directory = "calibration_results")
+}
