@@ -126,7 +126,8 @@ polygon_selection <- function(data, longitude, latitude, polygons,
   if (!is.null(buffer_distance)) {
     buffer_distance <- buffer_distance / 111.32
 
-    hulls_buffer <- suppressWarnings(rgeos::gBuffer(x, width = buffer_distance))
+    hulls_buffer <- suppressWarnings(rgeos::gBuffer(hulls_buffer,
+                                                    width = buffer_distance))
   } else {
     hulls_buffer <- hulls_buffer
   }
