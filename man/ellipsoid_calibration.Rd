@@ -39,7 +39,7 @@ for the ellipsoid, expresed as percentage. Default = 95.}
 \item{selection_criteria}{(character) set of criteria to select best models,
 options are: "S_OR" (statistical significance and low omission) and
 "S_OR_P" (statistical significance, low omission, and low prevalence).
-See details. Default = "Sig_OR_Prev".}
+See details. Default = "S_OR_P".}
 
 \item{error}{(numeric) value from 0 to 100 to represent the percentage of
 potential error (E) that the data could have due to any source of uncertainty.

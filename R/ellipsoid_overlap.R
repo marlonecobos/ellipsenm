@@ -139,6 +139,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all",
     ellipsoid_fit(data[[x]], longitude[x], latitude[x], method[x], level[x],
                   variables[[x]])
   })
+  names(ellipsoids) <- paste0("Niche_", 1:length(ellipsoids))
 
   ## data for niche comparisons
   n_niches <- length(ellipsoids)
