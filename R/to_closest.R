@@ -74,39 +74,59 @@ to_closest <- function(data, longitude, latitude, raster_layer, limit_distance) 
   tomove <- which(is.na(vals))
   xyout <- xy[tomove, ]
 
-  xyras <- raster::rasterToPoints(raster_layer)[, 1:2]
-  dists <- raster::pointDistance(xyout, xyras, lonlat = TRUE)
+  if (nrow(xyout) > 0) {
+    xyras <- raster::rasterToPoints(raster_layer)[, 1:2]
+    dists <- raster::pointDistance(xyout, xyras, lonlat = TRUE)
 
-  condition <- rep("Correct", nrow(data))
-  distss <- rep(0, nrow(data))
+    condition <- rep("Correct", nrow(data))
+    distss <- rep(0, nrow(data))
 
-  limdist <- limit_distance * 1000
+    limdist <- limit_distance * 1000
 
-  # -----------
-  # running process
-  cat("\nMoving occurrences to closest pixels:\n")
-  for (i in 1:nrow(xyout)) {
-    mindis <- min(dists[i, ])[1]
-    if (mindis <= limdist) {
-      xyin <- xyras[dists[i, ] == mindis, ]
-      if (class(xyin)[1] == "matrix") {
-        xyin <- xyin[1, ]
-      }
-      data[tomove[i], longitude] <- xyin[1]
-      data[tomove[i], latitude] <- xyin[2]
-      condition[tomove[i]] <- "Moved"
-      distss[tomove[i]] <- mindis / 1000
-      cat("\tOccurrence", i, "of", nrow(xyout), "moved\n")
+    # -----------
+    # running process
+    cat("\nMoving occurrences to closest pixels:\n")
+    if (class(xyout)[1] %in% c("matrix", "data.frame")) {
+      no <- nrow(xyout)
     } else {
-      condition[tomove[i]] <- "Not_moved"
-      distss[tomove[i]] <- mindis / 1000
-      cat(paste0("\tOccurrence ", i," of ", nrow(xyout), " was not moved because it is more than\n\t",
-                 limit_distance, " km apart from the closest pixel with environmental values\n"))
+      no <- length(xyout)
     }
+
+    for (i in 1:no) {
+      if (class(xyout)[1]  %in% c("matrix", "data.frame")) {
+        mindis <- min(dists[i, ])
+      } else {
+        mindis <- min(dists[i])
+      }
+
+      if (mindis <= limdist) {
+        if (class(xyout)[1] %in% c("matrix", "data.frame")) {
+          xyin <- xyras[dists[i, ] == mindis, ]
+        } else {
+          xyin <- xyras[dists[i] == mindis, ]
+        }
+
+        if (class(xyin)[1] %in% c("matrix", "data.frame")) {
+          xyin <- xyin[1, ]
+        }
+        data[tomove[i], longitude] <- xyin[1]
+        data[tomove[i], latitude] <- xyin[2]
+        condition[tomove[i]] <- "Moved"
+        distss[tomove[i]] <- mindis / 1000
+        cat("\tOccurrence", i, "of", nrow(xyout), "moved\n")
+      } else {
+        condition[tomove[i]] <- "Not_moved"
+        distss[tomove[i]] <- mindis / 1000
+        cat(paste0("\tOccurrence ", i," of ", nrow(xyout), " was not moved because it is more than\n\t",
+                   limit_distance, " km apart from the closest pixel with environmental values\n"))
+      }
+    }
+    data <- data.frame(data, condition = condition, distance_km = distss,
+                       initial_lon = xy[, 1], initial_lat = xy[, 2],
+                       stringsAsFactors = FALSE)
+  } else {
+    cat("No occurrence is out of the area of the raster layer of reference with values.")
   }
-  data <- data.frame(data, condition = condition, distance_km = distss,
-                     initial_lon = xy[, 1], initial_lat = xy[, 2],
-                     stringsAsFactors = FALSE)
 
   return(data)
 }
