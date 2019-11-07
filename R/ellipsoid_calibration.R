@@ -219,7 +219,7 @@ ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
 
         ## Counting
         num <- ifelse(x == 1, 0, (length(methods) * (x - 1))) + y
-        cat("\tParameter setting", num, "of", length(settings), "\n")
+        cat("\tParameter setting", num, "of", settings, "\n")
         return(res)
       })
 
