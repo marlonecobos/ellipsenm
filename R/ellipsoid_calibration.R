@@ -142,11 +142,10 @@ ellipsoid_calibration <- function(data, species, longitude, latitude, variables,
   clocc <- class(data)[1]
   if (clocc == "character" | clocc == "list") {
     if (clocc == "character") {
-      data <- lapply(data, function(x) {
-        read.csv(x)
-      })
+      data <- lapply(data, function(x) {read.csv(x)})
     }
     sp <- as.character(data[[1]][1, species])
+    data <- lapply(data, function(x) {x[, c(species, longitude, latitude)]})
 
   } else {
     stop("data must be either character or list. See function's help.")
