@@ -275,9 +275,16 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
     }
   } else {
     pr_values <- projections$r_values
-    layer_projection <- projections$s_layer
     prevalences_p <- projections$prevalence
     scenarios <- projections$scenarios
+    if (prediction != "mahalanobis") {
+      layer_projection <- projections$s_layer
+      if (prediction == "both") {
+        layer_projection <- raster::stack(layer_projection, projections$m_layer)
+      }
+    } else {
+      layer_projection <- projections$m_layer
+    }
 
     if (!missing(raster_layers)) {
       save(data, variable_names, variable1, n_var, r_values, ell_meta, mean_pred,
