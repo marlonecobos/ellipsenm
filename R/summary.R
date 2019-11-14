@@ -1,9 +1,14 @@
 #' Summary of attributes and results
-#' @param object ellipsoid or ellipsoid_model_sim object.
+#' @name summary
+#' @aliases summary,ellipsoid-method summary,ellipsoid_model_rep-method
+#' @aliases summary,calibration_ellipsoid-method summary,data_overlap-method
+#' @aliases summary,overlap_ellipsoid-method
+#' @param object object of class ellipsoid*, ellipsoid_model_rep,
+#' calibration_ellipsoid, data_overlap, or overlap_ellipsoid.
 #' @export
 #' @return
 #' A written summary.
-
+#' @rdname summary
 setMethod("summary", signature(object = "ellipsoid"),
           function(object) {
             # -----------
@@ -104,12 +109,7 @@ setMethod("summary", signature(object = "ellipsoid"),
           }
 )
 
-#' Summary of attributes and results
-#' @param object ellipsoid_model_rep object.
-#' @export
-#' @return
-#' A written summary.
-
+#' @rdname summary
 setMethod("summary", signature(object = "ellipsoid_model_rep"),
           function(object) {
             # -----------
@@ -160,12 +160,7 @@ setMethod("summary", signature(object = "ellipsoid_model_rep"),
           }
 )
 
-#' Summary of attributes and results
-#' @param object calibration_ellipsoid object.
-#' @export
-#' @return
-#' A written summary.
-
+#' @rdname summary
 setMethod("summary", signature(object = "calibration_ellipsoid"),
           function(object) {
             # -----------
@@ -197,12 +192,7 @@ setMethod("summary", signature(object = "calibration_ellipsoid"),
           }
 )
 
-#' Summary of attributes and results
-#' @param object data_overlap object.
-#' @export
-#' @return
-#' A written summary.
-#'
+#' @rdname summary
 setMethod("summary", signature(object = "data_overlap"),
           function(object) {
             # -----------
@@ -227,12 +217,7 @@ setMethod("summary", signature(object = "data_overlap"),
           }
 )
 
-#' Summary of attributes and results
-#' @param object overlap_ellipsoid object.
-#' @export
-#' @return
-#' A written summary.
-#'
+#' @rdname summary
 setMethod("summary", signature(object = "overlap_ellipsoid"),
           function(object) {
             # -----------
