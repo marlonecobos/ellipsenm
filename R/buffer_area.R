@@ -30,6 +30,11 @@
 #'
 #' If \code{save} = TRUE, results are written in a folder named as in \code{name}.
 #'
+#' @usage
+#' buffer_area(data, longitude, latitude, buffer_distance = 100,
+#'             raster_layers = NULL, clip = FALSE, mask = FALSE,
+#'             save = FALSE, name = "calib_area_buffer")
+#'
 #' @export
 #'
 #' @examples
@@ -132,55 +137,4 @@ buffer_area <- function(data, longitude, latitude, buffer_distance = 100,
   }
 
   return(buff_area)
-}
-
-
-#' Helper function to obtain polygon from RasterLayer
-#'
-#' @param raster_layer RasterLayer of a region of interest.
-#'
-#' @export
-
-raster_poly <- function(raster_layer) {
-  suppressPackageStartupMessages(library(raster))
-  wgs84 <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
-
-  if (is.na(raster_layer@crs)) {
-    raster::crs(raster_layer) <- wgs84
-  } else {
-    raster_layer <- raster::projectRaster(raster_layer, crs = wgs84)
-  }
-
-  raster_layer <- raster_layer > min(raster_layer[], na.rm = TRUE)
-  polygons <- raster::rasterToPolygons(raster_layer, dissolve = TRUE)
-
-  return(polygons)
-}
-
-
-#' Helper function to save results from calibration area creation
-#'
-#' @param name (character) name of a folder to be written with the results if
-#' \code{save} = TRUE.
-#' @param area_polygon SpatialPolygonDataFrame to be written in \code{name}.
-#' @param area_type (character) type of polygona (area) to be written.
-#' @param raster_layers optional RasterStack of layers to be written in \code{name}.
-#'
-#' @export
-
-save_areas <- function(name, area_polygon, area_type, raster_layers = NULL) {
-  dir.create(name)
-
-  if (!is.null(raster_layers)) {
-    rgdal::writeOGR(area_polygon, name, area_type,
-                    driver = "ESRI Shapefile")
-    rnames <- paste0(name, "/", names(raster_layers), ".tif")
-    r <- lapply(1:length(rnames), function(x) {
-      raster::writeRaster(raster_layers[[x]], filename = rnames[x],
-                          format = "GTiff")
-    })
-  } else {
-    rgdal::writeOGR(area_polygon, name, area_type,
-                    driver = "ESRI Shapefile")
-  }
 }

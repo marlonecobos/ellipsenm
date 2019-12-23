@@ -20,6 +20,11 @@
 #' variables (dimesnions) used to fit the ellipsoid.
 #'
 #' @return
+#' An object of class \code{\link{ellipsoid}}.
+#'
+#' @usage
+#' ellipsoid_fit(data, longitude, latitude, method = "covmat",
+#'               level = 95, raster_layers = NULL)
 #'
 #' @details
 #' The number of variables that can be used to created "ellipsoids" should be >=
@@ -155,36 +160,4 @@ ellipsoid_fit <- function (data, longitude, latitude, method = "covmat",
                        semi_axes_length = stds,
                        axes_coordinates = axes_coordinates)
   return(results)
-}
-
-
-#' Helper function to calculate niche volume
-#'
-#' @param n_dimensions (numeric) number of dimensions to be considered.
-#' @param semi_axes_length (numeric) length of ellipsoid axes.
-#'
-#' @export
-
-ellipsoid_volume <- function (n_dimensions, semi_axes_length) {
-  term1 <- 2 * pi^(n_dimensions / 2)
-  term2 <- n_dimensions * gamma(n_dimensions / 2)
-  term3 <- prod(semi_axes_length)
-  term4 <- (term1 / term2) * term3
-
-  return(term4)
-}
-
-
-#' Helper function to calculate quantiles
-#'
-#' @param n_data (numeric) total number of data to be considered.
-#' @param level (numeric) percentage of data to be considered when creating the
-#' ellipsoid that characterizes the species ecological niche. Default = 95.
-#'
-#' @export
-
-ndata_quantile <- function(n_data, level) {
-  n <- floor(n_data * level)
-  if (n > n_data) {n <- n_data}
-  return(n)
 }

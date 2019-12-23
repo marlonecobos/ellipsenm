@@ -42,6 +42,12 @@
 #' files with numeric results and raster files with the geographic predictions
 #' will be written.
 #'
+#' @usage
+#' ## S4 method for signature 'ellipsoid'
+#' predict(object, projection_variables, prediction = "suitability",
+#'         truncate = TRUE, return_numeric, tolerance = 1e-60,
+#'         name = NULL, format, overwrite = FALSE, force_return = FALSE)
+#'
 #' @details
 #' Argument \code{object} must be of one of the following classes: "ellipsoid"
 #' or "ellipsoid_model_sim". The prefix "suitability" or "mahalanobis" will be
@@ -397,6 +403,13 @@ setMethod("predict", signature(object = "ellipsoid"),
 )
 
 #' @rdname predict
+#' @usage
+#' ## S4 method for signature 'ellipsoid_model_rep'
+#' predict(object, projection_variables, prediction = "suitability",
+#'         truncate = TRUE, return_numeric, tolerance = 1e-60,
+#'         name = NULL, format, overwrite = FALSE, force_return = FALSE,
+#'         return_name = NULL)
+
 setMethod("predict", signature(object = "ellipsoid_model_rep"),
           function(object, projection_variables, prediction = "suitability",
                    truncate = TRUE, return_numeric, tolerance = 1e-60,

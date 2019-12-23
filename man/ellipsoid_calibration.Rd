@@ -5,10 +5,11 @@
 \title{Calibration of ellipsoid-based ecological niche models}
 \usage{
 ellipsoid_calibration(data, species, longitude, latitude, variables,
-  format_in = NULL, methods, level = 95,
-  selection_criteria = "S_OR_P", error = 5, iterations = 500,
-  percentage = 50, parallel = FALSE, overwrite = FALSE,
-  output_directory = "calibration_results")
+                      format_in = NULL, methods, level = 95,
+                      selection_criteria = "S_OR_P", error = 5,
+                      iterations = 500, percentage = 50,
+                      parallel = FALSE, overwrite = FALSE,
+                      output_directory = "calibration_results")
 }
 \arguments{
 \item{data}{(character or list) if character, vector of names of csv files
@@ -62,9 +63,10 @@ settings to be tested is equal or larger than the number of cores available.}
 calibration and selection will be written.}
 }
 \value{
-A calibration_ellipsoid object with all results and details derived from the
-calibration process. A folder named \code{output_directory}, containing all
-results as well as a detailed HTML report will also be created.
+An object of class \code{\link{calibration_ellipsoid}} with all
+results and details derived from the calibration process. A folder named
+\code{output_directory}, containing all results as well as a detailed HTML
+report will also be created.
 }
 \description{
 ellipsoid_calibration helps in creating and evaluating multiple

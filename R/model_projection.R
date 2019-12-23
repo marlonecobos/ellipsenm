@@ -46,6 +46,13 @@
 #' Additionally all results of projections will be written in the folder defined
 #' in \code{output_directory}.
 #'
+#' @usage
+#' model_projection(ellipsoid, projection_variables, prvariables_format = NULL,
+#'                  sp_name, prediction = "suitability", truncate = TRUE,
+#'                  return_numeric = TRUE, tolerance = 1e-60, format = "GTiff",
+#'                  overwrite = FALSE, force_return = FALSE, return_name = NULL,
+#'                  output_directory = "ellipsenm_projections")
+#'
 #' @export
 
 model_projection <- function(ellipsoid, projection_variables, prvariables_format = NULL,

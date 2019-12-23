@@ -29,6 +29,13 @@
 #'
 #' @return A plot of the niches to be compared in environmental space.
 #'
+#' @usage
+#' plot_overlap(object, niches = c(1, 2), niche_col = c("blue", "red"),
+#'              data = TRUE, data_col = c("blue", "red"),
+#'              background = FALSE, background_type, proportion = 0.3,
+#'              background_col = viridis::viridis, change_labels = FALSE,
+#'              xlab = "", ylab = "", zlab = "", legend = TRUE)
+#'
 #' @export
 #'
 #' @examples

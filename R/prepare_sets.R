@@ -27,6 +27,12 @@
 #' @return
 #' A list of character vectors containing the names of the variables to be used
 #' in each set. A folder with subfolders (sets) and variables subsetted.
+#'
+#' @usage
+#' prepare_sets(variables, sets = NULL, all_combinations = FALSE,
+#'              minvar_perset = 2, format_in = NULL, save = FALSE,
+#'              format_out = "GTiff", overwrite = FALSE,
+#'              output_directory = "Variable_sets")
 
 prepare_sets <- function(variables, sets = NULL, all_combinations = FALSE,
                          minvar_perset = 2, format_in = NULL, save = FALSE,

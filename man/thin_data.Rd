@@ -5,8 +5,8 @@
 \title{Spatial thinning of occurrence data}
 \usage{
 thin_data(data, longitude, latitude, thin_class = NULL,
-  raster_layer = NULL, thin_distance = 0, save = FALSE,
-  name = "occurrences_thin")
+          raster_layer = NULL, thin_distance = 0, save = FALSE,
+          name = "occurrences_thin")
 }
 \arguments{
 \item{data}{data.frame of occurrence records containing at least longitude and
@@ -33,7 +33,7 @@ directory. Default = FALSE.}
 written; format (.csv) is atomatically added. Default = "occurrences_thin".}
 }
 \value{
-A data.frame with thinned data and details about how many records were erased
+A data.frame with thinned data and messages about how many records were erased
 and kept.
 }
 \description{

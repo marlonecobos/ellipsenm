@@ -5,9 +5,9 @@
 \title{Selection of spatial polygons based on occurrences}
 \usage{
 polygon_selection(data, longitude, latitude, polygons,
-  buffer_distance = NULL, raster_layers = NULL, clip = FALSE,
-  dissolve = FALSE, mask = FALSE, save = FALSE,
-  name = "calib_area_poligons")
+                  buffer_distance = NULL, raster_layers = NULL,
+                  clip = FALSE, dissolve = FALSE, mask = FALSE,
+                  save = FALSE, name = "calib_area_poligons")
 }
 \arguments{
 \item{data}{data.frame of occurrence records containing at least longitude

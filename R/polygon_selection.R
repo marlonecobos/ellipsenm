@@ -33,6 +33,12 @@
 #'
 #' If \code{save} = TRUE, results are written in a folder named as in \code{name}.
 #'
+#' @usage
+#' polygon_selection(data, longitude, latitude, polygons,
+#'                   buffer_distance = NULL, raster_layers = NULL,
+#'                   clip = FALSE, dissolve = FALSE, mask = FALSE,
+#'                   save = FALSE, name = "calib_area_poligons")
+#'
 #' @export
 #'
 #' @examples

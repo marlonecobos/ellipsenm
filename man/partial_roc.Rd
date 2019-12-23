@@ -5,7 +5,7 @@
 \title{Partial ROC calculation for ecological niche models}
 \usage{
 partial_roc(prediction, test_data, longitude, latitude, error = 5,
-  iterations = 500, percentage = 50)
+            iterations = 500, percentage = 50)
 }
 \arguments{
 \item{prediction}{RasterLayer or numeric vector of ecological niche model

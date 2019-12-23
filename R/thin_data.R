@@ -21,8 +21,13 @@
 #' written; format (.csv) is atomatically added. Default = "occurrences_thin".
 #'
 #' @return
-#' A data.frame with thinned data and details about how many records were erased
+#' A data.frame with thinned data and messages about how many records were erased
 #' and kept.
+#'
+#' @usage
+#' thin_data(data, longitude, latitude, thin_class = NULL,
+#'           raster_layer = NULL, thin_distance = 0, save = FALSE,
+#'           name = "occurrences_thin")
 #'
 #' @export
 #'
@@ -154,29 +159,3 @@ thin_data <- function(data, longitude, latitude, thin_class = NULL,
   return(dat_sp)
 }
 
-
-#' Helper function to project points
-#'
-#' @param data data.frame of occurrence records containing at least longitude and
-#'             latitude columns.
-#' @param longitude (character) name of the column with longitude data.
-#' @param latitude (character) name of the column with latitude data.
-#'
-#' @export
-#'
-#' @return
-#' A SpatialPointsDataFrame object projected to azimuthal equidistant projection.
-
-wgs_aeqd <- function(data, longitude, latitude) {
-  WGS84 <- sp::CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
-
-  dat_s <- sp::SpatialPointsDataFrame(data[, c(longitude, latitude)], data,
-                                      proj4string = WGS84)
-  centroid <- rgeos::gCentroid(dat_s, byid = FALSE) # to get centroid of area
-  AEQD <- sp::CRS(paste0("+proj=aeqd +lat_0=", centroid@coords[2], " +lon_0=",
-                         centroid@coords[1], " +x_0=0 +y_0=0 +ellps=WGS84",
-                         " +datum=WGS84 +units=m +no_defs"))
-  dat_s <- sp::spTransform(dat_s, AEQD)
-
-  return(dat_s)
-}

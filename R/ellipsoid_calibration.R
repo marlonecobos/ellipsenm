@@ -41,9 +41,18 @@
 #' calibration and selection will be written.
 #'
 #' @return
-#' A calibration_ellipsoid object with all results and details derived from the
-#' calibration process. A folder named \code{output_directory}, containing all
-#' results as well as a detailed HTML report will also be created.
+#' An object of class \code{\link{calibration_ellipsoid}} with all
+#' results and details derived from the calibration process. A folder named
+#' \code{output_directory}, containing all results as well as a detailed HTML
+#' report will also be created.
+#'
+#' @usage
+#' ellipsoid_calibration(data, species, longitude, latitude, variables,
+#'                       format_in = NULL, methods, level = 95,
+#'                       selection_criteria = "S_OR_P", error = 5,
+#'                       iterations = 500, percentage = 50,
+#'                       parallel = FALSE, overwrite = FALSE,
+#'                       output_directory = "calibration_results")
 #'
 #' @export
 #'

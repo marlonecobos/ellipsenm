@@ -5,7 +5,7 @@
 \title{Helper funtion to select best parameter settings}
 \usage{
 select_best(calibration_table, selection_criteria = "S_OR_P",
-  level = 95, error = 5)
+            level = 95, error = 5)
 }
 \arguments{
 \item{calibration_table}{data.frame of results from model calibration in

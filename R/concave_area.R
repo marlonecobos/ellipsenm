@@ -41,6 +41,12 @@
 #'
 #' If \code{save} = TRUE, results are written in a folder named as in \code{name}.
 #'
+#' @usage
+#' concave_area(data, longitude, latitude, length_threshold = 5,
+#'              split = FALSE, n_kmeans = NULL, buffer_distance = NULL,
+#'              raster_layers = NULL, clip = FALSE, mask = FALSE,
+#'              save = FALSE, name = "calib_area_concave")
+#'
 #' @export
 #'
 #' @examples

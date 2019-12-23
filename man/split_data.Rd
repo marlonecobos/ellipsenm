@@ -5,8 +5,8 @@
 \title{Split occurrence data into training and testing data}
 \usage{
 split_data(data, method = "random", longitude, latitude,
-  train_proportion, raster_layer = NULL, background_n = 10000,
-  save = FALSE, name = "occurrences")
+           train_proportion, raster_layer = NULL,
+           background_n = 10000, save = FALSE, name = "occurrences")
 }
 \arguments{
 \item{data}{data.frame of occurrence records containing at least longitude

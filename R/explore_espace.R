@@ -24,6 +24,11 @@
 #' A plot and a PDF document with figures to explore the data in environmental
 #' space, which could help to make desicions on which methods and variables are
 #' worth to explore during model calibration.
+#'
+#' @usage
+#' explore_espace(data, species, longitude, latitude, raster_layers,
+#'                save = FALSE, name = "e_space_exploration.pdf",
+#'                height = 8, width = 17, open = TRUE)
 
 explore_espace <- function(data, species, longitude, latitude, raster_layers,
                            save = FALSE, name = "e_space_exploration.pdf",

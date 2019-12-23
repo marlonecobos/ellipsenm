@@ -4,11 +4,11 @@
 \alias{model_projection}
 \title{Helper function to project models to distinct scenarios}
 \usage{
-model_projection(ellipsoid, projection_variables,
-  prvariables_format = NULL, sp_name, prediction = "suitability",
-  truncate = TRUE, return_numeric = TRUE, tolerance = 1e-60,
-  format = "GTiff", overwrite = FALSE, force_return = FALSE,
-  return_name = NULL, output_directory = "ellipsenm_projections")
+model_projection(ellipsoid, projection_variables, prvariables_format = NULL,
+                 sp_name, prediction = "suitability", truncate = TRUE,
+                 return_numeric = TRUE, tolerance = 1e-60, format = "GTiff",
+                 overwrite = FALSE, force_return = FALSE, return_name = NULL,
+                 output_directory = "ellipsenm_projections")
 }
 \arguments{
 \item{ellipsoid}{a fitted object of class ellipsoid*.}

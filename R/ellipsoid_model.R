@@ -55,6 +55,18 @@
 #' This avoids saturation of the RAM.
 #'
 #' @return
+#' An object of class \code{\link{ellipsoid_model_sim}} or
+#' \code{\link{ellipsoid_model_rep}}.
+#'
+#' @usage
+#' ellipsoid_model(data, species, longitude, latitude, raster_layers,
+#'                 method = "covmat", level = 95, replicates = 1,
+#'                 replicate_type = "bootstrap", bootstrap_percentage = 75,
+#'                 projection_variables = NULL, prvariables_format = NULL,
+#'                 prediction = "suitability", return_numeric = TRUE,
+#'                 tolerance = 1e-60, format = "GTiff",
+#'                 overwrite = FALSE, color_palette = viridis::magma,
+#'                 output_directory = "ellipsenm_model")
 #'
 #' @details
 #' \code{replicate_type}

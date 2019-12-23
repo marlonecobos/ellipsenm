@@ -5,9 +5,9 @@
 \title{Concave hull polygons based on occurrences}
 \usage{
 concave_area(data, longitude, latitude, length_threshold = 5,
-  split = FALSE, n_kmeans = NULL, buffer_distance = NULL,
-  raster_layers = NULL, clip = FALSE, mask = FALSE, save = FALSE,
-  name = "calib_area_concave")
+             split = FALSE, n_kmeans = NULL, buffer_distance = NULL,
+             raster_layers = NULL, clip = FALSE, mask = FALSE,
+             save = FALSE, name = "calib_area_concave")
 }
 \arguments{
 \item{data}{data.frame of occurrence records containing at least longitude

@@ -5,8 +5,8 @@
 \title{Exploration of data in enviornmental space}
 \usage{
 explore_espace(data, species, longitude, latitude, raster_layers,
-  save = FALSE, name = "e_space_exploration.pdf", height = 8,
-  width = 17, open = TRUE)
+               save = FALSE, name = "e_space_exploration.pdf",
+               height = 8, width = 17, open = TRUE)
 }
 \arguments{
 \item{data}{data.frame of occurrence records. Columns must be: species,

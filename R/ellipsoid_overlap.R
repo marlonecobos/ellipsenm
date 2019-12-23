@@ -15,8 +15,11 @@
 #' performing Monte-Carlo simulations (full overlap). Default = 1000000.
 #'
 #' @return
-#' A overlap_ellipsoid object containing all results from overlap analyses as
-#' well as other information needed for plotting.
+#' An object of class \code{\link{overlap_ellipsoid}} containing all results
+#' from overlap analyses as well as other information needed for plotting.
+#'
+#' @usage
+#' ellipsoid_overlap(..., overlap_type = "all", n_points = 1000000)
 #'
 #' @details
 #' Types of overlap are as follows:
@@ -63,8 +66,7 @@
 #' # niche overlap analysis
 #' overlap <- ellipsoid_overlap(niche1, niche2)
 
-ellipsoid_overlap <- function(..., overlap_type = "all",
-                              n_points = 1000000) {
+ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000) {
   # -----------
   # detecting potential errors
   if (missing(...)) {

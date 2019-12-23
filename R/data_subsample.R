@@ -12,6 +12,10 @@
 #' for each replicate. Default = 50. Valid if \code{replicates} > 1 and
 #' \code{replicate_type} = "bootstrap".
 #'
+#' @usage
+#' data_subsample(data, replicates = 1, replicate_type = "bootstrap",
+#'                bootstrap_percentage = 50)
+#'
 #' @export
 #'
 #' @examples

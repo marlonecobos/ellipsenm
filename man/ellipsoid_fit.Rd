@@ -4,8 +4,8 @@
 \alias{ellipsoid_fit}
 \title{Fit ellipsoids based on distinct methods}
 \usage{
-ellipsoid_fit(data, longitude, latitude, method = "covmat", level = 95,
-  raster_layers = NULL)
+ellipsoid_fit(data, longitude, latitude, method = "covmat",
+              level = 95, raster_layers = NULL)
 }
 \arguments{
 \item{data}{data.frame or matrix of occurrence records. Columns must be
@@ -29,7 +29,7 @@ extracted using geographic coordinates present in \code{data}. If not defined
 variables (dimesnions) used to fit the ellipsoid.}
 }
 \value{
-
+An object of class \code{\link{ellipsoid}}.
 }
 \description{
 ellipsoid_fit helps in finding the centroid and matrix that

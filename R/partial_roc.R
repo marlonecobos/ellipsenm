@@ -23,6 +23,10 @@
 #' @return A list with the summary of the results and a data.frame containing
 #' the AUC values and AUC ratios calculated for all iterations.
 #'
+#' @usage
+#' partial_roc(prediction, test_data, longitude, latitude, error = 5,
+#'             iterations = 500, percentage = 50)
+#'
 #' @details Partial ROC is calculated following Peterson et al. (2008;
 #' \url{http://dx.doi.org/10.1016/j.ecolmodel.2007.11.008}).
 #'

@@ -5,7 +5,7 @@
 \title{Helper function to subsample occurrence data}
 \usage{
 data_subsample(data, replicates = 1, replicate_type = "bootstrap",
-  bootstrap_percentage = 50)
+               bootstrap_percentage = 50)
 }
 \arguments{
 \item{data}{data.frame of occurrence records. Columns must be longitude and

@@ -3,7 +3,6 @@
 \docType{package}
 \name{ellipsenm}
 \alias{ellipsenm}
-\alias{ellipsenm-package}
 \title{ellipsenm: An R package for ecological niche's characterization using ellipsoids}
 \description{
 ellipsenm implements multiple tools to help users in using ellipsoids to model

@@ -1,22 +1,177 @@
-#' Helper function to find raster extention
-#' @param format (character) any of the format types allowed for raster objects.
-#' See \code{\link[raster]{writeFormats}}
+#' Split occurrences in training and testing data using blocks
+#'
+#' @description occ_blocksplit splits a set of occurrences to obtain training
+#' and testing data using blocks.
+#'
+#' @param data matrix or data.frame with the occurrences to be split. Columns
+#' may vary but species, longitude, and latitue are recommended.
+#' @param longitude (character) name of the column with longitude data.
+#' @param latitude (character) name of the column with latitude data.
+#' @param raster_layer optional RasterLayer to prepare background data.
+#' @param background_n (numeric) optional number of coordinates to be extracted
+#' using the \code{raster_layer}. Default = 10000.
+#' @param train_proportion (numeric) proportion of data to be used as training
+#' occurrences. Available options are 0.25, 0.5, and 0.75. The remaining data
+#' will be used for testing. Default = 0.75.
+#'
 #' @export
-#' @return Raster extension according to format type.
+#'
+#' @return
+#' List with all occurrences (all), training occurrences (train), testing
+#' (test) occurrences, and all occurrences with assigned blocks (block).
+#'
+#' If a raster layer is given in \code{raster_layer}, background coordinates
+#' will be returned as part of this list. Data will be named as bg_all, bg_train,
+#' bg_test, and bg_block, for all, training, testing, and all background with
+#' assigned blocks, respectively.
 
-rformat_type <- function(format) {
-  if (missing(format)) {stop("Argument format needs to be defined.")}
-  if (format == "raster") {format1 <- ".grd"}
-  if (format == "GTiff") {format1 <- ".tif"}
-  if (format == "EHdr") {format1 <- ".bil"}
-  if (format == "ascii") {format1 <- ".asc"}
-  if (format == "SAGA") {format1 <- ".sdat"}
-  if (format == "IDRISI") {format1 <- ".rst"}
-  if (format == "CDF") {format1 <- ".nc"}
-  if (format == "ENVI") {format1 <- ".envi"}
-  if (format == "HFA") {format1 <- ".img"}
-  return(format1)
+occ_blocksplit <- function(data, longitude, latitude, train_proportion = 0.75,
+                           raster_layer = NULL, background_n = 10000) {
+  ndata <- nrow(data)
+
+  # -----------
+  # occurrences split
+  n1 <- ceiling(nrow(data) / 2)
+  n2 <- floor(nrow(data) / 2)
+  n3 <- ceiling(n1 / 2)
+  n4 <- ceiling(n2 / 2)
+  grp_a <- data[order(data[, latitude]), ][1:n1, ]
+  grp_b <- data[rev(order(data[, latitude])), ][1:n2, ]
+  grp1 <- grp_a[order(grp_a[, longitude]), ][1:(n3), ]
+  grp2 <- grp_a[!rownames(grp_a) %in% rownames(grp1), ]
+  grp3 <- grp_b[order(grp_b[, longitude]), ][1:(n4), ]
+  grp4 <- grp_b[!rownames(grp_b) %in% rownames(grp3), ]
+
+  # -----------
+  # background split
+  if (!is.null(raster_layer)) {
+    back <- as.data.frame(sp::coordinates(raster_layer)[!is.na(raster_layer[]), ])
+
+    if (nrow(back) > background_n) {
+      back <- back[sample(nrow(back), background_n), ]
+    }
+    colnames(back) <- c(longitude, latitude)
+
+    bvert <- mean(c(max(grp1[, longitude]), min(grp2[, longitude])))
+    tvert <- mean(c(max(grp3[, longitude]), min(grp4[, longitude])))
+    horz <- mean(c(max(grp_a[, latitude]), min(grp_b[, latitude])))
+    bggrp1 <- back[back[, latitude] <= horz & back[, longitude] < bvert, ]
+    bggrp2 <- back[back[, latitude] < horz & back[, longitude] >= bvert, ]
+    bggrp3 <- back[back[, latitude] > horz & back[, longitude] <= tvert, ]
+    bggrp4 <- back[back[, latitude] >= horz & back[, longitude] > tvert, ]
+  }
+
+  # -----------
+  # preparing data
+  ## occurrences
+  if (nrow(grp1) > 0) grp1$grp <- 1
+  if (nrow(grp2) > 0) grp2$grp <- 2
+  if (nrow(grp3) > 0) grp3$grp <- 3
+  if (nrow(grp4) > 0) grp4$grp <- 4
+
+  data_b <- rbind(grp1, grp2, grp3, grp4)
+  colnames(data_b) <- c(colnames(data), "Block")
+
+  ## object to return data
+  if (!is.null(raster_layer)) {
+    ## background
+    if (nrow(bggrp1) > 0) bggrp1$grp <- 1
+    if (nrow(bggrp2) > 0) bggrp2$grp <- 2
+    if (nrow(bggrp3) > 0) bggrp3$grp <- 3
+    if (nrow(bggrp4) > 0) bggrp4$grp <- 4
+
+    back_b <- rbind(bggrp1, bggrp2, bggrp3, bggrp4)
+    colnames(back_b) <- c(colnames(back), "Block")
+
+    data1 <- list(all = data,
+                  train = data_b[data_b$Block != 4, colnames(data_b) != "Block"],
+                  test = data_b[data_b$Block == 4, colnames(data_b) != "Block"],
+                  block = data_b,
+                  bg_all = back,
+                  bg_train = back_b[back_b$Block != 4, colnames(back_b) != "Block"],
+                  bg_test = back_b[back_b$Block == 4, colnames(back_b) != "Block"],
+                  bg_block = back_b)
+  } else {
+    data1 <- list(all = data,
+                  train = data_b[data_b$Block != 4, colnames(data_b) != "Block"],
+                  test = data_b[data_b$Block == 4, colnames(data_b) != "Block"],
+                  block = data_b)
+  }
+
+  return(data1)
 }
+
+
+#' Split data based on clusters
+#'
+#' @param data data.frame of occurrence records containing at least longitude
+#' and latitude columns.
+#' @param cluster_method (character) name of the method to be used for clustering
+#' the occurrences. Options are "hierarchical" and "k-means"; default =
+#' "hierarchical". Note that this parameter is ignored when \code{split} = FALSE.
+#' See details \code{\link[ellipsenm]{cluster_split}}.
+#' @param split_distance (numeric) distance in km that will be considered as the
+#' limit of connectivity among polygons created with clusters of occurrences.
+#' This parameter is used when \code{cluster_method} = "hierarchical" and
+#' \code{split} = TRUE. Default = NULL.
+#' @param n_kmeans (numeric) if \code{split} = TRUE, number of clusters in which
+#' the species occurrences will be grouped when using the "k-means"
+#' \code{cluster_method}. Default = NULL.
+#'
+#' @details The \code{cluster_method} must be chosen based on the spatial
+#' configuration of the species occurrences. Both methods make distinct assumptions
+#' and one of them may perform better than the other depending on the spatial
+#' pattern of the data.
+#'
+#' The k-means method, for example, perfomrs better when the following assumptions
+#' are fulfilled: Clusters are spatially grouped—or “spherical” and Clusters are
+#' of a similar size. Owing to the nature of the hierarchical clustering algorithm
+#' it may take more time than the k-means method. Both methods make assumptions
+#' and they may work well on some data sets, and fail on others.
+#'
+#' Another important factor to consider is that the k-means method allways starts
+#' with a random choice of cluster centers, thus it may end in different results
+#' on different runs. That may be problematic when trying to replicate your
+#' methods. With hierarchical clustering, most likely the same clusters can be
+#' obtained if the process is repeated.
+#'
+#' For more information on these clustering methods see Aggarwal and Reddy (2014)
+#' \url{https://goo.gl/RQ2ebd}.
+#'
+#' @export
+
+cluster_split <- function(data, cluster_method = "k-means",
+                          split_distance = 250, n_kmeans = NULL) {
+
+  if (cluster_method == "hierarchical" | cluster_method == "k-means") {
+    # split groups of points based on the split distance
+
+    if (cluster_method == "hierarchical") {
+      ## defining a hierarchical cluster method for the occurrences
+      cluster_method <- hclust(dist(data.frame(rownames = 1:nrow(data@data),
+                                               x = sp::coordinates(data)[, 1],
+                                               y = sp::coordinates(data)[, 2])),
+                               method = "complete")
+
+      ## defining wich points are clustered based on the user-defined distance
+      cluster_vector <- cutree(cluster_method, h = (split_distance / 111.32))
+    } else {
+      set.seed(1) # to get always the same answer when using the same data
+
+      ## identifying clusters from occurrences
+      cluster_vector <- kmeans(as.matrix(sp::coordinates(data)), n_kmeans)$cluster
+    }
+
+  } else {
+    stop("Options of cluster_method are: \n \"hierarchical\" or \"k-means\"")
+  }
+
+  ## Join results to occurrences
+  data@data <- data.frame(data@data, clusters = cluster_vector)
+
+  return(data)
+}
+
 
 #' Helperf function to get and write ellipsoid metadata
 #' @param ellipsoid object of class ellipsoid*.
@@ -133,7 +288,6 @@ write_ellmeta <- function(ellipsoid, name = "ellipsoid_metadata") {
 }
 
 
-
 #' Helper funtion to select best parameter settings
 #' @param calibration_table data.frame of results from model calibration in
 #' ellipsenm.
@@ -150,6 +304,9 @@ write_ellmeta <- function(ellipsoid, name = "ellipsoid_metadata") {
 #' @return
 #' data.frame with the selected parameter settings according to the argument
 #' \code{selection_criteria}.
+#' @usage
+#' select_best(calibration_table, selection_criteria = "S_OR_P",
+#'             level = 95, error = 5)
 
 select_best <- function(calibration_table, selection_criteria = "S_OR_P",
                         level = 95, error = 5) {
@@ -175,6 +332,7 @@ select_best <- function(calibration_table, selection_criteria = "S_OR_P",
   return(res)
 }
 
+
 #' Helper funtion to create data_overlap objects
 #' @param data data.frame of species' occurrence records. Columns must include
 #' species, longitude, and latitude.  Optionally, if \code{variables} is a matrix
@@ -189,7 +347,11 @@ select_best <- function(calibration_table, selection_criteria = "S_OR_P",
 #' variables to represent a set of conditions relevant for overlap analyses.
 #' @export
 #' @return
-#' A data_overlap object for posterior use in overlap analyses.
+#' An object of class \code{\link{data_overlap}} for posterior use in overlap
+#' analyses.
+#' @usage
+#' overlap_object(data, species, longitude, latitude, method = "covmat",
+#'                level = 95, variables = NULL)
 
 overlap_object <- function(data, species, longitude, latitude, method = "covmat",
                            level = 95, variables = NULL) {
@@ -211,54 +373,6 @@ overlap_object <- function(data, species, longitude, latitude, method = "covmat"
                          level = level)
   slot(object, "variables", check = FALSE) <- variables
   return(object)
-}
-
-#' Helper funtion to get attributes from ellipsoid lists
-#' @param ellipsoids list of ellipsoid objects.
-#' @param attribute (character) name of the attribute to be obtained from elements
-#' in \code{ellipsoids}. Options are: method, centroid, covariance_matrix, level,
-#' niche_volume, semi_axes_length, and axes_coordinates. Default = "method".
-#' @export
-#' @return
-#' The attribute selected.
-
-get_attribute <- function(ellipsoids, attribute = "method"){
-  if (missing(ellipsoids)) {
-    stop("Argument ellipsoids is needed, see function's help.")
-  }
-  if (!attribute %in% c("method", "centroid", "covariance_matrix", "level",
-                        "niche_volume", "semi_axes_length", "axes_coordinates")) {
-    stop("Invalid attribute, see function's help.")
-  }
-  attr1 <- lapply(ellipsoids, function(x) {
-    attr1 <- slot(x, attribute)
-    if(attribute == "axes_coordinates") {attr1 <- do.call(rbind, attr1)}
-    return(attr1)
-  })
-  return(attr1)
-}
-
-
-#' Helper funtion to get data for Montecarlo simulations
-#' @param ellipsoids list of ellipsoid objects.
-#' @param n_points (numeric) number of random points to be generated.
-#' @export
-#' @return
-#' A total of \code{n_points} created randomly considering the limits of the
-#' ellipsoids considered.
-
-hypercube_boundaries <- function(ellipsoids, n_points = 1000000) {
-  if (missing(ellipsoids)) {
-    stop("Argument ellipsoids is needed, see function's help.")
-  }
-  axis_list <- get_attribute(ellipsoids, attribute = "axes_coordinates")
-  ellipsoid_axis <- do.call(rbind, axis_list)
-  min_env <- apply(ellipsoid_axis, 2, min)
-  max_env <- apply(ellipsoid_axis, 2, max)
-  data_rand <- sapply(1:length(min_env), function (i) {
-    runif(n_points, min = min_env[i], max = max_env[i])
-  })
-  return(data_rand)
 }
 
 

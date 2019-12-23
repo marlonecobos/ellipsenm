@@ -4,7 +4,7 @@
 \alias{ellipsoid_overlap}
 \title{Overlap of ellipsoid-based ecological niche models}
 \usage{
-ellipsoid_overlap(..., overlap_type = "all", n_points = 1e+06)
+ellipsoid_overlap(..., overlap_type = "all", n_points = 1000000)
 }
 \arguments{
 \item{...}{data_overlap objects containing data for individual niches to be
@@ -19,8 +19,8 @@ to perform analyses. These objects can be created with the function
 performing Monte-Carlo simulations (full overlap). Default = 1000000.}
 }
 \value{
-A overlap_ellipsoid object containing all results from overlap analyses as
-well as other information needed for plotting.
+An object of class \code{\link{overlap_ellipsoid}} containing all results
+from overlap analyses as well as other information needed for plotting.
 }
 \description{
 ellipsoid_overlap performs analyses to measure the degree of

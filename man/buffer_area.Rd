@@ -5,8 +5,8 @@
 \title{Polygons based on buffered occurrences}
 \usage{
 buffer_area(data, longitude, latitude, buffer_distance = 100,
-  raster_layers = NULL, clip = FALSE, mask = FALSE, save = FALSE,
-  name = "calib_area_buffer")
+            raster_layers = NULL, clip = FALSE, mask = FALSE,
+            save = FALSE, name = "calib_area_buffer")
 }
 \arguments{
 \item{data}{data.frame of occurrence records containing at least longitude

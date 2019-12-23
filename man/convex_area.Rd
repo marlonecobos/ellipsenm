@@ -4,9 +4,10 @@
 \alias{convex_area}
 \title{Convex hull polygons based on occurrences}
 \usage{
-convex_area(data, longitude, latitude, split = FALSE, n_kmeans = NULL,
-  buffer_distance = NULL, raster_layers = NULL, clip = FALSE,
-  mask = FALSE, save = FALSE, name = "calib_area_convex")
+convex_area(data, longitude, latitude, split = FALSE,
+            n_kmeans = NULL, buffer_distance = NULL,
+            raster_layers = NULL, clip = FALSE, mask = FALSE,
+            save = FALSE, name = "calib_area_convex")
 }
 \arguments{
 \item{data}{data.frame of occurrence records containing at least longitude

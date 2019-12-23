@@ -5,9 +5,9 @@
 \title{Prepare sets of variables for calibration}
 \usage{
 prepare_sets(variables, sets = NULL, all_combinations = FALSE,
-  minvar_perset = 2, format_in = NULL, save = FALSE,
-  format_out = "GTiff", overwrite = FALSE,
-  output_directory = "Variable_sets")
+             minvar_perset = 2, format_in = NULL, save = FALSE,
+             format_out = "GTiff", overwrite = FALSE,
+             output_directory = "Variable_sets")
 }
 \arguments{
 \item{variables}{(character or RasterStack) if character, name of the folder
