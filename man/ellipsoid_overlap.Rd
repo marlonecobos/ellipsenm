@@ -54,14 +54,18 @@ The statistical significance test consist in randomly sampling the background
 with n = to the number of records of each species and creting ellipsoids with
 such data. Overlap is measured for each pair of random-ellipsoids according to
 the \code{overlap_type} selected. The process is repeated \code{replicate}
-times and the \code{confidence_limit} for these results are calculated. The
-observed overlap value is compared to the values at the \code{confidence_limit}
-found and whenever the observed values are as exterme or more extreme than the
-higher limit the overlap is considered significant. A p-value and the
-pre-defined \code{confidence_limit} will be added to the overlap matrix when
-the test is performed. A list with all the overlap results from the analyses
-with random-ellipsoids will be added to the \code{\link{overlap_ellipsoid}}
-object returned.
+times and the observed overlap value is compared to the values found for
+pairs of random-ellipsoids. The null hypothesis is that the niches are
+overlaped and if the observed values are as exterme or more extreme than the
+lower limit of the values found for the random-ellipsoids, the null hypothesis
+is rejected. This is, if the observed overlap value is lower than the 95%
+(or the value defined in \code{confidence_limit}) of the random-derived values
+of overlap, the niches are considered not-overlapped. If the observed value
+cannot be distinguished from random, the null hypothesis cannot be rejected.
+A p-value and the pre-defined \code{confidence_limit} will be added to the
+overlap matrix when the test is performed. A list with all the overlap results
+from the analyses with random-ellipsoids will be added to the
+\code{\link{overlap_ellipsoid}} object returned.
 }
 \examples{
 # reading data
