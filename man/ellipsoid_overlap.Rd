@@ -4,7 +4,9 @@
 \alias{ellipsoid_overlap}
 \title{Overlap of ellipsoid-based ecological niche models}
 \usage{
-ellipsoid_overlap(..., overlap_type = "all", n_points = 1000000)
+ellipsoid_overlap(..., overlap_type = "all", n_points = 1000000,
+                  significance_test = FALSE, replicates = 1000,
+                  confidence_limit = 0.05)
 }
 \arguments{
 \item{...}{data_overlap objects containing data for individual niches to be
@@ -16,7 +18,17 @@ to perform analyses. These objects can be created with the function
 "all", "full", and "back_union". Default = "all". See details.}
 
 \item{n_points}{(character) number of random points to be generated for
-performing Monte-Carlo simulations (full overlap). Default = 1000000.}
+performing Monte-Carlo simulations for full overlap-type measurements.
+Default = 1000000.}
+
+\item{significance_test}{(logical) whether or not to perform a test to determine
+statistical significance of overlap results. See details; default = FALSE.}
+
+\item{replicates}{(numeric) number of replicates to be performed during the
+significance test; default = 1000.}
+
+\item{confidence_limit}{(numeric) confidence limit for the significance test.
+Default = 0.05}
 }
 \value{
 An object of class \code{\link{overlap_ellipsoid}} containing all results
@@ -37,6 +49,19 @@ full = measures overlap of the complete volume of the ellipsoidal niches.
 
 back_union = meausures overlap of ellipsoidal niches considering only the
 union of the environmental conditions relevant for the two species (backgrounds).
+
+The statistical significance test consist in randomly sampling the background
+with n = to the number of records of each species and creting ellipsoids with
+such data. Overlap is measured for each pair of random-ellipsoids according to
+the \code{overlap_type} selected. The process is repeated \code{replicate}
+times and the \code{confidence_limit} for these results are calculated. The
+observed overlap value is compared to the values at the \code{confidence_limit}
+found and whenever the observed values are as exterme or more extreme than the
+higher limit the overlap is considered significant. A p-value and the
+pre-defined \code{confidence_limit} will be added to the overlap matrix when
+the test is performed. A list with all the overlap results from the analyses
+with random-ellipsoids will be added to the \code{\link{overlap_ellipsoid}}
+object returned.
 }
 \examples{
 # reading data

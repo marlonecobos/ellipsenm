@@ -12,14 +12,23 @@
 #' @param overlap_type (character) type of overlap to be measured. Options are:
 #' "all", "full", and "back_union". Default = "all". See details.
 #' @param n_points (character) number of random points to be generated for
-#' performing Monte-Carlo simulations (full overlap). Default = 1000000.
+#' performing Monte-Carlo simulations for full overlap-type measurements.
+#' Default = 1000000.
+#' @param significance_test (logical) whether or not to perform a test to determine
+#' statistical significance of overlap results. See details; default = FALSE.
+#' @param replicates (numeric) number of replicates to be performed during the
+#' significance test; default = 1000.
+#' @param confidence_limit (numeric) confidence limit for the significance test.
+#' Default = 0.05
 #'
 #' @return
 #' An object of class \code{\link{overlap_ellipsoid}} containing all results
 #' from overlap analyses as well as other information needed for plotting.
 #'
 #' @usage
-#' ellipsoid_overlap(..., overlap_type = "all", n_points = 1000000)
+#' ellipsoid_overlap(..., overlap_type = "all", n_points = 1000000,
+#'                   significance_test = FALSE, replicates = 1000,
+#'                   confidence_limit = 0.05)
 #'
 #' @details
 #' Types of overlap are as follows:
@@ -30,6 +39,19 @@
 #'
 #' back_union = meausures overlap of ellipsoidal niches considering only the
 #' union of the environmental conditions relevant for the two species (backgrounds).
+#'
+#' The statistical significance test consist in randomly sampling the background
+#' with n = to the number of records of each species and creting ellipsoids with
+#' such data. Overlap is measured for each pair of random-ellipsoids according to
+#' the \code{overlap_type} selected. The process is repeated \code{replicate}
+#' times and the \code{confidence_limit} for these results are calculated. The
+#' observed overlap value is compared to the values at the \code{confidence_limit}
+#' found and whenever the observed values are as exterme or more extreme than the
+#' higher limit the overlap is considered significant. A p-value and the
+#' pre-defined \code{confidence_limit} will be added to the overlap matrix when
+#' the test is performed. A list with all the overlap results from the analyses
+#' with random-ellipsoids will be added to the \code{\link{overlap_ellipsoid}}
+#' object returned.
 #'
 #' @export
 #'
@@ -66,7 +88,9 @@
 #' # niche overlap analysis
 #' overlap <- ellipsoid_overlap(niche1, niche2)
 
-ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000) {
+ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
+                              significance_test = FALSE, replicates = 1000,
+                              confidence_limit = 0.05) {
   # -----------
   # detecting potential errors
   if (missing(...)) {
@@ -197,15 +221,15 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000) {
   if(back == TRUE & overlap_type[1] %in% c("all", "back_union")) {
     cat("\nPerforming union background overlap analyses, please wait...\n")
     if (cls[1] == "RasterStack") {
-      bg_vars <- lapply(variables, function(x) {na.omit(raster::values(x))})
-      bg_vars <- unique(do.call(rbind, bg_vars))
+      backg <- lapply(variables, function(x) {na.omit(raster::values(x))})
+      background <- unique(do.call(rbind, backg))
     } else {
-      bg_vars <- unique(do.call(rbind, variables))
+      background <- unique(do.call(rbind, variables))
     }
-    colnames(bg_vars) <- variable_names
+    colnames(background) <- variable_names
 
     mah_suit <- sapply(1:length(ellipsoids), function(x) {
-      mh_st <- predict(ellipsoids[[x]], bg_vars, "both")
+      mh_st <- predict(ellipsoids[[x]], background, "both")
       mh_st <- data.frame(slot(mh_st, "suitability"), slot(mh_st, "mahalanobis"))
       return(mh_st)
     })
@@ -218,7 +242,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000) {
     names(mahas) <- paste0("Niche_", 1:length(ellipsoids),"_M")
     mahas <-  do.call(cbind, mahas)
 
-    metrics <- overlap_metrics(comparison_matrix, bg_vars, mahas, suits)
+    metrics <- overlap_metrics(comparison_matrix, background, mahas, suits)
 
     over_metrics <- lapply(1:length(metrics), function(x) {metrics[[x]][[1]]})
     over_metrics <- do.call(rbind.data.frame, over_metrics)
@@ -232,6 +256,72 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000) {
     slot(results, "union_background") <- over_cordinates
     slot(results, "union_overlap") <- over_metrics
   }
+
+  if (significance_test == TRUE) {
+    cat("\nPerforming statistical significance analyses, please wait:\n")
+    if (overlap_type == "all") {background <- list(data_rand, backg)}
+    if (overlap_type == "full") {background <- list(data_rand)}
+    if (overlap_type == "back_union") {background <- list(backg)}
+    sample_size <- sapply(data, function(y) {nrow(y)})
+
+    random_results <- overlap_random(background, sample_size, method, level,
+                                     overlap_type, replicates)
+
+    if (overlap_type[1] %in% c("all", "full")) {
+      f_pval <- sapply(1:length(random_results[[1]]), function(y) {
+        sum(random_results[[1]][[y]][, 3] >= results@full_overlap[y, 3]) / replicates
+      })
+      u_pval <- sapply(1:length(random_results[[2]]), function(y) {
+        sum(random_results[[2]][[y]][, 3] >= results@union_overlap[y, 3]) / replicates
+      })
+      f_metrics_s <- data.frame(total_points = results@full_overlap[, 1],
+                                overlaped_points = results@full_overlap[, 2],
+                                overlap = results@full_overlap[, 3],
+                                p_value = f_pval,
+                                pre_defined_CL = confidence_limit,
+                                prop_size_niche_1_vs_2 = results@full_overlap[, 4],
+                                prop_size_niche_2_vs_1 = results@full_overlap[, 5])
+
+      b_metrics_s <- data.frame(total_points = results@union_overlap[, 1],
+                                overlaped_points = results@union_overlap[, 2],
+                                overlap = results@union_overlap[, 3],
+                                p_value = u_pval,
+                                pre_defined_CL = confidence_limit,
+                                prop_size_niche_1_vs_2 = results@union_overlap[, 4],
+                                prop_size_niche_2_vs_1 = results@union_overlap[, 5])
+
+      slot(results, "full_overlap") <- f_metrics_s
+      slot(results, "union_overlap") <- b_metrics_s
+    }
+    if (overlap_type[1] == "full") {
+      f_pval <- sapply(1:length(random_results[[1]]), function(y) {
+        sum(random_results[[1]][[y]][, 3] >= results@full_overlap[y, 3]) / replicates
+      })
+      f_metrics_s <- data.frame(total_points = results@full_overlap[, 1],
+                                overlaped_points = results@full_overlap[, 2],
+                                overlap = results@full_overlap[, 3],
+                                p_value = f_pval,
+                                pre_defined_CL = confidence_limit,
+                                prop_size_niche_1_vs_2 = results@full_overlap[, 4],
+                                prop_size_niche_2_vs_1 = results@full_overlap[, 5])
+      slot(results, "full_overlap") <- f_metrics_s
+    }
+    if (back == TRUE & overlap_type[1] == "back_union") {
+      u_pval <- sapply(1:length(random_results[[1]]), function(y) {
+        sum(random_results[[1]][[y]][, 3] >= results@union_overlap[y, 3]) / replicates
+      })
+      b_metrics_s <- data.frame(total_points = results@union_overlap[, 1],
+                                overlaped_points = results@union_overlap[, 2],
+                                overlap = results@union_overlap[, 3],
+                                p_value = u_pval,
+                                pre_defined_CL = confidence_limit,
+                                prop_size_niche_1_vs_2 = results@union_overlap[, 4],
+                                prop_size_niche_2_vs_1 = results@union_overlap[, 5])
+      slot(results, "union_overlap") <- b_metrics_s
+    }
+    slot(results, "significance_results") <- random_results
+  }
+
   cat("\nProcess finished\n")
 
   return(results)

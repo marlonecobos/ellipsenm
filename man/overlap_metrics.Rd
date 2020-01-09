@@ -4,7 +4,13 @@
 \alias{overlap_metrics}
 \title{Helper function to compute overlap metrics}
 \usage{
-overlap_metrics(comparison_matrix, background, mahalanobis, suitability)
+overlap_metrics(
+  comparison_matrix,
+  background,
+  mahalanobis,
+  suitability,
+  return_background = TRUE
+)
 }
 \arguments{
 \item{comparison_matrix}{matrix resulted from using the \code{\link[utils]{combn}}

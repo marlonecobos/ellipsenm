@@ -128,6 +128,8 @@ data_overlap <- setClass("data_overlap",
 #' @slot union_background list of matrices representing background for union
 #' overlap.
 #' @slot union_overlap data.frame of overlap results considering union background.
+#' @slot significance_results list of all overlap results resulted from
+#' significance random tests.
 #' @export
 #' @examples
 #' showClass("overlap_ellipsoid")
@@ -138,4 +140,5 @@ overlap_ellipsoid <- setClass("overlap_ellipsoid",
                                         full_background = "list",
                                         full_overlap = "data.frame",
                                         union_background = "list",
-                                        union_overlap = "data.frame"))
+                                        union_overlap = "data.frame",
+                                        significance_results = "list"))

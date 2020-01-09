@@ -390,7 +390,7 @@ overlap_object <- function(data, species, longitude, latitude, method = "covmat"
 #' for plotting results.
 
 overlap_metrics <- function(comparison_matrix, background, mahalanobis,
-                            suitability) {
+                            suitability, return_background = TRUE) {
   if (missing(comparison_matrix)) {
     stop("Argument comparison_matrix is necessary to perform the analysis")
   }
@@ -424,13 +424,17 @@ overlap_metrics <- function(comparison_matrix, background, mahalanobis,
                           prop_size_niche_1_vs_2 = prop_size_niche_1_vs_2,
                           prop_size_niche_2_vs_1 = prop_size_niche_2_vs_1)
 
-    background_in <- data.frame(background[compare[intersect_id, 1], ],
-                                mahalanobis[compare[intersect_id, 1],
-                                            comparison_matrix[, x]],
-                                suitability[compare[intersect_id, 1],
-                                            comparison_matrix[, x]])
+    if (return_background == TRUE) {
+      background_in <- data.frame(background[compare[intersect_id, 1], ],
+                                  mahalanobis[compare[intersect_id, 1],
+                                              comparison_matrix[, x]],
+                                  suitability[compare[intersect_id, 1],
+                                              comparison_matrix[, x]])
 
-    return(list(overlap = overlap, background = background_in))
+      return(list(overlap = overlap, background = background_in))
+    } else {
+      return(list(overlap = overlap))
+    }
   })
   return(get_metrics)
 }

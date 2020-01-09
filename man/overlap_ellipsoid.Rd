@@ -26,6 +26,9 @@ overlap.}
 overlap.}
 
 \item{\code{union_overlap}}{data.frame of overlap results considering union background.}
+
+\item{\code{significance_results}}{list of all overlap results resulted from
+significance random tests.}
 }}
 
 \examples{
