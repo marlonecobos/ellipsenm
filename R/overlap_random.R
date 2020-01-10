@@ -149,7 +149,7 @@ overlap_random <- function(background, sample_size, method, level,
       return(list(full = over_metrics, back = over_metricsb))
     }
     if (overlap_type[1] == "full") {return(list(full = over_metrics))}
-    if (overlap_type[1] == "all") {return(list(back = over_metricsb))}
+    if (overlap_type[1] == "back_union") {return(list(back = over_metricsb))}
   })
 
   overs <- rownames(b_over[[1]][[1]])
@@ -169,7 +169,7 @@ overlap_random <- function(background, sample_size, method, level,
     })
     return(list(full_random = fo))
   }
-  if (overlap_type[1] == "all") {
+  if (overlap_type[1] == "back_union") {
     uo <- lapply(overs, function(x) {
       do.call(rbind, lapply(b_over, function (y) {y[[1]][x, ]}))
     })

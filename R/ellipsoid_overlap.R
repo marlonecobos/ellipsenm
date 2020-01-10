@@ -285,6 +285,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
                                 pre_defined_CL = confidence_limit,
                                 prop_size_niche_1_vs_2 = results@full_overlap[, 4],
                                 prop_size_niche_2_vs_1 = results@full_overlap[, 5])
+      rownames(f_metrics_s) <- rownames(results@full_overlap)
 
       b_metrics_s <- data.frame(total_points = results@union_overlap[, 1],
                                 overlaped_points = results@union_overlap[, 2],
@@ -293,6 +294,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
                                 pre_defined_CL = confidence_limit,
                                 prop_size_niche_1_vs_2 = results@union_overlap[, 4],
                                 prop_size_niche_2_vs_1 = results@union_overlap[, 5])
+      rownames(b_metrics_s) <- rownames(results@union_overlap)
 
       slot(results, "full_overlap") <- f_metrics_s
       slot(results, "union_overlap") <- b_metrics_s
@@ -308,6 +310,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
                                 pre_defined_CL = confidence_limit,
                                 prop_size_niche_1_vs_2 = results@full_overlap[, 4],
                                 prop_size_niche_2_vs_1 = results@full_overlap[, 5])
+      rownames(f_metrics_s) <- rownames(results@full_overlap)
       slot(results, "full_overlap") <- f_metrics_s
     }
     if (back == TRUE & overlap_type[1] == "back_union") {
@@ -321,9 +324,10 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
                                 pre_defined_CL = confidence_limit,
                                 prop_size_niche_1_vs_2 = results@union_overlap[, 4],
                                 prop_size_niche_2_vs_1 = results@union_overlap[, 5])
+      rownames(b_metrics_s) <- rownames(results@union_overlap)
       slot(results, "union_overlap") <- b_metrics_s
     }
-    slot(results, "significance_results", check = FALSE) <- random_results
+    slot(results, "significance_results") <- random_results
   }
 
   cat("\nProcess finished\n")
