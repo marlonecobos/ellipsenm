@@ -323,7 +323,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
                                 prop_size_niche_2_vs_1 = results@union_overlap[, 5])
       slot(results, "union_overlap") <- b_metrics_s
     }
-    slot(results, "significance_results") <- random_results
+    slot(results, "significance_results", check = FALSE) <- random_results
   }
 
   cat("\nProcess finished\n")
