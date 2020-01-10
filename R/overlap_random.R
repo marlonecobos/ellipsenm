@@ -156,23 +156,31 @@ overlap_random <- function(background, sample_size, method, level,
 
   if (overlap_type[1] == "all") {
     fo <- lapply(overs, function(x) {
-      do.call(rbind, lapply(b_over, function (y) {y[[1]][x, ]}))
+      f <- do.call(rbind, lapply(b_over, function (y) {y[[1]][x, ]}))
+      rownames(f) <- paste0("Replicate_", 1:nrow(f)); return(f)
     })
     uo <- lapply(overs, function(x) {
-      do.call(rbind, lapply(b_over, function (y) {y[[2]][x, ]}))
+      u <- do.call(rbind, lapply(b_over, function (y) {y[[2]][x, ]}))
+      rownames(u) <- paste0("Replicate_", 1:nrow(u)); return(u)
     })
+    names(fo) <- overs
+    names(uo) <- overs
     return(list(full_random = fo, union_random = uo))
   }
   if (overlap_type[1] == "full") {
     fo <- lapply(overs, function(x) {
-      do.call(rbind, lapply(b_over, function (y) {y[[1]][x, ]}))
+      f <- do.call(rbind, lapply(b_over, function (y) {y[[1]][x, ]}))
+      rownames(f) <- paste0("Replicate_", 1:nrow(f)); return(f)
     })
+    names(fo) <- overs
     return(list(full_random = fo))
   }
   if (overlap_type[1] == "back_union") {
     uo <- lapply(overs, function(x) {
-      do.call(rbind, lapply(b_over, function (y) {y[[1]][x, ]}))
+      u <- do.call(rbind, lapply(b_over, function (y) {y[[1]][x, ]}))
+      rownames(u) <- paste0("Replicate_", 1:nrow(u)); return(u)
     })
+    names(uo) <- overs
     return(list(union_random = uo))
   }
 }
