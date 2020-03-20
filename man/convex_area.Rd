@@ -5,6 +5,7 @@
 \title{Convex hull polygons based on occurrences}
 \usage{
 convex_area(data, longitude, latitude, split = FALSE,
+            cluster_method = "hierarchical", split_distance = NULL,
             n_kmeans = NULL, buffer_distance = NULL,
             raster_layers = NULL, clip = FALSE, mask = FALSE,
             save = FALSE, name = "calib_area_convex")
@@ -21,6 +22,16 @@ and latitude columns.}
 a number (for K-means clustering) is used to separate distinct chunks of
 data Recommended when the species of interest has a disjunct distribution.
 Default = FALSE.}
+
+\item{cluster_method}{(character) name of the method to be used for clustering
+the occurrences. Options are "hierarchical" and "k-means"; default =
+"hierarchical". Note that this parameter is ignored when \code{split} = FALSE.
+See details \code{\link{cluster_split}}.}
+
+\item{split_distance}{(numeric) distance in km that will be considered as the
+limit of connectivity among polygons created with clusters of occurrences.
+This parameter is used when \code{cluster_method} = "hierarchical" and
+\code{split} = TRUE. Default = NULL.}
 
 \item{n_kmeans}{(numeric) if \code{split} = TRUE, number of clusters in which
 the species occurrences will be grouped using the "k-means" method.
@@ -80,7 +91,8 @@ points(occurrences[, 2:3])
 
 # producing convex polygons splitted considering clusters
 cx_area2 <- convex_area(data = occurrences, longitude = "longitude",
-                        latitude = "latitude", split = TRUE, n_kmeans = 2,
+                        latitude = "latitude", split = TRUE,
+                        cluster_method = "k-means", n_kmeans = 2,
                         buffer_distance = 5)
 
 sp::plot(cx_area2)

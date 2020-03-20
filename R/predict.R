@@ -142,18 +142,18 @@ setMethod("predict", signature(object = "ellipsoid"),
             if (!missing(object)) {
               if (!class(object)[1] %in%
                   c("ellipsoid", "ellipsoid_model_sim")) {
-                stop("Argument object must be of class ellipsoid*.")
+                stop("Argument 'object' must be of class ellipsoid*.")
               }
             }else {
-              stop("Argument object is necessary to perform the analysis.")
+              stop("Argument 'object' is necessary to perform the analysis.")
             }
             if (!is.null(name)) {
               if (missing(format)) {
-                stop("Argument format needs to be defined if argument name is given.")
+                stop("Argument 'format' needs to be defined if argument name is given.")
               }
             }
             if (!class(projection_variables)[1] %in% c("RasterStack", "RasterBrick", "matrix", "data.frame")) {
-              stop("Argument projection_variables needs to be either a RasterStack or a matrix.")
+              stop("Argument 'projection_variables' needs to be either a RasterStack or a matrix.")
             } else {
               if (class(projection_variables)[1] == "RasterBrick") {
                 projection_variables <- raster::stack(projection_variables)
@@ -161,7 +161,7 @@ setMethod("predict", signature(object = "ellipsoid"),
             }
             if (!is.null(name)) {
               if (class(projection_variables)[1] != "RasterStack") {
-                message("Argument projection_variables is a matrix, no raster predictions will be returned.")
+                message("Argument 'projection_variables' is a matrix, no raster predictions will be returned.")
               }
             } else {
               force_return <- FALSE
@@ -419,18 +419,18 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
             # detecting potential errors
             if (!missing(object)) {
               if (!class(object)[1] %in% c("ellipsoid_model_rep")) {
-                stop("Argument object must be of class ellipsoid* that\ncontains centroid and coariance_matrix.")
+                stop("Argument 'object' must be of class ellipsoid* that\ncontains centroid and coariance_matrix.")
               }
             }else {
-              stop("Argument object is necessary to perform the analysis.")
+              stop("Argument 'object' is necessary to perform the analysis.")
             }
             if (!is.null(name)) {
               if (missing(format)) {
-                stop("Argument format needs to be defined if argument name is given.")
+                stop("Argument 'format' needs to be defined if argument name is given.")
               }
             }
             if (!class(projection_variables)[1] %in% c("RasterStack", "RasterBrick", "matrix", "data.frame")) {
-              stop("Argument projection_variables needs to be either a RasterStack or a matrix.")
+              stop("Argument 'projection_variables' needs to be either a RasterStack or a matrix.")
             } else {
               if (class(projection_variables)[1] == "RasterBrick") {
                 projection_variables <- raster::stack(projection_variables)
@@ -444,7 +444,7 @@ setMethod("predict", signature(object = "ellipsoid_model_rep"),
             }
             if (!is.null(name)) {
               if (class(projection_variables)[1] != "RasterStack") {
-                message("\nArgument projection_variables is a matrix, no raster predictions will be returned.\n")
+                message("\nArgument 'projection_variables' is a matrix, no raster predictions will be returned.\n")
               }
             } else {
               force_return <- FALSE

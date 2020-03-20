@@ -134,32 +134,32 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   # -----------
   # detecting potential errors, other potential problems tested in code
   if (missing(data)) {
-    stop("Argument occurrences is necessary to perform the analysis.")
+    stop("Argument 'data' is necessary to perform the analysis.")
   }
   if (missing(species)) {
-    stop("Argument species is not defined.")
+    stop("Argument 'species' is not defined.")
   }
   if (missing(longitude)) {
-    stop("Argument longitude is not defined.")
+    stop("Argument 'longitude' is not defined.")
   }
   if (missing(latitude)) {
-    stop("Argument latitude is not defined.")
+    stop("Argument 'latitude' is not defined.")
   }
   if (missing(raster_layers)) {
     variables <- data[, !colnames(data) %in% c(species, longitude, latitude)]
     if (ncol(variables) < 2) {
-      stop("If raster_layers is not defined, data must contain information of at least\ntwo variables to fit ellipsoids. See function's help.")
+      stop("If 'raster_layers' is not defined, data must contain information of at least\ntwo variables to fit ellipsoids. See function's help.")
     }
   }
   if (overwrite == FALSE & dir.exists(output_directory)) {
-    stop("output_directory already exists, to replace it use overwrite = TRUE.")
+    stop("'output_directory' already exists, to replace it use overwrite = TRUE.")
   }
   if (overwrite == TRUE & dir.exists(output_directory)) {
     unlink(x = output_directory, recursive = TRUE, force = TRUE)
   }
   if (!is.null(projection_variables)) {
     if (class(projection_variables)[1] == "character" & is.null(prvariables_format)) {
-      stop("Argument prvariables_format needs to be defined when projection_variables is a character.")
+      stop("Argument 'prvariables_format' needs to be defined when projection_variables is a character.")
     }
   }
 
@@ -194,7 +194,7 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   if (replicates >= 1) {
     data1 <- data_subsample(data[, -1], replicates, replicate_type, bootstrap_percentage)
   } else {
-    stop("Argument replicates needs to be numeric and >= 1, see function's help.")
+    stop("Argument 'replicates' needs to be numeric and >= 1, see function's help.")
   }
 
   cat("\nFitting ellipsoids using occurrence data:\n")

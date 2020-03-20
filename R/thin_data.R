@@ -77,13 +77,13 @@ thin_data <- function(data, longitude, latitude, thin_class = NULL,
   # -----------
   # detecting potential errors
   if (missing(data)) {
-    stop("Argument data is not defined.")
+    stop("Argument 'data' is not defined.")
   }
   if (missing(longitude)) {
-    stop("Argument longitude is not defined.")
+    stop("Argument 'longitude' is not defined.")
   }
   if (missing(latitude)) {
-    stop("Argument latitude is not defined.")
+    stop("Argument 'latitude' is not defined.")
   }
 
   # -----------

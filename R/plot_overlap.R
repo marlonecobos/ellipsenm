@@ -91,7 +91,7 @@ plot_overlap <- function(object, niches = c(1, 2), niche_col = c("blue", "red"),
   # -----------
   # detecting potential errors
   if (missing(object)) {
-    stop("Argument object is necessary to perform the analysis.")
+    stop("Argument 'object' is necessary to perform the analysis.")
   }
   if (length(niche_col) < length(object@ellipsoids)) {
     message("Number of niches to plot exceeds number of colors, using automatic selection.")
@@ -99,7 +99,7 @@ plot_overlap <- function(object, niches = c(1, 2), niche_col = c("blue", "red"),
     niche_col <- rainbow(length(object@ellipsoids))
   }
   if (background == TRUE & missing(background_type)) {
-    stop("Argument background_type needs to be defined if background = TRUE.")
+    stop("Argument 'background_type' needs to be defined if background = TRUE.")
   }
 
   # -----------

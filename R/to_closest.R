@@ -51,19 +51,19 @@ to_closest <- function(data, longitude, latitude, raster_layer, limit_distance) 
   # -----------
   # detecting potential errors
   if (missing(data)) {
-    stop("Argument data is necessary to perform the analysis")
+    stop("Argument 'data' is necessary to perform the analysis")
   }
   if (missing(longitude)) {
-    stop("Argument longitude is not defined.")
+    stop("Argument 'longitude' is not defined.")
   }
   if (missing(latitude)) {
-    stop("Argument latitude is not defined.")
+    stop("Argument 'latitude' is not defined.")
   }
   if (missing(raster_layer)) {
-    stop("Argument raster_layer is not defined.")
+    stop("Argument 'raster_layer' is not defined.")
   }
   if (missing(limit_distance)) {
-    stop("Argument limit_distance is not defined.")
+    stop("Argument 'limit_distance' is not defined.")
   }
 
   # -----------

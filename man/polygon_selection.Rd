@@ -50,9 +50,9 @@ If raster layers are not masked, a SpatialPolygonDataFrame.
 If \code{save} = TRUE, results are written in a folder named as in \code{name}.
 }
 \description{
-polygon_selection helps in creating concave polygons based on
-occurrences, buffering polygons, masking raster layers, and writing results
-if needed.
+polygon_selection helps in selecting polygons that intersect
+with occurrences. Buffering polygons, masking raster layers, and writing
+results can also be performed if needed.
 }
 \examples{
 # reading data

@@ -65,16 +65,16 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
   if (!missing(ellipsoid)) {
     cls <- class(ellipsoid)[1]
     if (!cls %in% c("ellipsoid", "ellipsoid_model_sim", "ellipsoid_model_rep")) {
-      stop("Argument ellipsoid must be of class ellipsoid*.")
+      stop("Argument 'ellipsoid' must be of class ellipsoid*.")
     }
   } else {
-    stop("Argument ellipsoid is necessary to perform the analysis.")
+    stop("Argument 'ellipsoid' is necessary to perform the analysis.")
   }
   if (missing(projection_variables)) {
-    stop("Argument projection_variables needs to be defined.")
+    stop("Argument 'projection_variables' needs to be defined.")
   }
   if (class(projection_variables)[1] == "character" & is.null(prvariables_format)) {
-    stop("Argument prvariables_format needs to be defined when projection_variables is a character.")
+    stop("Argument 'prvariables_format' needs to be defined when projection_variables is a character.")
   }
   if(missing(sp_name)) {
     sp_name <- "species"

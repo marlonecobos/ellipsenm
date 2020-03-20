@@ -7,14 +7,14 @@
 #' represent distinct variables for analysis, otherwise, group of raster layers.
 #' @param sample_size (numeric) sample size to be taken from all variables;
 #' default = 10000.
-#' @param save (logical) whether or not to save the results; default = FALSE.
 #' @param correlation_limit (numeric) absolute value of correlation limit;
 #' default = 0.8.
-#' @param name (character) ; default = "correlation",
+#' @param save (logical) whether or not to save the results; default = FALSE.
+#' @param name (character) name of the csv files to be writen;
+#' default = "correlation".
 #' @param corrplot (logical) whether or not to plot the results; default = FALSE.
 #' @param magnify_to (numeric) optional value to be used to magnify all values
-#' with absolute correlation values above \code{correlation_limit}.
-#' Default = NULL.
+#' with absolute correlations above \code{correlation_limit}. Default = NULL.
 #' @param ... other arguments to be passed to \code{\link[corrplot]{corrplot}}.
 #' Arguments "type", "order", "tl.col", and "tl.srt" are fixed.
 #'
@@ -23,11 +23,13 @@
 #' are shown in a plot.
 #'
 #' @usage
-#' variable_correlation(variables, sample_size = 10000, save = FALSE,
-#'                      correlation_limit = 0.8, name = "correlation",
-#'                      corrplot = FALSE, magnify_to = NULL, ...)
+#' variable_correlation(variables, sample_size = 10000, correlation_limit = 0.8,
+#'                      save = FALSE, name = "correlation", corrplot = FALSE,
+#'                      magnify_to = NULL, ...)
 #'
 #' @details
+#' If \code{magnify_to} is defined and \code{save} = TRUE, an additional csv
+#' file named as "\code{name}_magnified.csv" will be written.
 #'
 #' @export
 #'
@@ -43,15 +45,16 @@
 #' cors <- variable_correlation(variables, sample_size = 5000, corrplot = TRUE,
 #'                              magnified = 2)
 #'
-#' # to save results directly check arguments "save" and "name"
+#' # to save results check arguments "save" and "name"
 
-variable_correlation <- function(variables, sample_size = 10000, save = FALSE,
-                                 correlation_limit = 0.8, name = "correlation",
-                                 corrplot = FALSE, magnify_to = NULL, ...) {
+variable_correlation <- function(variables, sample_size = 10000,
+                                 correlation_limit = 0.8, save = FALSE,
+                                 name = "correlation", corrplot = FALSE,
+                                 magnify_to = NULL, ...) {
   # -----------
   # detecting potential errors
   if (missing(variables)) {
-    stop("Argument data is necessary to perform the analysis")
+    stop("Argument 'variables' is necessary to perform the analysis")
   }
   var_class <- class(variables)[1]
   if (!var_class %in% c("matrix", "RasterStack", "RasterBrick")) {

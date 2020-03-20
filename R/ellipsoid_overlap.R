@@ -32,12 +32,9 @@
 #'
 #' @details
 #' Types of overlap are as follows:
-#'
-#' all = performs all types of overlap analyses allowed.
-#'
-#' full = measures overlap of the complete volume of the ellipsoidal niches.
-#'
-#' back_union = meausures overlap of ellipsoidal niches considering only the
+#' - "all", performs all types of overlap analyses allowed.
+#' - "full", measures overlap of the complete volume of the ellipsoidal niches.
+#' - "back_union", meausures overlap of ellipsoidal niches considering only the
 #' union of the environmental conditions relevant for the two species (backgrounds).
 #'
 #' The statistical significance test consist in randomly sampling the background
@@ -98,11 +95,11 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
   # -----------
   # detecting potential errors
   if (missing(...)) {
-    stop("Argument ... is necessary to perform the analysis")
+    stop("Argument '...' is necessary to perform the analysis")
   } else {
     plits <- list(...)
     if (length(plits) < 2) {
-      stop("ellipsoid* objects to be compare must be two or more.")
+      stop("At least two ellipsoid* objects are needed to perfrom analyses.")
     }
     cls <- sapply(plits, function (x) {class(x)[1]})
     if (any(cls != "data_overlap")) {
@@ -110,7 +107,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
     }
   }
   if (!overlap_type[1] %in% c("all", "full", "back_union")) {
-    stop("Argument overlap_type is not valid, see function's help.")
+    stop("Argument 'overlap_type' is not valid, see function's help.")
   }
 
   # -----------
@@ -123,7 +120,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
   back <- all(back == TRUE)
 
   if (back == FALSE & overlap_type[1] %in% c("all", "back_union")) {
-    message("overlap_type using background is not possible, only full overlap will be performed.")
+    message("overlap analysis using background is not possible, only full overlap will be performed.")
     overlap_type <- "full"
   }
 
@@ -153,7 +150,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
   })[, 1]
   cls <- sapply(variables, function (x) {class(x)[1]})
   if (back == TRUE & all(cls != cls[1])) {
-    stop("Variables from all data_overlap objects must be of the same class.")
+    stop("Variables from all 'data_overlap' objects must be of the same class.")
   }
   data <- lapply(1:length(data), function(x) {
     if (class(variables[[x]])[1] == "RasterStack") {

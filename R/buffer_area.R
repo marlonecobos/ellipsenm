@@ -76,13 +76,13 @@ buffer_area <- function(data, longitude, latitude, buffer_distance = 100,
   # -----------
   # detecting potential errors
   if (missing(data)) {
-    stop("Argument occurrences is necessary to perform the analysis")
+    stop("Argument 'data' is necessary to perform the analysis")
   }
   if (missing(longitude)) {
-    stop("Argument longitude is not defined.")
+    stop("Argument 'longitude' is not defined.")
   }
   if (missing(latitude)) {
-    stop("Argument latitude is not defined.")
+    stop("Argument 'latitude' is not defined.")
   }
 
   # -----------

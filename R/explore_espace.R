@@ -34,19 +34,19 @@ explore_espace <- function(data, species, longitude, latitude, raster_layers,
                            save = FALSE, name = "e_space_exploration.pdf",
                            height = 8, width = 17, open = TRUE) {
   if (missing(data)) {
-    stop("Argument occurrences is necessary to perform the analysis.")
+    stop("Argument 'data' is necessary to perform the analysis.")
   }
   if (missing(species)) {
-    stop("Argument species is not defined.")
+    stop("Argument 'species' is not defined.")
   }
   if (missing(longitude)) {
-    stop("Argument longitude is not defined.")
+    stop("Argument 'longitude' is not defined.")
   }
   if (missing(latitude)) {
-    stop("Argument latitude is not defined.")
+    stop("Argument 'latitude' is not defined.")
   }
   if (missing(raster_layers)) {
-    stop("Argument raster_layers is not defined.")
+    stop("Argument 'raster_layers' is not defined.")
   }
 
   suppressPackageStartupMessages(library(GGally))

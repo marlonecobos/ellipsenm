@@ -15,6 +15,14 @@
 #' a number (for K-means clustering) is used to separate distinct chunks of
 #' data Recommended when the species of interest has a disjunct distribution.
 #' Default = FALSE.
+#' @param cluster_method (character) name of the method to be used for clustering
+#' the occurrences. Options are "hierarchical" and "k-means"; default =
+#' "hierarchical". Note that this parameter is ignored when \code{split} = FALSE.
+#' See details \code{\link{cluster_split}}.
+#' @param split_distance (numeric) distance in km that will be considered as the
+#' limit of connectivity among polygons created with clusters of occurrences.
+#' This parameter is used when \code{cluster_method} = "hierarchical" and
+#' \code{split} = TRUE. Default = NULL.
 #' @param n_kmeans (numeric) if \code{split} = TRUE, number of clusters in which
 #' the species occurrences will be grouped using the "k-means" method.
 #' Default = NULL.
@@ -43,7 +51,8 @@
 #'
 #' @usage
 #' concave_area(data, longitude, latitude, length_threshold = 5,
-#'              split = FALSE, n_kmeans = NULL, buffer_distance = NULL,
+#'              split = FALSE, cluster_method = "hierarchical",
+#'              split_distance = NULL, n_kmeans = NULL, buffer_distance = NULL,
 #'              raster_layers = NULL, clip = FALSE, mask = FALSE,
 #'              save = FALSE, name = "calib_area_concave")
 #'
@@ -70,7 +79,8 @@
 #'
 #' # producing concave polygons splitted considering clusters
 #' cv_area2 <- concave_area(data = occurrences, longitude = "longitude",
-#'                         latitude = "latitude", split = TRUE, n_kmeans = 2,
+#'                         latitude = "latitude", split = TRUE,
+#'                         cluster_method = "k-means", n_kmeans = 2,
 #'                         buffer_distance = 5)
 #'
 #' sp::plot(cv_area2)
@@ -99,19 +109,21 @@
 
 
 concave_area <- function(data, longitude, latitude, length_threshold = 5,
-                         split = FALSE, n_kmeans = NULL, buffer_distance = NULL,
-                         raster_layers = NULL, clip = FALSE, mask = FALSE,
-                         save = FALSE, name = "calib_area_concave") {
+                         split = FALSE, cluster_method = "hierarchical",
+                         split_distance = NULL, n_kmeans = NULL,
+                         buffer_distance = NULL, raster_layers = NULL,
+                         clip = FALSE, mask = FALSE, save = FALSE,
+                         name = "calib_area_concave") {
   # -----------
   # detecting potential errors
   if (missing(data)) {
-    stop("Argument occurrences is necessary to perform the analysis")
+    stop("Argument 'data' is necessary to perform the analysis")
   }
   if (missing(longitude)) {
-    stop("Argument longitude is not defined.")
+    stop("Argument 'longitude' is not defined.")
   }
   if (missing(latitude)) {
-    stop("Argument latitude is not defined.")
+    stop("Argument 'latitude' is not defined.")
   }
 
   # -----------
@@ -128,7 +140,17 @@ concave_area <- function(data, longitude, latitude, length_threshold = 5,
   # -----------
   # Defining clusters if needed
   if (split == TRUE) {
-    occ_sp <- cluster_split(occ_sp, n_kmeans = n_kmeans)
+    if (!is.null(n_kmeans) | !is.null(split_distance)) {
+      if (cluster_method == "hierarchical" & is.null(split_distance)) {
+        stop("If 'cluster_method' = 'hierarchical', 'split_distance' must be defined")
+      }
+      if (cluster_method == "k-means" & is.null(n_kmeans)) {
+        stop("If 'cluster_method' = 'k-means', 'n_kmeans' must be defined")
+      }
+      occ_sp <- cluster_split(occ_sp, cluster_method, split_distance, n_kmeans)
+    } else {
+      stop("If 'split' = TRUE, 'split_distance' or 'n_kmeans' must be defined.")
+    }
   } else {
     occ_sp@data <- data.frame(occ_sp@data, clusters = 1)
   }
@@ -171,6 +193,8 @@ concave_area <- function(data, longitude, latitude, length_threshold = 5,
 
     hulls_buffer <- lapply(hulls_buffer, function(x) {
       hb <- suppressWarnings(rgeos::gBuffer(x, width = buffer_distance))
+      hb@proj4string <- WGS84
+      hb
     })
 
     # union buffered polygons

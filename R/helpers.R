@@ -27,6 +27,17 @@
 
 occ_blocksplit <- function(data, longitude, latitude, train_proportion = 0.75,
                            raster_layer = NULL, background_n = 10000) {
+  # -----------
+  # detecting potential errors
+  if (missing(data)) {
+    stop("Argument 'data' is necessary to perform the analysis")
+  }
+  if (missing(longitude)) {
+    stop("Argument 'longitude' is not defined.")
+  }
+  if (missing(latitude)) {
+    stop("Argument 'latitude' is not defined.")
+  }
   ndata <- nrow(data)
 
   # -----------
@@ -108,12 +119,11 @@ occ_blocksplit <- function(data, longitude, latitude, train_proportion = 0.75,
 #' and latitude columns.
 #' @param cluster_method (character) name of the method to be used for clustering
 #' the occurrences. Options are "hierarchical" and "k-means"; default =
-#' "hierarchical". Note that this parameter is ignored when \code{split} = FALSE.
-#' See details \code{\link[ellipsenm]{cluster_split}}.
+#' "hierarchical".
 #' @param split_distance (numeric) distance in km that will be considered as the
 #' limit of connectivity among polygons created with clusters of occurrences.
-#' This parameter is used when \code{cluster_method} = "hierarchical" and
-#' \code{split} = TRUE. Default = NULL.
+#' This parameter is used when \code{cluster_method} = "hierarchical".
+#' Default = NULL.
 #' @param n_kmeans (numeric) if \code{split} = TRUE, number of clusters in which
 #' the species occurrences will be grouped when using the "k-means"
 #' \code{cluster_method}. Default = NULL.
@@ -140,16 +150,21 @@ occ_blocksplit <- function(data, longitude, latitude, train_proportion = 0.75,
 #'
 #' @export
 
-cluster_split <- function(data, cluster_method = "k-means",
-                          split_distance = 250, n_kmeans = NULL) {
+cluster_split <- function(data, cluster_method = "hierarchical",
+                          split_distance = NULL, n_kmeans = NULL) {
+
+  # -----------
+  # detecting potential errors
+  if (missing(data)) {
+    stop("Argument 'data' is necessary to perform the analysis")
+  }
 
   if (cluster_method == "hierarchical" | cluster_method == "k-means") {
     # split groups of points based on the split distance
 
     if (cluster_method == "hierarchical") {
       ## defining a hierarchical cluster method for the occurrences
-      cluster_method <- hclust(dist(data.frame(rownames = 1:nrow(data@data),
-                                               x = sp::coordinates(data)[, 1],
+      cluster_method <- hclust(dist(data.frame(x = sp::coordinates(data)[, 1],
                                                y = sp::coordinates(data)[, 2])),
                                method = "complete")
 
@@ -190,10 +205,10 @@ write_ellmeta <- function(ellipsoid, name = "ellipsoid_metadata") {
   if (!missing(ellipsoid)) {
     cls <- class(ellipsoid)[1]
     if (!cls %in% c("ellipsoid", "ellipsoid_model_sim", "ellipsoid_model_rep")) {
-      stop("Argument ellipsoid must be of class ellipsoid*.")
+      stop("Argument 'ellipsoid' must be of class ellipsoid*.")
     }
   } else {
-    stop("Argument ellipsoid is necessary to perform the analysis.")
+    stop("Argument 'ellipsoid' is necessary to perform the analysis.")
   }
   name <- gsub("\\\\", "/", name)
   name <- unlist(strsplit(name, "/"))
@@ -326,7 +341,7 @@ select_best <- function(calibration_table, selection_criteria = "S_OR_P",
       res <- res[res[, 8] == min(res[, 8]), ]
     }
   } else {
-    stop("Argument selection_criteria is not valid, see function's help.")
+    stop("Argument 'selection_criteria' is not valid, see function's help.")
   }
   cat("\tA total of", nrow(res), "paramter settings were selected.\n")
   return(res)
@@ -356,15 +371,15 @@ select_best <- function(calibration_table, selection_criteria = "S_OR_P",
 overlap_object <- function(data, species, longitude, latitude, method = "covmat",
                            level = 95, variables = NULL) {
   if (missing(data)) {
-    stop("Argument data is needed for creating data_overlap object.")
+    stop("Argument 'data' is needed for creating data_overlap object.")
   }
   if (!is.null(variables)) {
     if (!class(variables)[1] %in% c("RasterStack", "matrix", "data.frame")) {
-      stop("Argument variables not valid, see function's help.")
+      stop("Argument 'variables' is not valid, see function's help.")
     }
   } else {
     if (ncol(data) <= 3) {
-      stop("If variables are not defined, data must include other columns representing environmental data.")
+      stop("If 'variables' are not defined, data must include other columns representing environmental data.")
     }
   }
   object <- data_overlap(data = data,
@@ -392,16 +407,16 @@ overlap_object <- function(data, species, longitude, latitude, method = "covmat"
 overlap_metrics <- function(comparison_matrix, background, mahalanobis,
                             suitability, return_background = TRUE) {
   if (missing(comparison_matrix)) {
-    stop("Argument comparison_matrix is necessary to perform the analysis")
+    stop("Argument 'comparison_matrix' is necessary to perform the analysis")
   }
   if (missing(background)) {
-    stop("Argument background is necessary to perform the analysis")
+    stop("Argument 'background' is necessary to perform the analysis")
   }
   if (missing(mahalanobis)) {
-    stop("Argument mahalanobis is necessary to perform the analysis")
+    stop("Argument 'mahalanobis' is necessary to perform the analysis")
   }
   if (missing(suitability)) {
-    stop("Argument suitability is necessary to perform the analysis")
+    stop("Argument 'suitability' is necessary to perform the analysis")
   }
   get_metrics <- lapply(1:ncol(comparison_matrix), function(x) {
     compare <- suitability[, comparison_matrix[, x]]

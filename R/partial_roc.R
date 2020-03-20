@@ -49,28 +49,28 @@ partial_roc <- function(prediction, test_data, longitude, latitude, error = 5,
   # -----------
   # detecting potential errors, other potential problems tested in code
   if (missing(prediction)) {
-    stop("Argument prediction is necessary to perform the analysis.")
+    stop("Argument 'prediction' is necessary to perform the analysis.")
   }
   if (missing(test_data)) {
-    stop("Argument occurrences is necessary to perform the analysis.")
+    stop("Argument 'occurrences' is necessary to perform the analysis.")
   }
   c_pred <- class(prediction)[1]
   if (!c_pred %in% c("RasterLayer", "numeric")) {
-    stop("prediction must be of class RasterLayer or numeric.")
+    stop("'prediction' must be of class RasterLayer or numeric.")
   }
   c_tdat <- class(test_data)[1]
   if (!c_tdat %in% c("matrix", "data.frame", "numeric")) {
-    stop("test_data must be of class matrix, data.frame, or numeric.")
+    stop("'test_data' must be of class matrix, data.frame, or numeric.")
   }
   if (c_pred == "numeric" & c_tdat != "numeric") {
-    stop("test_data must be of class numeric if prediction is a numeric vector.")
+    stop("'test_data' must be of class numeric if prediction is a numeric vector.")
   }
   if (c_tdat != "numeric") {
     if (missing(longitude)) {
-      stop("Argument longitude is not defined.")
+      stop("Argument 'longitude' is not defined.")
     }
     if (missing(latitude)) {
-      stop("Argument latitude is not defined.")
+      stop("Argument 'latitude' is not defined.")
     }
   }
 

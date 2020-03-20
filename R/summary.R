@@ -16,10 +16,10 @@ setMethod("summary", signature(object = "ellipsoid"),
             if (!missing(object)) {
               clo <- class(object)[1]
               if (!clo %in% c("ellipsoid", "ellipsoid_model_sim")) {
-                stop("Argument object must be of class ellipsoid*.")
+                stop("Argument 'object' must be of class ellipsoid*.")
               }
             }else {
-              stop("Argument object is necessary.")
+              stop("Argument 'object' is necessary.")
             }
 
             if (clo == "ellipsoid") {
@@ -117,10 +117,10 @@ setMethod("summary", signature(object = "ellipsoid_model_rep"),
             if (!missing(object)) {
               clo <- class(object)[1]
               if (clo != "ellipsoid_model_rep") {
-                stop("Argument object must be of class ellipsoid*.")
+                stop("Argument 'object' must be of class ellipsoid*.")
               }
             }else {
-              stop("Argument object is necessary.")
+              stop("Argument 'object' is necessary.")
             }
 
             nam <- names(object@ellipsoids)
@@ -168,10 +168,10 @@ setMethod("summary", signature(object = "calibration_ellipsoid"),
             if (!missing(object)) {
               clo <- class(object)[1]
               if (clo != "calibration_ellipsoid") {
-                stop("Argument object must be of class calibration_ellipsoid.")
+                stop("Argument 'object' must be of class calibration_ellipsoid.")
               }
             }else {
-              stop("Argument object is necessary.")
+              stop("Argument 'object' is necessary.")
             }
 
             cat("\n                 Summary of calibration_ellipsoid object\n")
@@ -200,10 +200,10 @@ setMethod("summary", signature(object = "data_overlap"),
             if (!missing(object)) {
               clo <- class(object)[1]
               if (clo != "data_overlap") {
-                stop("Argument object must be of class data_overlap.")
+                stop("Argument 'object' must be of class data_overlap.")
               }
             }else {
-              stop("Argument object is necessary to perform the analysis.")
+              stop("Argument 'object' is necessary to perform the analysis.")
             }
 
             cat("\n                      Summary of data_overlap object\n")
@@ -225,10 +225,10 @@ setMethod("summary", signature(object = "overlap_ellipsoid"),
             if (!missing(object)) {
               clo <- class(object)[1]
               if (clo != "overlap_ellipsoid") {
-                stop("Argument object must be of class overlap_ellipsoid.")
+                stop("Argument 'object' must be of class overlap_ellipsoid.")
               }
             }else {
-              stop("Argument object is necessary to perform the analysis.")
+              stop("Argument 'object' is necessary to perform the analysis.")
             }
 
             nam <- names(object@ellipsoids)

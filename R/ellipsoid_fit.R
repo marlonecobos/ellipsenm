@@ -13,7 +13,7 @@
 #' the species ecological niche. Available methods are: "covmat", "mve1", and
 #' "mve2". See details. Default = "covmat".
 #' @param level (numeric) the confidence level of a pairwise confidence region
-#' for the ellipsoid, expresed as percentage. Default = 95.
+#' for the ellipsoid, expresed as percentage. Default = 95. See details.
 #' @param raster_layers optional RasterStack of environmental variables to be
 #' extracted using geographic coordinates present in \code{data}. If not defined
 #' \code{data} must include at least two other columns with values of the
@@ -32,26 +32,30 @@
 #' are ellipses, with three variables "ellipsoids" are ellipsoids, and with more
 #' than three variables "ellipsoids" are hyper-ellipsoids.
 #'
-#' Method details are as follows:
-#'
-#' "covmat" creates ellipsoids based in the centriod and a matrix of covariances
+#' Details of aregument \code{method} are as follows:
+#' - "covmat" creates ellipsoids based in the centriod and a matrix of covariances
 #' of the variables used. A particularity of this method is that the centroid
 #' will always be located in the center of the destribution of the entire data.
 #' This is, the density of points in the plane of analyses matters. Analyses are
 #' performed with base functions from R.
-#'
-#' "mve1" generates an ellipsoid that reduces the volume contained it without
+#' - "mve1" generates an ellipsoid that reduces the volume contained it without
 #' loosing the data contained (i.e., minimum volume ellipsoid). This method may
 #' modify the position of the centroid and the values in the covariance matrix
 #' that can be obtained using the "covmat" method.
-#'
-#' "mve2" as with the previous method, this one also creates a minimum volume
+#' - "mve2" as with the previous method, this one also creates a minimum volume
 #' ellipsoid. However, the algorithm for creating ellipsoids used here is
 #' different. The ellipsoids created in this method are called moment based
 #' minimum volume ellipsoids and, as with the previous method, they may suffer
 #' changes in the position of the centroid and the values of the covariance
 #' matrix if compared to the "covmat" method. In general ellipsoids created with
 #' this method have smaller volumes than the ones created with previous methods.
+#'
+#' Argument \code{level} defines the limit of the elipsoid as the percentage of
+#' data to be included inside it. In the context of ecological niche modeling,
+#' this argument represents the percentage of error that the data may contain
+#' owing to the diverse types of biases derived from sampling, georeferencing,
+#' identification, or other types of problems related to data management and
+#' storage.
 #'
 #' @export
 #'
@@ -84,13 +88,13 @@ ellipsoid_fit <- function (data, longitude, latitude, method = "covmat",
   # -----------
   # detecting potential errors
   if (missing(data)) {
-    stop("Argument data is necessary to perform the analysis")
+    stop("Argument 'data' is necessary to perform the analysis")
   }
   if (missing(longitude)) {
-    stop("Argument longitude is not defined.")
+    stop("Argument 'longitude' is not defined.")
   }
   if (missing(latitude)) {
-    stop("Argument latitude is not defined.")
+    stop("Argument 'latitude' is not defined.")
   }
 
   # -----------

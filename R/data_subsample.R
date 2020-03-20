@@ -39,7 +39,14 @@
 
 data_subsample <- function(data, replicates = 1, replicate_type = "bootstrap",
                            bootstrap_percentage = 50) {
+  # -----------
+  # detecting potential errors
+  if (missing(data)) {
+    stop("Argument 'data' is necessary to perform the analysis")
+  }
 
+  # -----------
+  # running
   if (replicates == 1) {
     samples <- list(data)
 

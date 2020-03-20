@@ -39,7 +39,7 @@ mbased_mve <- function(data, fitting_tolerance = 0.001) {
   # -----------
   # detecting potential errors
   if (missing(data)) {
-    stop("Argument data is necessary to perform the analysis")
+    stop("Argument 'data' is necessary to perform the analysis")
   }
 
   # -----------

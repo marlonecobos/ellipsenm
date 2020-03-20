@@ -53,7 +53,7 @@ mmm_ellipsoid <- function(ellipsoid_list) {
   # -----------
   # detecting potential errors
   if (missing(ellipsoid_list)) {
-    stop("Argument ellipsoid_list is necessary to perform the analysis.")
+    stop("Argument 'ellipsoid_list' is necessary to perform the analysis.")
   }
 
   # -----------

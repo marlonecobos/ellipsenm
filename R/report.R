@@ -26,20 +26,20 @@ report <- function(report_type, prediction, projected, output_directory = getwd(
   # -----------
   # detecting potential errors
   if (missing(report_type)) {
-    stop("Argument report_type is missing.")
+    stop("Argument 'report_type' is missing.")
   }
   if (!report_type %in% c("calibration", "enm", "overlap")) {
-    stop("Argument report_type is not valid, please see function's help.")
+    stop("Argument 'report_type' is not valid, please see function's help.")
   }
   if (report_type == "enm") {
     if (missing(prediction)) {
-      stop("Argument prediction is missing.")
+      stop("Argument 'prediction' is missing.")
     }
     if (!prediction %in% c("mahalanobis", "both", "suitability")) {
-      stop("Argument prediction is not valid, please see function's help.")
+      stop("Argument 'prediction' is not valid, please see function's help.")
     }
     if (missing(projected)) {
-      stop("Argument projected is missing.")
+      stop("Argument 'projected' is missing.")
     }
   }
 

@@ -29,7 +29,7 @@ wgs_aeqd <- function(data, longitude, latitude) {
 #' @return Raster extension according to format type.
 
 rformat_type <- function(format) {
-  if (missing(format)) {stop("Argument format needs to be defined.")}
+  if (missing(format)) {stop("Argument 'format' needs to be defined.")}
   if (format == "raster") {format1 <- ".grd"}
   if (format == "GTiff") {format1 <- ".tif"}
   if (format == "EHdr") {format1 <- ".bil"}
@@ -153,11 +153,11 @@ ndata_quantile <- function(n_data, level) {
 
 get_attribute <- function(ellipsoids, attribute = "method"){
   if (missing(ellipsoids)) {
-    stop("Argument ellipsoids is needed, see function's help.")
+    stop("Argument 'ellipsoids' is needed, see function's help.")
   }
   if (!attribute %in% c("method", "centroid", "covariance_matrix", "level",
                         "niche_volume", "semi_axes_length", "axes_coordinates")) {
-    stop("Invalid attribute, see function's help.")
+    stop("Invalid 'attribute', see function's help.")
   }
   attr1 <- lapply(ellipsoids, function(x) {
     attr1 <- slot(x, attribute)
@@ -178,7 +178,7 @@ get_attribute <- function(ellipsoids, attribute = "method"){
 
 hypercube_boundaries <- function(ellipsoids, n_points = 1000000) {
   if (missing(ellipsoids)) {
-    stop("Argument ellipsoids is needed, see function's help.")
+    stop("Argument 'ellipsoids' is needed, see function's help.")
   }
   axis_list <- get_attribute(ellipsoids, attribute = "axes_coordinates")
   ellipsoid_axis <- do.call(rbind, axis_list)

@@ -41,16 +41,16 @@ prepare_sets <- function(variables, sets = NULL, all_combinations = FALSE,
   # -----------
   # detecting potential errors
   if (missing(variables)) {
-    stop("Argument variables is necessary to perform the analysis.")
+    stop("Argument 'variables' is necessary to perform the analysis.")
   }
   if (missing(sets) & all_combinations == FALSE) {
-    stop("Argument sets must be provided if all_cambinations = FALSE. See function's help.")
+    stop("Argument 'sets' must be provided if all_cambinations = FALSE. See function's help.")
   }
   clvar <- class(variables)[1]
   if (clvar == "character" | clvar == "RasterStack") {
     if (clvar == "character") {
       if (is.null(format_in)) {
-        stop("Argument fomat_in cannot be NULL if variables is of class character.")
+        stop("Argument 'fomat_in' cannot be NULL if variables is of class character.")
       }
       patt <- paste0(rformat_type(format_in), "$")
       rtype <- rformat_type(format_in)
@@ -60,7 +60,7 @@ prepare_sets <- function(variables, sets = NULL, all_combinations = FALSE,
     }
     var_names <- names(variables)
   } else {
-    stop("variables must be either character or RasterStack. See function's help.")
+    stop("'variables' must be either character or RasterStack. See function's help.")
   }
 
   # -----------
@@ -68,7 +68,7 @@ prepare_sets <- function(variables, sets = NULL, all_combinations = FALSE,
   cat("\nPreparing sets of variables...\n")
   if (!missing(sets)) {
     if (!missing(sets) & all_combinations == TRUE) {
-      message("Argument sets was provided, all_cambinations = TRUE will be ignored.")
+      message("Argument 'sets' was provided, all_cambinations = TRUE will be ignored.")
     }
     names(sets) <- paste0("set_", 1:length(sets))
   } else {

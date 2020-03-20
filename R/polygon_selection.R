@@ -1,8 +1,8 @@
 #' Selection of spatial polygons based on occurrences
 #'
-#' @description polygon_selection helps in creating concave polygons based on
-#' occurrences, buffering polygons, masking raster layers, and writing results
-#' if needed.
+#' @description polygon_selection helps in selecting polygons that intersect
+#' with occurrences. Buffering polygons, masking raster layers, and writing
+#' results can also be performed if needed.
 #'
 #' @param data data.frame of occurrence records containing at least longitude
 #' and latitude columns.
@@ -92,16 +92,16 @@ polygon_selection <- function(data, longitude, latitude, polygons,
   # -----------
   # detecting potential errors
   if (missing(data)) {
-    stop("Argument occurrences is necessary to perform the analysis")
+    stop("Argument 'data' is necessary to perform the analysis")
   }
   if (missing(longitude)) {
-    stop("Argument longitude is not defined.")
+    stop("Argument 'longitude' is not defined.")
   }
   if (missing(latitude)) {
-    stop("Argument latitude is not defined.")
+    stop("Argument 'latitude' is not defined.")
   }
   if (missing(polygons)) {
-    stop("Argument polygons is not defined.")
+    stop("Argument 'polygons' is not defined.")
   }
 
   # -----------

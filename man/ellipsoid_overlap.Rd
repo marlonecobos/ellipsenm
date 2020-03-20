@@ -42,13 +42,12 @@ sets of environmental conditions (background).
 }
 \details{
 Types of overlap are as follows:
-
-all = performs all types of overlap analyses allowed.
-
-full = measures overlap of the complete volume of the ellipsoidal niches.
-
-back_union = meausures overlap of ellipsoidal niches considering only the
+\itemize{
+\item "all", performs all types of overlap analyses allowed.
+\item "full", measures overlap of the complete volume of the ellipsoidal niches.
+\item "back_union", meausures overlap of ellipsoidal niches considering only the
 union of the environmental conditions relevant for the two species (backgrounds).
+}
 
 The statistical significance test consist in randomly sampling the background
 with n = to the number of records of each species and creting ellipsoids with
@@ -58,7 +57,7 @@ times and the observed overlap value is compared to the values found for
 pairs of random-ellipsoids. The null hypothesis is that the niches are
 overlaped and if the observed values are as exterme or more extreme than the
 lower limit of the values found for the random-ellipsoids, the null hypothesis
-is rejected. This is, if the observed overlap value is lower than the 95%
+is rejected. This is, if the observed overlap value is lower than the 95\%
 (or the value defined in \code{confidence_limit}) of the random-derived values
 of overlap, the niches are considered not-overlapped. If the observed value
 cannot be distinguished from random, the null hypothesis cannot be rejected.

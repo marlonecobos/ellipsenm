@@ -6,8 +6,8 @@
 \usage{
 cluster_split(
   data,
-  cluster_method = "k-means",
-  split_distance = 250,
+  cluster_method = "hierarchical",
+  split_distance = NULL,
   n_kmeans = NULL
 )
 }
@@ -17,13 +17,12 @@ and latitude columns.}
 
 \item{cluster_method}{(character) name of the method to be used for clustering
 the occurrences. Options are "hierarchical" and "k-means"; default =
-"hierarchical". Note that this parameter is ignored when \code{split} = FALSE.
-See details \code{\link[ellipsenm]{cluster_split}}.}
+"hierarchical".}
 
 \item{split_distance}{(numeric) distance in km that will be considered as the
 limit of connectivity among polygons created with clusters of occurrences.
-This parameter is used when \code{cluster_method} = "hierarchical" and
-\code{split} = TRUE. Default = NULL.}
+This parameter is used when \code{cluster_method} = "hierarchical".
+Default = NULL.}
 
 \item{n_kmeans}{(numeric) if \code{split} = TRUE, number of clusters in which
 the species occurrences will be grouped when using the "k-means"
