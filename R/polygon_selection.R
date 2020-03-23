@@ -17,7 +17,7 @@
 #' @param clip (logical) whether or not to clip polygons considering boundaries
 #' of layers in \code{raster_layers}. Using this option increases the time of
 #' processing considerably. Default = FALSE.
-#' @param dissolve (logical) whether or not to disolve polygons. Default = FALSE.
+#' @param dissolve (logical) whether or not to dissolve polygons. Default = FALSE.
 #' @param mask (logical) whether or not to mask the \code{raster_layers} to the
 #' area created with thsi function. Default = FALSE.
 #' @param save (logical) whether or not to write the results in the working
@@ -42,6 +42,7 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' # reading data
 #' occurrences <- read.csv(system.file("extdata", "occurrences.csv",
 #'                                     package = "ellipsenm"))
@@ -84,6 +85,7 @@
 #'
 #' # check directory
 #' dir()
+#' }
 
 polygon_selection <- function(data, longitude, latitude, polygons,
                               buffer_distance = NULL, raster_layers = NULL,
@@ -126,6 +128,16 @@ polygon_selection <- function(data, longitude, latitude, polygons,
   # -----------
   # selection of polygons
   hulls_buffer <- polygons[occ_sp, ]
+
+  # -----------
+  # dissolve
+  if (dissolve == TRUE) {
+    cat("\nDissolving polygons, please wait...\n")
+    hulls_buffer@data$union_field <- rep("Union", length(hulls_buffer@data[, 1]))
+    hulls_buffer <- rgeos::gUnaryUnion(hulls_buffer,
+                                       id = hulls_buffer@data$union_field)
+    hulls_buffer <- raster::disaggregate(hulls_buffer)
+  }
 
   # -----------
   # creating buffers based on a user-defined distance if needed

@@ -30,7 +30,7 @@ Default = NULL.}
 of layers in \code{raster_layers}. Using this option increases the time of
 processing considerably. Default = FALSE.}
 
-\item{dissolve}{(logical) whether or not to disolve polygons. Default = FALSE.}
+\item{dissolve}{(logical) whether or not to dissolve polygons. Default = FALSE.}
 
 \item{mask}{(logical) whether or not to mask the \code{raster_layers} to the
 area created with thsi function. Default = FALSE.}
@@ -55,6 +55,7 @@ with occurrences. Buffering polygons, masking raster layers, and writing
 results can also be performed if needed.
 }
 \examples{
+\donttest{
 # reading data
 occurrences <- read.csv(system.file("extdata", "occurrences.csv",
                                     package = "ellipsenm"))
@@ -97,4 +98,5 @@ sp_area4 <- polygon_selection(data = occurrences, longitude = "longitude",
 
 # check directory
 dir()
+}
 }

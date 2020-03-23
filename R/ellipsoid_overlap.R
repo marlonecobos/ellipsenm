@@ -163,8 +163,12 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
   ## ellipsoids
   cat("\nFitting ellipsoids\n")
   ellipsoids <- lapply(1:length(plits), function(x) {
-    ellipsoid_fit(data[[x]], longitude[x], latitude[x], method[x], level[x],
-                  variables[[x]])
+    if (class(variables[[x]])[1] != "RasterStack") {
+      ellipsoid_fit(data[[x]], longitude[x], latitude[x], method[x], level[x])
+    } else {
+      ellipsoid_fit(data[[x]], longitude[x], latitude[x], method[x], level[x],
+                    variables[[x]])
+    }
   })
   names(ellipsoids) <- paste0("Niche_", 1:length(ellipsoids))
 
