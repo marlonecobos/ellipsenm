@@ -229,6 +229,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
       backg <- lapply(variables, function(x) {na.omit(raster::values(x))})
       background <- unique(do.call(rbind, backg))
     } else {
+      backg <- variables
       background <- unique(do.call(rbind, variables))
     }
     colnames(background) <- variable_names
