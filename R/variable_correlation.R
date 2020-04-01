@@ -16,7 +16,7 @@
 #' @param magnify_to (numeric) optional value to be used to magnify all values
 #' with absolute correlations above \code{correlation_limit}. Default = NULL.
 #' @param ... other arguments to be passed to \code{\link[corrplot]{corrplot}}.
-#' Arguments "type", "order", "tl.col", and "tl.srt" are fixed.
+#' Arguments "type", "tl.col", and "tl.srt" are fixed.
 #'
 #' @return
 #' A correlation matrix. If argument \code{corrplot} = TRUE correlation values
@@ -114,7 +114,7 @@ variable_correlation <- function(variables, sample_size = 10000,
     } else {
       cor_mat <- correlation_matrix
     }
-    corrplot::corrplot(cor_mat, type = "upper", order = "hclust", tl.col = "black",
+    corrplot::corrplot(cor_mat, type = "upper", tl.col = "black",
                        tl.srt = 45, ...)
   }
 

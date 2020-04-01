@@ -29,7 +29,7 @@ default = "correlation".}
 with absolute correlations above \code{correlation_limit}. Default = NULL.}
 
 \item{...}{other arguments to be passed to \code{\link[corrplot]{corrplot}}.
-Arguments "type", "order", "tl.col", and "tl.srt" are fixed.}
+Arguments "type", "tl.col", and "tl.srt" are fixed.}
 }
 \value{
 A correlation matrix. If argument \code{corrplot} = TRUE correlation values

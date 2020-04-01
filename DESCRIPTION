@@ -1,21 +1,36 @@
 Package: ellipsenm
 Type: Package
-Title: An R package for ecological niche's characterization using ellipsoids
+Title: Ecological Niche's Characterizations Using Ellipsoids
 Version: 0.3.4
 Authors@R: c(
     person("Marlon E.", "Cobos", email = "manubio13@gmail.com", role = c("aut","cre")),
     person("Luis", "Osorio-Olvera", email = "luismurao@gmail.com ", role = "aut"),
     person("Jorge", "Soberon", email = "jsoberon@ku.edu", role = "aut"),
+    person("A. Townsend", "Peterson", email = "town@ku.edu", role = "aut"),
     person("Vijay", "Barve", email = "vijay.barve@gmail.com", role = "aut"),
     person("Narayani", "Barve", email = "narayani.ku@gmail.com", role = "aut"))
+Author: Marlon E. Cobos [aut, cre],
+    Luis Osorio-Olvera [aut],
+    Jorge Soberon [aut],
+    A. Townsend Peterson [aut]
 Maintainer: Marlon E. Cobos <manubio13@gmail.com>
-Date: 2019-07-03
-Description: ellipsenm is an R package that implements multiple tools to help in
-    using ellipsoid envelopes to model ecological niches of species. Handly 
-    options for calibrating and selecting models, producing models with replicates 
-    and projections, and assessing niche overlap are included as part of this 
-    package. Other functions implemented here are useful to perform a series of 
-    pre- and post-modeling analyses.
+Date: 2020-03-28
+Description: A collection of tools to characterize ecological niches using 
+    ellipsoid envelopes. Functions to perform model calibration and selection, 
+    prepare model projections to distinct scenarios, assess niche overlap, and
+    produce virtual ecological niches are included as part of this package. 
+    Other functions implemented here are useful to perform a series of common
+    pre- and post-modeling analyses. In contrast to other tools for ecological
+    niche and species distribution modeling, this package is the first in 
+    presenting a comprehensive set of tools that use ellipsoid envelopes as 
+    the theoretical representation of ecological niches. Details on the 
+    theoretical background and methods used here can be found in:
+    Peterson et al. (1999) <doi:10.1126/science.285.5431.1265>,
+    Soberon and Peterson (2005) <doi:10.17161/bi.v2i0.4>,
+    Peterson (2011) <doi:10.1111/j.1365-2699.2010.02456.x>,
+    Peterson et al. (2011) <https://bit.ly/2UpQ9Hd>
+URL: https://github.com/marlonecobos/ellipsenm
+BugReports: https://github.com/marlonecobos/ellipsenm/issues
 Imports:
     concaveman (>= 1.0),
     corrplot (>= 0.8),
