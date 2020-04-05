@@ -1,10 +1,10 @@
 ---
 title: "ellipsenm: An R package for ecological niche's characterization using ellipsoids"
-author: "Marlon E. Cobos, Luis Osorio-Olvera, Jorge Soberón, Laura Jiménez, A. Townsend Peterson, Vijay Barve, and Narayani Barve"
+author: "Marlon E. Cobos, Luis Osorio-Olvera, Jorge Soberón, A. Townsend Peterson, Vijay Barve, and Narayani Barve"
 output:
   github_document:
     toc: yes
-    toc_depth: 4
+    toc_depth: 3
 ---
 
 ```{r knitr_init, echo=FALSE, cache=FALSE, message=FALSE}
@@ -64,7 +64,7 @@ library(ellipsenm)
 
 <br>
 
-## Exploring the ellipsenm package
+## Exploring ellipsenm
 
 ### Setting a directory
 
@@ -287,6 +287,10 @@ niche2 <- overlap_object(occurrences2, species =  "species", longitude = "longit
 
 # niche overlap analysis
 overlap <- ellipsoid_overlap(niche1, niche2)
+
+# niche overlap analysis with test of significance
+overlap_st <- ellipsoid_overlap(niche1, niche2, significance_test = TRUE, 
+                                replicates = 100)
 ```
 
 Use the following lines of code for plotting results using distinct options.

@@ -1,14 +1,14 @@
 ellipsenm: An R package for ecological niche’s characterization using
 ellipsoids
 ================
-Marlon E. Cobos, Luis Osorio-Olvera, Jorge Soberón, Laura Jiménez, A.
-Townsend Peterson, Vijay Barve, and Narayani Barve
+Marlon E. Cobos, Luis Osorio-Olvera, Jorge Soberón, A. Townsend
+Peterson, Vijay Barve, and Narayani Barve
 
   - [Project description](#project-description)
       - [Status of the project](#status-of-the-project)
   - [Package description](#package-description)
   - [Installing the package](#installing-the-package)
-  - [Exploring the ellipsenm package](#exploring-the-ellipsenm-package)
+  - [Exploring ellipsenm](#exploring-ellipsenm)
       - [Setting a directory](#setting-a-directory)
       - [Ecological niches in
         ellipsenm](#ecological-niches-in-ellipsenm)
@@ -111,7 +111,7 @@ library(ellipsenm)
 
 <br>
 
-## Exploring the ellipsenm package
+## Exploring ellipsenm
 
 ### Setting a directory
 
@@ -379,6 +379,10 @@ niche2 <- overlap_object(occurrences2, species =  "species", longitude = "longit
 
 # niche overlap analysis
 overlap <- ellipsoid_overlap(niche1, niche2)
+
+# niche overlap analysis with test of significance
+overlap_st <- ellipsoid_overlap(niche1, niche2, significance_test = TRUE, 
+                                replicates = 100)
 ```
 
 Use the following lines of code for plotting results using distinct
