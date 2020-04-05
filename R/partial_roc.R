@@ -52,7 +52,7 @@ partial_roc <- function(prediction, test_data, longitude, latitude, error = 5,
     stop("Argument 'prediction' is necessary to perform the analysis.")
   }
   if (missing(test_data)) {
-    stop("Argument 'occurrences' is necessary to perform the analysis.")
+    stop("Argument 'test_data' is necessary to perform the analysis.")
   }
   c_pred <- class(prediction)[1]
   if (!c_pred %in% c("RasterLayer", "numeric")) {
@@ -97,6 +97,7 @@ partial_roc <- function(prediction, test_data, longitude, latitude, error = 5,
 
   # -----------
   # preparing data
+  if (c_pred == "RasterLayer") {prediction <- raster::setMinMax(prediction)}
   min_pred <- ifelse(c_pred == "numeric", min(prediction, na.rm = TRUE),
                      prediction@data@min)
   max_pred <- ifelse(c_pred == "numeric", max(prediction, na.rm = TRUE),
@@ -123,8 +124,9 @@ partial_roc <- function(prediction, test_data, longitude, latitude, error = 5,
   if(min_pred == max_pred){
     warning("\nprediction has no variability, pROC will return NA.\n")
 
-    p_roc <- rep(NA, 2)
-    names(p_roc) <- c(paste0("Mean_AUC_ratio_at_", error, "%"), "pval_pROC")
+    p_roc <- rep(NA, 3)
+    names(p_roc) <- c(paste0("Mean_AUC_ratio_at_", error, "%"), "pval_pROC",
+                      "Valid_iterations")
 
     auc_ratios <- rep(NA, 3)
     names(auc_ratios) <- c("Prediction_partial_AUC", "Random_curve_partial_AUC",
