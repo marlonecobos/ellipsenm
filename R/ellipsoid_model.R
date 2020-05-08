@@ -214,8 +214,8 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   # -----------
   # prediction in calibration area
   cat("\nPreparing raster predictions for calibration area:\n")
-  nam_format <- rformat_type(format)
-  namer <- paste0(output_directory, "/calibration_", sp, nam_format)
+  #nam_format <- rformat_type(format)
+  namer <- paste0(output_directory, "/calibration_", sp)#, nam_format)
   dir.create(output_directory)
   force_return <- TRUE
   return_name <- "mean_ellipsoid"

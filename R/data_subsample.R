@@ -59,7 +59,7 @@ data_subsample <- function(data, replicates = 1, replicate_type = "bootstrap",
         part <- round(ndata * bootstrap_percentage / 100)
         samples <- lapply(1:replicates, function(x) {
           set.seed(x)
-          data[sample(ndata, part), ]
+          data[sample(ndata, part, replace = T), ]
         })
 
       } else {

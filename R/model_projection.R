@@ -58,7 +58,7 @@
 model_projection <- function(ellipsoid, projection_variables, prvariables_format = NULL,
                              sp_name, prediction = "suitability", truncate = TRUE,
                              return_numeric = TRUE, tolerance = 1e-60, format = "GTiff",
-                              overwrite = FALSE, force_return = FALSE, return_name = NULL,
+                             overwrite = FALSE, force_return = FALSE, return_name = NULL,
                              output_directory = "ellipsenm_projections") {
   # -----------
   # detecting potential errors
@@ -91,13 +91,13 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
     } else {
       ellv_names <- names(ellipsoid@ellipsoids[[1]]@centroid)
     }
-    nam_format <- rformat_type(format)
+    #nam_format <- rformat_type(format)
 
     if (cclas == "RasterStack") {
       r_values <- na.omit(raster::values(projection_variables))
       lnames <- "projection"
       if (all(ellv_names == names(projection_variables))) {
-        namer <- paste0(output_directory, "/", lnames, "_", sp_name, nam_format)
+        namer <- paste0(output_directory, "/", lnames, "_", sp_name)#, nam_format)
 
         if (cls == "ellipsoid_model_rep") {
           predictions <- predict(ellipsoid, projection_variables, prediction,
@@ -125,7 +125,7 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
         cat("   Projection to", lnames[i], "\n")
         if (all(ellv_names == names(projection_variables[[i]]))) {
           if (i == 1) {r_values <- na.omit(raster::values(projection_variables[[i]]))}
-          namer <- paste0(output_directory, "/", lnames, "_", sp_name, nam_format)
+          namer <- paste0(output_directory, "/", lnames, "_", sp_name)#, nam_format)
 
           if (cls == "ellipsoid_model_rep") {
             predictions[[i]] <- predict(ellipsoid, projection_variables[[i]], prediction,
@@ -158,7 +158,7 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
                                                full.names = TRUE))
           if (i == 1) {r_values <- na.omit(raster::values(p_layers))}
 
-          namer <- paste0(output_directory, "/", lnames[i], "_", sp_name, nam_format)
+          namer <- paste0(output_directory, "/", lnames[i], "_", sp_name)#, nam_format)
 
           if (cls == "ellipsoid_model_rep") {
             predictions[[i]] <- predict(ellipsoid, p_layers, prediction, truncate,
