@@ -281,7 +281,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
         sum(random_results[[2]][[y]][, 3] <= results@union_overlap[y, 3]) / replicates
       })
       f_metrics_s <- data.frame(total_points = results@full_overlap[, 1],
-                                overlaped_points = results@full_overlap[, 2],
+                                overlapped_points = results@full_overlap[, 2],
                                 overlap = results@full_overlap[, 3],
                                 p_value = f_pval,
                                 pre_defined_CL = confidence_limit,
@@ -290,7 +290,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
       rownames(f_metrics_s) <- rownames(results@full_overlap)
 
       b_metrics_s <- data.frame(total_points = results@union_overlap[, 1],
-                                overlaped_points = results@union_overlap[, 2],
+                                overlapped_points = results@union_overlap[, 2],
                                 overlap = results@union_overlap[, 3],
                                 p_value = u_pval,
                                 pre_defined_CL = confidence_limit,
@@ -306,7 +306,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
         sum(random_results[[1]][[y]][, 3] <= results@full_overlap[y, 3]) / replicates
       })
       f_metrics_s <- data.frame(total_points = results@full_overlap[, 1],
-                                overlaped_points = results@full_overlap[, 2],
+                                overlapped_points = results@full_overlap[, 2],
                                 overlap = results@full_overlap[, 3],
                                 p_value = f_pval,
                                 pre_defined_CL = confidence_limit,
@@ -320,7 +320,7 @@ ellipsoid_overlap <- function(..., overlap_type = "all", n_points = 1000000,
         sum(random_results[[1]][[y]][, 3] <= results@union_overlap[y, 3]) / replicates
       })
       b_metrics_s <- data.frame(total_points = results@union_overlap[, 1],
-                                overlaped_points = results@union_overlap[, 2],
+                                overlapped_points = results@union_overlap[, 2],
                                 overlap = results@union_overlap[, 3],
                                 p_value = u_pval,
                                 pre_defined_CL = confidence_limit,
