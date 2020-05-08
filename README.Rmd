@@ -232,7 +232,8 @@ ell_model2 <- ellipsoid_model(data = occurrences, species = "species",
                               longitude = "longitude", latitude = "latitude",
                               raster_layers = vars, method = "covmat", level = 99,
                               replicates = 3, replicate_type = "bootstrap",
-                              bootstrap_percentage = 75, projection_variables = pr_vars,
+                              bootstrap_percentage = 75, 
+                              projection_variables = list(projection = pr_vars),
                               prediction = "suitability", return_numeric = TRUE,
                               format = "GTiff", overwrite = FALSE,
                               output_directory = "ellipsenm_model2")
@@ -289,8 +290,8 @@ niche2 <- overlap_object(occurrences2, species =  "species", longitude = "longit
 overlap <- ellipsoid_overlap(niche1, niche2)
 
 # niche overlap analysis with test of significance
-overlap_st <- ellipsoid_overlap(niche1, niche2, significance_test = TRUE, 
-                                replicates = 100)
+overlap_st <- ellipsoid_overlap(niche1, niche2, overlap_type = "back_union",
+                                significance_test = TRUE, replicates = 100)
 ```
 
 Use the following lines of code for plotting results using distinct options.
