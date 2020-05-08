@@ -125,7 +125,7 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
         cat("   Projection to", lnames[i], "\n")
         if (all(ellv_names == names(projection_variables[[i]]))) {
           if (i == 1) {r_values <- na.omit(raster::values(projection_variables[[i]]))}
-          namer <- paste0(output_directory, "/", lnames, "_", sp_name)#, nam_format)
+          namer <- paste0(output_directory, "/", lnames[i], "_", sp_name)#, nam_format)
 
           if (cls == "ellipsoid_model_rep") {
             predictions[[i]] <- predict(ellipsoid, projection_variables[[i]], prediction,
@@ -209,8 +209,8 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
         maha <- predictions[[1]]@prediction_maha
       }
       prevs <- lapply(1:length(predictions), function(x) {
-        write.csv(predictions[[x]]@prevalence,
-                  paste0(output_directory, "/", lnames[x],"_prevalence.csv"),
+        prevs <- data.frame(ellipsoid_model = predictions[[x]]@prevalence)
+        write.csv(prevs, paste0(output_directory, "/", lnames[x],"_prevalence.csv"),
                   row.names = TRUE)
         cat("\tPrevalence in scenario", lnames[x],"\n")
       })
