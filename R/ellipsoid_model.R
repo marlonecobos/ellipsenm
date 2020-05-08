@@ -20,6 +20,9 @@
 #' "mve2". See details of \code{\link{ellipsoid_fit}}. Default = "covmat".
 #' @param level (numeric) the confidence level of a pairwise confidence region
 #' for the ellipsoid, expresed as percentage. Default = 95.
+#' @param truncate (logical) whether or not to truncate values of suitability
+#' based on ellipsoid limits. All values outside the ellipsoid will be zero.
+#' Default = TRUE.
 #' @param replicates (numeric) number of replicates to perform. Default = 1
 #' produces a single model using all the data.
 #' @param replicate_type (character) type of replicates to perform. Options are:
@@ -60,7 +63,7 @@
 #'
 #' @usage
 #' ellipsoid_model(data, species, longitude, latitude, raster_layers,
-#'                 method = "covmat", level = 95, replicates = 1,
+#'                 method = "covmat", level = 95, truncate = TRUE, replicates = 1,
 #'                 replicate_type = "bootstrap", bootstrap_percentage = 75,
 #'                 projection_variables = NULL, prvariables_format = NULL,
 #'                 prediction = "suitability", return_numeric = TRUE,
@@ -124,7 +127,7 @@
 #' # check your directory, folder "ellipsenm_model2"
 
 ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
-                             method = "covmat", level = 95, replicates = 1,
+                             method = "covmat", level = 95, truncate = TRUE, replicates = 1,
                              replicate_type = "bootstrap", bootstrap_percentage = 75,
                              projection_variables = NULL, prvariables_format = NULL,
                              prediction = "suitability", return_numeric = TRUE,
@@ -221,11 +224,11 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   return_name <- "mean_ellipsoid"
 
   if (replicates > 1) {
-    predictions <- predict(ellipsoids, variables, prediction, TRUE, return_numeric,
+    predictions <- predict(ellipsoids, variables, prediction, truncate, return_numeric,
                            tolerance, namer, format, overwrite, force_return,
                            return_name)
   } else {
-    predictions <- predict(ellipsoids, variables, prediction, TRUE, return_numeric,
+    predictions <- predict(ellipsoids, variables, prediction, truncate, return_numeric,
                            tolerance, namer, format, overwrite, force_return)
   }
 
@@ -266,7 +269,7 @@ ellipsoid_model <- function (data, species, longitude, latitude, raster_layers,
   if (!is.null(projection_variables)) {
     cat("\nProducing results for projection scenario(s):\n")
     projections <- model_projection(predictions, projection_variables,
-                                    prvariables_format, sp, prediction, TRUE,
+                                    prvariables_format, sp, prediction, truncate,
                                     return_numeric, tolerance, format,
                                     overwrite, force_return, return_name,
                                     output_directory)

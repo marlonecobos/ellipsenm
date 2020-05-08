@@ -5,7 +5,7 @@
 \title{Ellipsoid-based ecological niche models}
 \usage{
 ellipsoid_model(data, species, longitude, latitude, raster_layers,
-                method = "covmat", level = 95, replicates = 1,
+                method = "covmat", level = 95, truncate = TRUE, replicates = 1,
                 replicate_type = "bootstrap", bootstrap_percentage = 75,
                 projection_variables = NULL, prvariables_format = NULL,
                 prediction = "suitability", return_numeric = TRUE,
@@ -36,6 +36,10 @@ the species ecological niche. Available methods are: "covmat", "mve1", and
 
 \item{level}{(numeric) the confidence level of a pairwise confidence region
 for the ellipsoid, expresed as percentage. Default = 95.}
+
+\item{truncate}{(logical) whether or not to truncate values of suitability
+based on ellipsoid limits. All values outside the ellipsoid will be zero.
+Default = TRUE.}
 
 \item{replicates}{(numeric) number of replicates to perform. Default = 1
 produces a single model using all the data.}

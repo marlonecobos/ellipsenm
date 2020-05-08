@@ -186,7 +186,9 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
     if (prediction != "mahalanobis") {
       suit <- predictions@prediction_suit
       prevalence <- predictions@prevalence
-      if (cls != "ellipsoid_model_rep") {colnames(prevalence) <- "ellipsoid_model"}
+      if (cls != "ellipsoid_model_rep") {
+        prevalence <- data.frame(ellipsoid_model = prevalence)
+      }
       if (prediction == "both") {
         maha <- predictions@prediction_maha
       }
@@ -200,7 +202,9 @@ model_projection <- function(ellipsoid, projection_variables, prvariables_format
     if (prediction != "mahalanobis") {
       suit <- predictions[[1]]@prediction_suit
       prevalence <- predictions[[1]]@prevalence
-      if (cls != "ellipsoid_model_rep") {colnames(prevalence) <- "ellipsoid_model"}
+      if (cls != "ellipsoid_model_rep") {
+        prevalence <- data.frame(ellipsoid_model = prevalence)
+      }
       if (prediction == "both") {
         maha <- predictions[[1]]@prediction_maha
       }
