@@ -61,7 +61,7 @@ explore_espace <- function(data, species, longitude, latitude, raster_layers,
   if (nrow(v) > 10000) {v <- v[sample(nrow(v), 10000), ]}
 
   o <- data.frame(code = "Species",
-                  raster::extract(vars, data[, c(longitude, latitude)]))
+                  raster::extract(raster_layers, data[, c(longitude, latitude)]))
   vo <- rbind(v, o)
 
   ## subsets
