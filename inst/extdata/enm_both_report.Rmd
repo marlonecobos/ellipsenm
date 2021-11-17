@@ -60,7 +60,7 @@ The plot below shows the geographic arrangement of occurrence data on the variab
 
 ```{r Figure1, fig.cap="Representation of species occurrence data in geographic space. Occurrence data is represented in black. Grey lines represent country borders."}
 par(mar = c(2, 2, 1, 1))
-plot(variable1, col = viridis(255))
+raster::plot(variable1, col = viridis(255))
 map(add = TRUE, col = "gray50")
 points(data[, 2:3])
 ```
@@ -214,7 +214,7 @@ The geographic prediction of suitability values in the calibration area is prese
 
 ```{r Figure5, fig.cap="Representation of suitability values in geographic space. Cold colors represent low suitabilities and warm colors high suitabilities. Grey lines represent country borders."}
 par(mar = c(2, 2, 1, 1))
-plot(layer[[1]], col = color_palette(255))
+raster::plot(layer[[1]], col = color_palette(255))
 map(add = TRUE, col = "gray50")
 ```
 
@@ -222,7 +222,7 @@ A geographic prediction of Mahalanobis distances in the calibration area is pres
 
 ```{r Figure6, fig.cap="Representation of Mahalanobis distances in geographic space. Cold colors represent long distances and warm colors short distances. Grey lines represent country borders."}
 par(mar = c(2, 2, 1, 1))
-plot(layer[[2]], col = rev(color_palette(255)))
+raster::plot(layer[[2]], col = rev(color_palette(255)))
 map(add = TRUE, col = "gray50")
 ```
 
