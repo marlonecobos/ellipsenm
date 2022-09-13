@@ -52,7 +52,7 @@ Default = FALSE.}
 A plot of the niches to be compared in environmental space.
 }
 \description{
-plot_overlap helps to create two or thre dimentional representations
+plot_overlap helps to create two or three dimensional representations
 of the overlap results obtained with the function \code{\link{ellipsoid_overlap}}.
 }
 \examples{

@@ -1,6 +1,6 @@
 #' Plot results of niche overlap analyses
 #'
-#' @description plot_overlap helps to create two or thre dimentional representations
+#' @description plot_overlap helps to create two or three dimensional representations
 #' of the overlap results obtained with the function \code{\link{ellipsoid_overlap}}.
 #'
 #' @param object overlap_ellipsoid object resulted from using the function

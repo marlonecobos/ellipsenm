@@ -9,12 +9,8 @@ Authors@R: c(
     person("A. Townsend", "Peterson", email = "town@ku.edu", role = "aut"),
     person("Vijay", "Barve", email = "vijay.barve@gmail.com", role = "aut"),
     person("Narayani", "Barve", email = "narayani.ku@gmail.com", role = "aut"))
-Author: Marlon E. Cobos [aut, cre],
-    Luis Osorio-Olvera [aut],
-    Jorge Soberon [aut],
-    A. Townsend Peterson [aut]
 Maintainer: Marlon E. Cobos <manubio13@gmail.com>
-Date: 2020-03-28
+Date: 2022-09-13
 Description: A collection of tools to characterize ecological niches using 
     ellipsoid envelopes. Functions to perform model calibration and selection, 
     prepare model projections to distinct scenarios, assess niche overlap, and
@@ -64,5 +60,5 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.0.0
+RoxygenNote: 7.1.2
 LinkingTo: Rcpp
