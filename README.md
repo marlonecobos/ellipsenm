@@ -1,8 +1,8 @@
 ellipsenm: An R package for ecological niche’s characterization using
 ellipsoids
 ================
-Marlon E. Cobos, Luis Osorio-Olvera, Jorge Soberón, A. Townsend
-Peterson, Vijay Barve, and Narayani Barve
+Marlon E. Cobos, Luis Osorio-Olvera, Jorge Soberón, Vijay Barve, Narayani Barve,
+and A. Townsend Peterson
 
   - [Project description](#project-description)
       - [Status of the project](#status-of-the-project)
